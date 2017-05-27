@@ -1,3 +1,5 @@
+ÐÞ¸Ä×Ôhttps://github.com/taylorchen709/vue-admin.git
+
 **demo**: [https://taylorchen709.github.io/vue-admin/](https://taylorchen709.github.io/vue-admin/)
 
 # To start
@@ -7,6 +9,12 @@ This is a project template for [vue-cli](https://github.com/vuejs/vue-cli)
 ``` bash
 # install dependencies
 npm install
+
+if npm install node-sass failed 
+please use cnpm instead
+
+npm install -g cnpm --registry=https://registry.npm.taobao.org
+cnpm install node-sass@latest
 
 # serve with hot reload at localhost:8081
 npm run dev
