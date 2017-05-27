@@ -1,0 +1,22 @@
+{
+  "POP_ROLE":{
+    "query": "SysRoleMapper.selectAllByPage",
+    "title": "角色",
+    "value":"roleCode",
+    "name":"roleName",
+    "conditions":[
+      {"title":"角色编码",
+        "name":"roleCode"},
+      {"title":"角色名称",
+        "name":"roleName"}
+    ],
+    "columns":[
+      {
+        "title":"角色编码",
+        "name":"roleCode"
+      },
+      {"title":"角色名称",
+        "name":"roleName"}
+    ]
+  }
+}
