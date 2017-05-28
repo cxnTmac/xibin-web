@@ -85,7 +85,7 @@
 <script>
 	import util from '../../common/js/util'
 	//import NProgress from 'nprogress'
-	import { getModelListPage, removeModel, saveModel } from '../../api/modelApi';
+	import { getModelListPage, removeModel, saveModel ,batchRemoveModel} from '../../api/modelApi';
     var codemaster = require('../../../static/codemaster.json');
 	export default {
 		data() {
@@ -152,7 +152,8 @@
                 var codemaster = require('../../../static/codemaster.json');
 				let para = {
 					page: this.page,
-					size: this.size
+					size: this.size,
+                    conditions:JSON.stringify(this.filters)
 				};
 
 
@@ -172,15 +173,19 @@
 				}).then(() => {
 					this.listLoading = true;
 					//NProgress.start();
-					let para = { id: row.id };
+					let para = { id: row.id ,modelCode:row.modelCode};
 					removeModel(para).then((res) => {
 						this.listLoading = false;
 						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getModels();
+                        if(res.data.code == 200){
+                            this.$message({
+                                message: res.data.msg,
+                                type: 'success'
+                            });
+                            this.getModels();
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
 					});
 				}).catch(() => {
 
@@ -262,19 +267,24 @@
 			//批量删除
 			batchRemove: function () {
 				var ids = this.sels.map(item => item.id).toString();
+                var modelCodes = this.sels.map(item => item.modelCode).join(",");
 				this.$confirm('确认删除选中记录吗？', '提示', {
 					type: 'warning'
 				}).then(() => {
 					this.listLoading = true;
 					//NProgress.start();
-					let para = { ids: ids };
-					batchRemoveUser(para).then((res) => {
+					let para = { ids: ids ,modelCodes:modelCodes};
+                    batchRemoveModel(para).then((res) => {
 						this.listLoading = false;
 						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
+                        if(res.data.code == 200){
+                            this.$message({
+                                message: res.data.msg,
+                                type: 'success'
+                            });
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
 						this.getModels();
 					});
 				}).catch(() => {

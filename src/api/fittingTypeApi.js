@@ -11,5 +11,9 @@ export const getFittingTypeListPage = params => { return axios.get(`/xibin/fitti
 
 export const removeFittingType = params => { return axios.get(`/xibin/fittingType/removeFittingType.shtml`, { params: params }); };
 
+export const batchRemoveFittingType = params => { return axios.post(`/xibin/fittingType/batchRemove.shtml`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
+
 export const saveFittingType = params => { return axios.get(`/xibin/fittingType/saveFittingType.shtml`, { params: params }); };
 

@@ -73,6 +73,7 @@
 
 <script>
     import { logout } from '../api/api';
+    var loginPopWin = require('../components/loginPopWin.vue');
 	export default {
 		data() {
 			return {

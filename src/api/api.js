@@ -17,7 +17,6 @@ export const getUserList = params => { return axios.get(`${base}/user/list`, { p
 //export const getUserListPage = params => { return axios.get(`${base}/user/listpage`, { params: params }); };
 
 export const getUserListPage = params => { return axios.get(`/xibin/user/showAllUser.shtml`, { params: params }); };
-
 //export const removeUser = params => { return axios.get(`${base}/user/remove`, { params: params }); };
 
 export const removeUser = params => { return axios.get(`/xibin/user/removeUser.shtml`, { params: params }); };

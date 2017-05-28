@@ -1,5 +1,6 @@
 var SIGN_REGEXP = /([yMdhsm])(\1*)/g;
 var DEFAULT_PATTERN = 'yyyy-MM-dd';
+import ElementUI from 'element-ui';
 function padding(s, len) {
     var len = len - (s + '').length;
     for (var i = 0; i < len; i++) { s = '0' + s; }
@@ -26,6 +27,16 @@ export default {
             }
         }
         return '';
+    },
+    errorCallBack:function(data,router,$message){
+        if(data.response.status == 401){
+            $message({
+                message: "登陆超时，请重新登陆",
+                type: 'error'
+            });
+            router.push({ path: '/Login' });
+            console.log("session过期");
+        }
     },
     formatDate: {
 

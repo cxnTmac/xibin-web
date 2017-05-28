@@ -3,9 +3,9 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters">
-				<!--<el-form-item>-->
-					<!--<el-input v-model="filters.userName" placeholder="用户名"></el-input>-->
-				<!--</el-form-item>-->
+				<el-form-item>
+					<el-input v-model="filters.fittingTypeName" placeholder="配件类别名称"></el-input>
+				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" v-on:click="getFittingTypes">查询</el-button>
 				</el-form-item>
@@ -87,7 +87,7 @@
 <script>
 	import util from '../../common/js/util'
 	//import NProgress from 'nprogress'
-	import { getFittingTypeListPage, removeFittingType, saveFittingType } from '../../api/fittingTypeApi';
+	import { getFittingTypeListPage, removeFittingType, saveFittingType ,batchRemoveFittingType} from '../../api/fittingTypeApi';
     var codemaster = require('../../../static/codemaster.json');
 	export default {
 		data() {
@@ -155,7 +155,8 @@
 
 				let para = {
 					page: this.page,
-					size: this.size
+					size: this.size,
+                    conditions:JSON.stringify(this.filters)
 				};
 
 
@@ -175,15 +176,20 @@
 				}).then(() => {
 					this.listLoading = true;
 					//NProgress.start();
-					let para = { id: row.id };
+					let para = { id: row.id ,fittingTypeCode:row.fittingTypeCode};
                     removeFittingType(para).then((res) => {
 						this.listLoading = false;
 						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getFittingTypes();
+                        if(res.data.code == 200){
+                            this.$message({
+                                message: res.data.msg,
+                                type: 'success'
+                            });
+                            this.getFittingTypes();
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
+
 					});
 				}).catch(() => {
 
@@ -265,20 +271,25 @@
 			},
 			//批量删除
 			batchRemove: function () {
-				var ids = this.sels.map(item => item.id).toString();
+				var ids = this.sels.map(item => item.id).join(",");
+				var fittingTypeCodes = this.sels.map(item => item.fittingTypeCode).join(",");
 				this.$confirm('确认删除选中记录吗？', '提示', {
 					type: 'warning'
 				}).then(() => {
 					this.listLoading = true;
 					//NProgress.start();
-					let para = { ids: ids };
-					batchRemoveUser(para).then((res) => {
+					let para = { ids: ids ,fittingTypeCodes:fittingTypeCodes};
+                    batchRemoveFittingType(para).then((res) => {
 						this.listLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
+                        if(res.data.code == 200){
+                            this.$message({
+                                message: res.data.msg,
+                                type: 'success'
+                            });
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
+
 						this.getFittingTypes();
 					});
 				}).catch(() => {

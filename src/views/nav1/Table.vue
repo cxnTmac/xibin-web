@@ -132,6 +132,7 @@
     //import NProgress from 'nprogress'
 	import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '../../api/api';
     var codemaster = require('../../../static/codemaster.json');
+    //查询弹出框
     require('../../components/popWin.vue');
 
 	export default {
@@ -225,7 +226,9 @@
 					this.users = res.data.list;
 					this.listLoading = false;
 					//NProgress.done();
-				});
+				}).catch((data) => {
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
 			},
 			//删除
 			handleDel: function (index, row) {
@@ -245,7 +248,7 @@
 						this.getUsers();
 					});
 				}).catch(() => {
-
+                    util.errorCallBack(data,this.$router,this.$message);
 				});
 			},
 			//显示编辑界面
@@ -333,7 +336,7 @@
 						this.getUsers();
 					});
 				}).catch(() => {
-
+                    util.errorCallBack(data,this.$router,this.$message);
 				});
 			}
 		},
