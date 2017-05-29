@@ -80,12 +80,20 @@
 		<!--新增界面-->
 		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-				<el-form-item label="姓名" prop="userName">
-					<el-input v-model="addForm.userName" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="密码" prop="password">
-					<el-input type="password" v-model="addForm.password" auto-complete="off"></el-input>
-				</el-form-item>
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="姓名" prop="userName">
+							<el-input v-model="addForm.userName" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="密码" prop="password">
+							<el-input type="password" v-model="addForm.password" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
 				<el-form-item label="是否启用">
 					<el-select v-model="addForm.isEnable" placeholder="请选择">
 						<el-option
@@ -98,25 +106,13 @@
 						</el-option>
 					</el-select>
 				</el-form-item>
-				<el-form-item label="角色">
-					<!--<el-select-->
-						<!--v-model="addForm.roleCode"-->
-						<!--multiple-->
-						<!--filterable-->
-						<!--remote-->
-						<!--placeholder="请输入关键词"-->
-						<!--:remote-method="getRemoteRole"-->
-						<!--:loading="loading">-->
-						<!--<el-option-->
-								<!--v-for="item in roles"-->
-								<!--:key="item.value"-->
-								<!--:label="item.label"-->
-								<!--:value="item.value">-->
-						<!--</el-option>-->
-					<!--</el-select>-->
-
-					<popwin-button popKey="POP_ROLE" :selectValue="addForm.roleCode" @changeValue="changeAddPopValue"></popwin-button>
-				</el-form-item>
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="角色">
+							<popwin-button popKey="POP_ROLE" :selectValue="addForm.roleCode" @changeValue="changeAddPopValue"></popwin-button>
+						</el-form-item>
+					</el-col>
+				</el-row>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="addFormVisible = false">取消</el-button>
@@ -201,9 +197,6 @@
 			//性别显示转换
             formatYorN: function (row, column) {
                 return util.getComboNameByValue(codemaster.SYS_YES_NO,row.isEnable);
-			},
-            getRemoteRole:function(){
-
 			},
 			handleCurrentChange(val) {
 				this.page = val;

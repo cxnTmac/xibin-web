@@ -1,5 +1,9 @@
 {"SYS_YES_NO":[
   {"code":"Y","name":"是"},
   {"code":"N","name":"否"}
-]
+],
+  "WM_IS_PACKED":[
+    {"code":"PACKED","name":"包装货"},
+    {"code":"UNPACKED","name":"散装货"}
+  ]
 }

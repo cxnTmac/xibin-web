@@ -17,7 +17,7 @@
 //		  template:'<el-table :data="data2">'+
 //		  				'<el-table-column v-for="item in getColumns2" :prop="item.name" :label="item.title"></el-table-column>'+
 //		            '</el-table>',
-         template:'<div><el-input v-model="selectValue" width="600"></el-input><el-popover ref="popBtn" placement="right" width="500" trigger="click">'+
+         template:'<div><el-popover ref="popBtn" placement="top-start" width="500" trigger="click">'+
 //         				'<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">'+
          '<el-form :inline="true" :model="filters">'+
         	 '<el-form-item>'+
@@ -38,11 +38,15 @@
 		 	'<el-table-column v-for="item in getColumns2" :prop="item.name" :label="item.title"></el-table-column>'+
 		 '</el-table>'+
          '<el-col :span="24" class="toolbar">'+
-         '<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="size" :total="total" style="float:right;">'+
+         '<el-pagination layout="prev, pager, next" @current-change="handleCurrentPageChange" :page-size="size" :total="total" style="float:right;">'+
         '</el-pagination>'+
          '</el-col>'+
 		 '</el-popover>'+
-		 '<el-button v-popover:popBtn type="primary" icon="search" v-on:click="getData"></el-button></div>',
+         '<el-row :gutter="0">'+
+         '<el-col :span="18">'+
+         '<el-input v-model="selectValue" width="600"></el-input></el-col>'+
+         '<el-col :span="6">'+
+		 '<el-button v-popover:popBtn type="primary" icon="search" v-on:click="getData"></el-button></el-col></el-row></div>',
 //        template: '<button v-on:click="increment">{{ counter }}</button>',
         computed:{
 			getColumns2 :function(){
@@ -71,7 +75,7 @@
 //				}]
 				data2:[],
                 page: 1,
-                size:10,
+                size:5,
 				total:0,
                 listLoading:false
             }
@@ -82,6 +86,10 @@
                 this.name = currentRow[popConfig[this.popKey].name];
                 this.$emit('changeValue',[this.selectValue,this.name]);
 			},
+            handleCurrentPageChange(val) {
+                this.page = val;
+                this.getData();
+            },
             getData:function(){
                 this.listLoading = true;
                 let para = {};

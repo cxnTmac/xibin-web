@@ -18,5 +18,25 @@
       {"title":"角色名称",
         "name":"roleName"}
     ]
+  },
+  "POP_FITTINGTYPE":{
+    "query": "BdFittingTypeMapper.selectAllByPage",
+    "title": "配件类别",
+    "value":"fittingTypeCode",
+    "name":"fittingTypeName",
+    "conditions":[
+      {"title":"配件编码",
+        "name":"fittingTypeCode"},
+      {"title":"配件名称",
+        "name":"fittingTypeName"}
+    ],
+    "columns":[
+      {
+        "title":"配件编码",
+        "name":"fittingTypeCode"
+      },
+      {"title":"配件名称",
+        "name":"fittingTypeName"}
+    ]
   }
 }

@@ -4,69 +4,195 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters">
 				<el-form-item>
-					<el-input v-model="filters.userName" placeholder="用户名"></el-input>
+					<el-input v-model="filters.skuName" placeholder="产品名称"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">查询</el-button>
+					<el-button type="primary" v-on:click="getSkus"><i class="el-icon-search el-icon--left"></i>查询</el-button>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" @click="handleAdd">新增</el-button>
+					<el-button type="primary" @click="handleAdd"><i class="el-icon-plus el-icon--left"></i>新增</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
 
 		<!--列表-->
-		<el-table :data="users" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
+		<el-table :data="skus" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
 			<el-table-column prop="id" label="id" width="80" sortable>
 			</el-table-column>
-			<el-table-column prop="userName" label="用户名" width="120" sortable>
+			<el-table-column prop="fittingSkuCode" label="产品编码" width="120" sortable>
 			</el-table-column>
-			<!--<el-table-column prop="password" label="密码" width="100" :formatter="formatSex" sortable>-->
+			<el-table-column prop="fittingSkuName" label="产品名称" width="120" sortable>
+			</el-table-column>
+			<el-table-column prop="modelCode" label="车型" width="120" >
+			</el-table-column>
+			<el-table-column prop="fittingTypeCode" label="配件类别编码" width="120" >
+			</el-table-column>
+			<el-table-column prop="fittingTypeName" label="配件类别名称" width="120" >
+			</el-table-column>
+			<el-table-column prop="fittingSkuRemark" label="产品备注" width="120" >
+			</el-table-column>
+			<el-table-column prop="manufacturer" label="生产厂家" width="120" >
+			</el-table-column>
+			<el-table-column prop="materialquality" label="材质" width="120" >
+			</el-table-column>
+			<!--<el-table-column prop="packageCode" label="包装编码" width="120" sortable>-->
 			<!--</el-table-column>-->
-			<el-table-column prop="password" label="密码" width="100"  >
+			<el-table-column prop="uomDesc" label="单位" width="120" >
 			</el-table-column>
-			<el-table-column prop="isEnable" label="是否启用" width="120" :formatter="formatYorN">
+			<el-table-column prop="price" label="参考价格" width="120" sortable>
 			</el-table-column>
-			<el-table-column prop="roleCode" label="角色编码" width="120" >
+
+			<el-table-column prop="type" label="包装类别" width="120"  :formatter="formatISPACKED">
 			</el-table-column>
-			<el-table-column label="操作" min-width="150">
+			<el-table-column prop="def1" label="详细尺寸" width="120" >
+			</el-table-column>
+			<el-table-column prop="def2" label="自定义2" width="120" >
+			</el-table-column>
+			<el-table-column prop="def3" label="自定义3" width="120" >
+			</el-table-column>
+			<el-table-column prop="def4" label="自定义4" width="120" >
+			</el-table-column>
+			<el-table-column prop="def5" label="自定义5" width="120" >
+			</el-table-column>
+
+			<el-table-column label="操作" fixed="right" min-width="270">
 				<template scope="scope">
 					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)"><i class="el-icon-delete2 el-icon--left"></i>删除</el-button>
+					<el-button type="primary" size="small" @click="handlePicManager(scope.$index, scope.row)"><i class="el-icon-picture el-icon--left"></i>图片管理</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
-			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
+			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0"><i class="el-icon-delete2 el-icon--left"></i>批量删除</el-button>
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="size" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
 
+		<!--图片管理界面-->
+		<el-dialog title="图片管理" :visible.sync="dialogPicManagerVisible">
+			<el-tabs v-model="activeName" @tab-click="handleClick">
+				<el-tab-pane label="图片上传" name="picUpload">
+					<el-upload ref="upload"
+						class="upload-demo"
+						drag
+							   :data= "currentRow"
+							   :on-success="uploadConnectSuccess"
+							   :on-error="uploadConnectFail"
+						action="http://localhost:8080/xibin/file/uploadFittingSkuPic.shtml"
+							   :file-list="fileList"
+						multiple
+							   list-type="picture"
+						:auto-upload="false">
+					<i class="el-icon-upload"></i>
+					<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+					<div class="el-upload__tip" slot="tip">只能上传jpg/png文件</div>
+					</el-upload>
+					<el-button type="primary" size="large" @click="startUpload">开始上传</el-button>
+				</el-tab-pane>
+				<el-tab-pane label="图片查看" name="picManage">
+					<el-row>
+						<el-col :span="6"  v-for="(img,index) in imgs" :key="img" :offset="index > 0 ? 2 : 0">
+							<el-card :body-style="{ padding: '0px' }">
+								<el-tooltip :content="img.pic" placement="left" effect="dark">
+								<img :src=img.zipPic v-preview="img.pic" class="image" >
+								</el-tooltip>
+								<div style="padding: 14px;">
+									<span>img.pic</span>
+									<div class="bottom clearfix">
+										<time class="time">{{img.uploadDate}}</time>
+										<!--<el-button type="danger" icon="delete"></el-button>-->
+										<el-button type="text" class="button">删除</el-button>
+									</div>
+								</div>
+							</el-card>
+						</el-col>
+					</el-row>
+
+				</el-tab-pane>
+			</el-tabs>
+		</el-dialog>
 		<!--编辑界面-->
 		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="用户名">
-					<el-input v-model="editForm.userName" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="密码">
-					<el-input type="password" v-model="editForm.password" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="是否启用">
-					<el-select v-model="editForm.isEnable" placeholder="请选择">
-						<el-option
-								v-for="item in yes_no"
-								:key="item.code"
-								:label="item.name"
-								:value="item.code">
-							<span style="float: left">{{ item.name }}</span>
-							<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
-						</el-option>
-					</el-select>
-				</el-form-item>
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="产品编码" prop="fittingSkuCode">
+							<el-input v-model="editForm.fittingSkuCode" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="产品名称" prop="fittingSkuName">
+							<el-input v-model="editForm.fittingSkuName" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="20">
+						<el-form-item label="产品备注" prop="fittingSkuRemark">
+							<el-input v-model="editForm.fittingSkuRemark" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="6">
+						<el-form-item label="生产厂家" prop="manufacturer">
+							<el-input v-model="editForm.manufacturer" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="6">
+						<el-form-item label="材质" prop="materialquality">
+							<el-input v-model="editForm.materialquality" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="6">
+						<el-form-item label="单位" prop="uomDesc">
+							<el-input v-model="editForm.uomDesc" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="6">
+						<el-form-item label="参考价格" prop="price">
+							<el-input v-model="editForm.price" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="车型" prop="modelCode">
+							<el-input v-model="editForm.modelCode" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="配件类别" prop="fittingTypeCode">
+							<popwin-button popKey="POP_FITTINGTYPE" :selectValue="editForm.fittingTypeCode" @changeValue="changeEditPopValueForFittingType"></popwin-button>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="包装类别" prop="type">
+							<el-select v-model="editForm.type" placeholder="请选择">
+								<el-option
+										v-for="item in is_packed"
+										:key="item.code"
+										:label="item.name"
+										:value="item.code">
+									<span style="float: left">{{ item.name }}</span>
+									<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
+								</el-option>
+							</el-select>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="详细尺寸" prop="def1">
+							<el-input v-model="editForm.def1" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="editFormVisible = false">取消</el-button>
@@ -77,41 +203,82 @@
 		<!--新增界面-->
 		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-				<el-form-item label="姓名" prop="userName">
-					<el-input v-model="addForm.userName" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="密码" prop="password">
-					<el-input type="password" v-model="addForm.password" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="是否启用">
-					<el-select v-model="addForm.isEnable" placeholder="请选择">
-						<el-option
-								v-for="item in yes_no"
-								:key="item.code"
-								:label="item.name"
-								:value="item.code">
-							<span style="float: left">{{ item.name }}</span>
-							<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
-						</el-option>
-					</el-select>
-				</el-form-item>
-				<el-form-item label="角色">
-					<el-select
-						v-model="addForm.roleCode"
-						multiple
-						filterable
-						remote
-						placeholder="请输入关键词"
-						:remote-method="getRemoteRole"
-						:loading="loading">
-						<el-option
-								v-for="item in roles"
-								:key="item.value"
-								:label="item.label"
-								:value="item.value">
-						</el-option>
-					</el-select>
-				</el-form-item>
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="产品编码" prop="fittingSkuCode">
+							<el-input v-model="addForm.fittingSkuCode" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="产品名称" prop="fittingSkuName">
+							<el-input v-model="addForm.fittingSkuName" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="20">
+						<el-form-item label="产品备注" prop="fittingSkuRemark">
+							<el-input v-model="addForm.fittingSkuRemark" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="6">
+						<el-form-item label="生产厂家" prop="manufacturer">
+							<el-input v-model="addForm.manufacturer" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="6">
+						<el-form-item label="材质" prop="materialquality">
+							<el-input v-model="addForm.materialquality" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="6">
+						<el-form-item label="单位" prop="uomDesc">
+							<el-input v-model="addForm.uomDesc" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="6">
+						<el-form-item label="参考价格" prop="price">
+							<el-input v-model="addForm.price" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="车型" prop="modelCode">
+							<el-input v-model="addForm.modelCode" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="配件类别" prop="fittingTypeCode">
+							<popwin-button popKey="POP_FITTINGTYPE" :selectValue="addForm.fittingTypeCode" @changeValue="changeAddPopValueForFittingType"></popwin-button>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="包装类别" prop="type">
+							<el-select v-model="addForm.type" placeholder="请选择">
+								<el-option
+										v-for="item in is_packed"
+										:key="item.code"
+										:label="item.name"
+										:value="item.code">
+									<span style="float: left">{{ item.name }}</span>
+									<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
+								</el-option>
+							</el-select>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="详细尺寸" prop="def1">
+							<el-input v-model="addForm.def1" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+
+
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="addFormVisible = false">取消</el-button>
@@ -123,90 +290,136 @@
 
 <script>
 	import util from '../../common/js/util'
-	//import NProgress from 'nprogress'
-	import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '../../api/api';
+	import NProgress from 'nprogress'
+	import { getFittingSkuListPage, removeFittingSku, batchRemoveFittingSku, saveFittingSku} from '../../api/fittingSkuApi';
     var codemaster = require('../../../static/codemaster.json');
 	export default {
 		data() {
 			return {
-				yes_no:codemaster.SYS_YES_NO,
+                imgs: [{pic:'static/fittingSku/0270-1/test1.jpg',zipPic:'static/fittingSku/0270-1/test1-zip.jpg',uploadDate:'2017-05-28 23:25'}, {pic:'static/fittingSku/0270-1/test1.jpg',zipPic:'static/fittingSku/0270-1/test1-zip.jpg',uploadDate:'2017-05-28 23:25'}],
+				is_packed:codemaster.WM_IS_PACKED,
 				filters: {
-					userName: ''
+				    fittingSkuCode:'',
+					fittingSkuName: ''
 				},
-				users: [],
+				skus: [],
 				total: 0,
 				page: 1,
 				size:10,
 				listLoading: false,
                 loading:true,
 				sels: [],//列表选中列
-
+				currentRow:{},//当前点击按钮对应的列
 				editFormVisible: false,//编辑界面是否显示
 				editLoading: false,
 				editFormRules: {
-                    userName: [
-						{ required: true, message: '请输入用户名', trigger: 'blur' }
+                    fittingSkuCode: [
+						{ required: true, message: '请输入产品编码', trigger: 'blur' }
 					],
-                    password:[
-						{ required: true, message: '请输入密码', trigger: 'blur' }
-					]
+                    fittingSkuName:[
+						{ required: true, message: '请输入产品名称', trigger: 'blur' }
+					],
+                    modelCode:[
+						{ required: true, message: '请输入车型', trigger: 'blur' }
+					],
+                    fittingTypeCode:[
+                        { required: true, message: '请输入配件类别', trigger: 'blur' }
+                    ]
 				},
 				//编辑界面数据
 				editForm: {
-					id: 0,
-					userName: '',
-					password: '',
-					isEnable: 'N',
-					roleCode:''
+                    id: 0,
+                    fittingSkuCode: '',
+                    fittingSkuName: '',
+                    fittingSkuStatus: '',
+                    fittingSkuRemark:'',
+                    manufacturer:'',
+                    materialquality:'',
+                    packageCode:'',
+                    uomDesc:'',
+                    price:'',
+                    modelCode:'',
+                    fittingTypeCode:'',
+                    type:'',
+                    def1:'',
+                    def2:'',
+                    def3:'',
+                    def4:'',
+                    def5:''
 				},
 
 				addFormVisible: false,//新增界面是否显示
 				addLoading: false,
-				addFormRules: {
-					userName: [
-						{ required: true, message: '请输入用户名', trigger: 'blur' }
-					],
-                    password:[
-                        { required: true, message: '请输入密码', trigger: 'blur' }
+				addFormRules:{
+                    fittingSkuCode: [
+                        { required: true, message: '请输入产品编码', trigger: 'blur' }
+                    ],
+                    fittingSkuName:[
+                        { required: true, message: '请输入产品名称', trigger: 'blur' }
+                    ],
+                    modelCode:[
+                        { required: true, message: '请输入车型', trigger: 'blur' }
+                    ],
+                    fittingTypeCode:[
+                        { required: true, message: '请输入配件类别', trigger: 'blur' }
                     ]
-				},
+                },
 				//新增界面数据
 				addForm: {
                     id: 0,
-                    userName: '',
-                    password: '',
-                    isEnable: 'N',
-                    roleCode:''
+                    fittingSkuCode: '',
+                    fittingSkuName: '',
+                    fittingSkuStatus: '',
+                    fittingSkuRemark:'',
+                    manufacturer:'',
+                    materialquality:'',
+                    packageCode:'',
+                    uomDesc:'',
+                    price:'',
+                    modelCode:'',
+                    fittingTypeCode:'',
+                    type:'',
+                    def1:'',
+                    def2:'',
+                    def3:'',
+                    def4:'',
+                    def5:''
 				},
-				roles:[]
+				//UI控制数据
+                dialogPicManagerVisible : false,
+                activeName:'picUpload',
+                fileList:[]
 			}
 		},
 		methods: {
-			//性别显示转换
-            formatYorN: function (row, column) {
-                return util.getComboNameByValue(codemaster.SYS_YES_NO,row.isEnable);
-			},
-            getRemoteRole:function(){
+            changeAddPopValueForFittingType:function(value){
+                this.addForm.fittingTypeCode = value[0];
 
+            },
+            changeEditPopValueForFittingType:function(value){
+                this.editForm.fittingTypeCode = value[0];
+            },
+            formatISPACKED: function (row, column) {
+                return util.getComboNameByValue(codemaster.WM_IS_PACKED,row.type);
 			},
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getUsers();
+				this.getSkus();
 			},
 			//获取用户列表
-			getUsers() {
-                var codemaster = require('../../../static/codemaster.json');
+			getSkus() {
 				let para = {
 					page: this.page,
-					size: this.size
+					size: this.size,
+					conditions:JSON.stringify(this.filters)
 				};
 
 
 				this.listLoading = true;
 				//NProgress.start();
-				getUserListPage(para).then((res) => {
+                getFittingSkuListPage(para).then((res) => {
 					this.total = res.data.size;
-					this.users = res.data.list;
+					this.skus = res.data.list;
 					this.listLoading = false;
 					//NProgress.done();
 				});
@@ -217,16 +430,13 @@
 					type: 'warning'
 				}).then(() => {
 					this.listLoading = true;
-					//NProgress.start();
+					NProgress.start();
 					let para = { id: row.id };
 					removeUser(para).then((res) => {
 						this.listLoading = false;
-						//NProgress.done();
-						this.$message({
-							message: '删除成功',
-							type: 'success'
-						});
-						this.getUsers();
+						NProgress.done();
+
+						this.getSkus();
 					});
 				}).catch(() => {
 
@@ -236,16 +446,38 @@
 			handleEdit: function (index, row) {
 				this.editFormVisible = true;
 				this.editForm = Object.assign({}, row);
+                this.currentRow = Object.assign({}, row);
 			},
 			//显示新增界面
 			handleAdd: function () {
 				this.addFormVisible = true;
 				this.addForm = {
-					userName: '',
-                    password: '',
-                    isEnable: 'N',
-                    roleCode:''
+                    id: 0,
+                    fittingSkuCode: '',
+                    fittingSkuName: '',
+                    fittingSkuStatus: '',
+                    fittingSkuRemark:'',
+                    manufacturer:'',
+                    materialquality:'',
+                    packageCode:'',
+                    uomDesc:'',
+                    price:'',
+                    modelCode:'',
+                    fittingTypeCode:'',
+                    type:'',
+                    def1:'',
+                    def2:'',
+                    def3:'',
+                    def4:'',
+                    def5:''
 				};
+                this.currentRow = this.addForm;
+			},
+			//点击图片管理
+            handlePicManager:function(index, row){
+                this.fileList = [];
+                this.currentRow = Object.assign({}, row);
+                this.dialogPicManagerVisible  = true;
 			},
 			//编辑
 			editSubmit: function () {
@@ -253,19 +485,23 @@
 					if (valid) {
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
 							this.editLoading = true;
-							//NProgress.start();
+							NProgress.start();
 							let para = Object.assign({}, this.editForm);
 							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							editUser({user:JSON.stringify(para)}).then((res) => {
+                            saveFittingSku({fittingSku:JSON.stringify(para)}).then((res) => {
 								this.editLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
+								NProgress.done();
+                                if(res.data.code == 200){
+                                    this.$message({
+                                        message: res.data.msg,
+                                        type: 'success'
+                                    });
+                                }else{
+                                    this.$message.error(res.data.msg);
+                                }
 								this.$refs['editForm'].resetFields();
 								this.editFormVisible = false;
-								this.getUsers();
+								this.getSkus();
 							});
 						});
 					}
@@ -277,19 +513,23 @@
 					if (valid) {
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
 							this.addLoading = true;
-							//NProgress.start();
+							NProgress.start();
 							let para = Object.assign({}, this.addForm);
-							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							addUser({user:JSON.stringify(para)}).then((res) => {
+
+                            saveFittingSku({fittingSku:JSON.stringify(para)}).then((res) => {
 								this.addLoading = false;
-								//NProgress.done();
-								this.$message({
-									message: '提交成功',
-									type: 'success'
-								});
+								NProgress.done();
+                                if(res.data.code == 200){
+                                    this.$message({
+                                        message: res.data.msg,
+                                        type: 'success'
+                                    });
+                                }else{
+                                    this.$message.error(res.data.msg);
+                                }
 								this.$refs['addForm'].resetFields();
 								this.addFormVisible = false;
-								this.getUsers();
+								this.getSkus();
 							});
 						});
 					}
@@ -305,29 +545,67 @@
 					type: 'warning'
 				}).then(() => {
 					this.listLoading = true;
-					//NProgress.start();
+					NProgress.start();
 					let para = { ids: ids };
-					batchRemoveUser(para).then((res) => {
+                    batchRemoveFittingSku(para).then((res) => {
 						this.listLoading = false;
-						//NProgress.done();
+						NProgress.done();
 						this.$message({
 							message: '删除成功',
 							type: 'success'
 						});
-						this.getUsers();
+						this.getSkus();
 					});
 				}).catch(() => {
 
 				});
+			},
+            handleClick(tab, event) {
+                console.log(tab, event);
+            },
+			startUpload() {
+				this.$refs.upload.submit();
+			},
+            uploadConnectSuccess(response, file, fileList){
+                if(response.code == 0){
+                    this.$message.error(response.msg);
+				}
+			},
+            uploadConnectFail(err, file, fileList){
+                this.$message.error("网络连接错误，上传失败！");
 			}
+
 		},
 		mounted() {
-			this.getUsers();
+			this.getSkus();
 		}
 	}
 
 </script>
 
 <style scoped>
+	.time {
+		font-size: 13px;
+		color: #999;
+	}
 
+	.bottom {
+		margin-top: 13px;
+		line-height: 12px;
+	}
+	.button {
+		padding: 0;
+		float: right;
+	}
+	.image {
+		width: 100%;
+		display: block;
+	}
+	.clearfix:after {
+		display: table;
+		content: "";
+	}
+	.clearfix:after {
+		clear: both
+	}
 </style>

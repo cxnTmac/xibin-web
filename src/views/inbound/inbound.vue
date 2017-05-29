@@ -4,10 +4,10 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters">
 				<el-form-item>
-					<el-input v-model="filters.modelName" placeholder="车型名称"></el-input>
+					<el-input v-model="filters.fittingTypeName" placeholder="配件类别名称"></el-input>
 				</el-form-item>
 				<el-form-item>
-					<el-button type="primary" v-on:click="getModels">查询</el-button>
+					<el-button type="primary" v-on:click="getFittingTypes">查询</el-button>
 				</el-form-item>
 				<el-form-item>
 					<el-button type="primary" @click="handleAdd">新增</el-button>
@@ -16,18 +16,20 @@
 		</el-col>
 
 		<!--列表-->
-		<el-table :data="users" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
+		<el-table :data="fittingTypes" highlight-current-row v-loading="listLoading" @selection-change="selsChange" stripe style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
 			<el-table-column prop="id" label="id" width="80" sortable>
 			</el-table-column>
-			<el-table-column prop="modelCode" label="车型编码" width="200" sortable>
+			<el-table-column prop="fittingTypeCode" label="配件类型编码" width="200" sortable>
 			</el-table-column>
-			<el-table-column prop="modelName" label="车型名称" width="300"  >
+			<!--<el-table-column prop="password" label="密码" width="100" :formatter="formatSex" sortable>-->
+			<!--</el-table-column>-->
+			<el-table-column prop="fittingTypeName" label="配件类型名称" width="300"  >
 			</el-table-column>
-			<el-table-column prop="modelRemark" label="备注" min-width="400">
+			<el-table-column prop="fittingTypeRemark" label="备注" min-width="400">
 			</el-table-column>
-			<el-table-column label="操作" min-width="150">
+			<el-table-column label="操作" width="150">
 				<template scope="scope">
 					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
@@ -44,15 +46,15 @@
 
 		<!--编辑界面-->
 		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="车型编码">
-					<el-input v-model="editForm.modelCode" auto-complete="off" :disabled="true"></el-input>
+			<el-form :model="editForm" label-width="120px" :rules="editFormRules" ref="editForm">
+				<el-form-item label="配件类型编码">
+					<el-input v-model="editForm.fittingTypeCode" auto-complete="off" :disabled="true"></el-input>
 				</el-form-item>
-				<el-form-item label="车型名称">
-					<el-input v-model="editForm.modelName" auto-complete="off"></el-input>
+				<el-form-item label="配件类型名称">
+					<el-input v-model="editForm.fittingTypeName" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="备注">
-					<el-input v-model="editForm.modelRemark" auto-complete="off"></el-input>
+					<el-input v-model="editForm.fittingTypeRemark" auto-complete="off"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -63,15 +65,15 @@
 
 		<!--新增界面-->
 		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
-			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-				<el-form-item label="车型编码">
-					<el-input v-model="addForm.modelCode" auto-complete="off"></el-input>
+			<el-form :model="addForm" label-width="120px" :rules="addFormRules" ref="addForm">
+				<el-form-item label="配件类型编码">
+					<el-input v-model="addForm.fittingTypeCode" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="车型名称">
-					<el-input v-model="addForm.modelName" auto-complete="off"></el-input>
+				<el-form-item label="配件类型名称">
+					<el-input v-model="addForm.fittingTypeName" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="备注">
-					<el-input v-model="addForm.modelRemark" auto-complete="off"></el-input>
+					<el-input v-model="addForm.fittingTypeRemark" auto-complete="off"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -85,15 +87,16 @@
 <script>
 	import util from '../../common/js/util'
 	//import NProgress from 'nprogress'
-	import { getModelListPage, removeModel, saveModel ,batchRemoveModel} from '../../api/modelApi';
+	import { getFittingTypeListPage, removeFittingType, saveFittingType ,batchRemoveFittingType} from '../../api/fittingTypeApi';
     var codemaster = require('../../../static/codemaster.json');
 	export default {
 		data() {
 			return {
 				filters: {
-					modelName: ''
+                    fittingTypeCode: '',
+                    fittingTypeName:''
 				},
-				users: [],
+                fittingTypes: [],
 				total: 0,
 				page: 1,
 				size:10,
@@ -104,52 +107,52 @@
 				editFormVisible: false,//编辑界面是否显示
 				editLoading: false,
 				editFormRules: {
-                    modelCode: [
+                    fittingTypeCode: [
 						{ required: true, message: '请输入编码', trigger: 'blur' }
 					],
-                    modelName:[
+                    fittingTypeName:[
 						{ required: true, message: '请输入名称', trigger: 'blur' }
 					]
 				},
 				//编辑界面数据
 				editForm: {
 					id: 0,
-					modelName: '',
-					modelCode: '',
-					modelStatus: '',
-					modelRemark:''
+                    fittingTypeCode: '',
+                    fittingTypeName: '',
+                    fittingTypeRemark:'',
+					fittingTypeStatue: ''
 				},
 
 				addFormVisible: false,//新增界面是否显示
 				addLoading: false,
 				addFormRules: {
-                    modelCode: [
-                        { required: true, message: '请输入编码', trigger: 'blur' }
-                    ],
-                    modelName:[
+                    fittingTypeCode: [
+						{ required: true, message: '请输入编码', trigger: 'blur' }
+					],
+                    fittingTypeName:[
                         { required: true, message: '请输入名称', trigger: 'blur' }
                     ]
 				},
 				//新增界面数据
 				addForm: {
                     id: 0,
-                    modelName: '',
-                    modelCode: '',
-                    modelStatus: '',
-                    modelRemark:''
-				},
-				roles:[]
+                    fittingTypeCode: '',
+                    fittingTypeName: '',
+                    fittingTypeRemark:'',
+                    fittingTypeStatue: ''
+				}
 			}
 		},
 		methods: {
+			//性别显示转换
 
 			handleCurrentChange(val) {
 				this.page = val;
-				this.getModels();
+				this.getFittingTypes();
 			},
 			//获取用户列表
-			getModels() {
-                var codemaster = require('../../../static/codemaster.json');
+            getFittingTypes() {
+
 				let para = {
 					page: this.page,
 					size: this.size,
@@ -159,9 +162,9 @@
 
 				this.listLoading = true;
 				//NProgress.start();
-				getModelListPage(para).then((res) => {
+				getFittingTypeListPage(para).then((res) => {
 					this.total = res.data.size;
-					this.users = res.data.list;
+					this.fittingTypes = res.data.list;
 					this.listLoading = false;
 					//NProgress.done();
 				});
@@ -173,8 +176,8 @@
 				}).then(() => {
 					this.listLoading = true;
 					//NProgress.start();
-					let para = { id: row.id ,modelCode:row.modelCode};
-					removeModel(para).then((res) => {
+					let para = { id: row.id ,fittingTypeCode:row.fittingTypeCode};
+                    removeFittingType(para).then((res) => {
 						this.listLoading = false;
 						//NProgress.done();
                         if(res.data.code == 200){
@@ -182,10 +185,11 @@
                                 message: res.data.msg,
                                 type: 'success'
                             });
-                            this.getModels();
+                            this.getFittingTypes();
                         }else{
                             this.$message.error(res.data.msg);
                         }
+
 					});
 				}).catch(() => {
 
@@ -201,10 +205,11 @@
 				this.addFormVisible = true;
 				this.addForm = {
                     id: 0,
-                    modelName: '',
-                    modelCode: '',
-                    modelStatus: '',
-                    modelRemark:''
+                    fittingTypeCode: '',
+                    fittingTypeName: '',
+                    fittingTypeRemark:'',
+                    fittingTypeStatue: '',
+                    remark:''
 				};
 			},
 			//编辑
@@ -215,7 +220,7 @@
 							this.editLoading = true;
 							//NProgress.start();
 							let para = Object.assign({}, this.editForm);
-                            saveModel({model:JSON.stringify(para)}).then((res) => {
+                            saveFittingType({fittingType:JSON.stringify(para)}).then((res) => {
 								this.editLoading = false;
 								//NProgress.done();
                                 if(res.data.code == 200){
@@ -228,7 +233,7 @@
                                 }
 								this.$refs['editForm'].resetFields();
 								this.editFormVisible = false;
-								this.getModels();
+								this.getFittingTypes();
 							});
 						});
 					}
@@ -242,20 +247,20 @@
 							this.addLoading = true;
 							//NProgress.start();
 							let para = Object.assign({}, this.addForm);
-                            saveModel({model:JSON.stringify(para)}).then((res) => {
+                            saveFittingType({fittingType:JSON.stringify(para)}).then((res) => {
 								this.addLoading = false;
 								//NProgress.done();
-                                if(res.data.code == 200){
+								if(res.data.code == 200){
                                     this.$message({
                                         message: res.data.msg,
                                         type: 'success'
                                     });
-                                }else{
+								}else{
                                     this.$message.error(res.data.msg);
-                                }
+								}
 								this.$refs['addForm'].resetFields();
 								this.addFormVisible = false;
-								this.getModels();
+								this.getFittingTypes();
 							});
 						});
 					}
@@ -266,17 +271,16 @@
 			},
 			//批量删除
 			batchRemove: function () {
-				var ids = this.sels.map(item => item.id).toString();
-                var modelCodes = this.sels.map(item => item.modelCode).join(",");
+				var ids = this.sels.map(item => item.id).join(",");
+				var fittingTypeCodes = this.sels.map(item => item.fittingTypeCode).join(",");
 				this.$confirm('确认删除选中记录吗？', '提示', {
 					type: 'warning'
 				}).then(() => {
 					this.listLoading = true;
 					//NProgress.start();
-					let para = { ids: ids ,modelCodes:modelCodes};
-                    batchRemoveModel(para).then((res) => {
+					let para = { ids: ids ,fittingTypeCodes:fittingTypeCodes};
+                    batchRemoveFittingType(para).then((res) => {
 						this.listLoading = false;
-						//NProgress.done();
                         if(res.data.code == 200){
                             this.$message({
                                 message: res.data.msg,
@@ -285,7 +289,8 @@
                         }else{
                             this.$message.error(res.data.msg);
                         }
-						this.getModels();
+
+						this.getFittingTypes();
 					});
 				}).catch(() => {
 
@@ -293,7 +298,7 @@
 			}
 		},
 		mounted() {
-			this.getModels();
+			this.getFittingTypes();
 		}
 	}
 
