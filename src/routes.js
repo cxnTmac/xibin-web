@@ -11,6 +11,7 @@ import Page6 from './views/nav3/Page6.vue'
 import fittingType from './views/basicdata/fittingType.vue'
 import model from './views/basicdata/model.vue'
 import sku from './views/basicdata/sku.vue'
+import inbound from './views/inbound/inbound.vue'
 import echarts from './views/charts/echarts.vue'
 
 let routes = [
@@ -77,6 +78,15 @@ let routes = [
             { path: '/fittingType', component: fittingType, name: '配件类型'},
             { path: '/model', component: model, name: '车型' },
             { path: '/sku', component: sku, name: '产品' }
+        ]
+    },
+    {
+        path: '/',
+        component: Home,
+        name: '入库管理',
+        iconCls: 'el-icon-message',//图标样式class
+        children: [
+            { path: '/inboundOrder', component: inbound, name: '入库单'}
         ]
     },
     {

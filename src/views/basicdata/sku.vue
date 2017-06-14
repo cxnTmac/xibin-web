@@ -83,30 +83,30 @@
 							   :data= "currentRow"
 							   :on-success="uploadConnectSuccess"
 							   :on-error="uploadConnectFail"
-						action="http://localhost:8080/xibin/file/uploadFittingSkuPic.shtml"
+						action="/xibin/file/uploadFittingSkuPic.shtml"
 							   :file-list="fileList"
 						multiple
 							   list-type="picture"
-						:auto-upload="false">
+						:auto-upload="true">
 					<i class="el-icon-upload"></i>
 					<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
 					<div class="el-upload__tip" slot="tip">只能上传jpg/png文件</div>
 					</el-upload>
-					<el-button type="primary" size="large" @click="startUpload">开始上传</el-button>
+					<!--<el-button type="primary" size="large" @click="startUpload">开始上传</el-button>-->
 				</el-tab-pane>
 				<el-tab-pane label="图片查看" name="picManage">
 					<el-row>
 						<el-col :span="6"  v-for="(img,index) in imgs" :key="img" :offset="index > 0 ? 2 : 0">
 							<el-card :body-style="{ padding: '0px' }">
-								<el-tooltip :content="img.pic" placement="left" effect="dark">
-								<img :src=img.zipPic v-preview="img.pic" class="image" >
+								<el-tooltip :content="img.normal.fittingSkuPicName" placement="left" effect="dark">
+								<img :src=img.zip.fittingSkuPicUrl v-preview="img.normal.fittingSkuPicUrl" class="image" >
 								</el-tooltip>
 								<div style="padding: 14px;">
-									<span>img.pic</span>
+									<span>{{img.normal.fittingSkuPicName}}</span>
 									<div class="bottom clearfix">
-										<time class="time">{{img.uploadDate}}</time>
+										<time class="time">{{img.normal.createTime}}</time>
 										<!--<el-button type="danger" icon="delete"></el-button>-->
-										<el-button type="text" class="button">删除</el-button>
+										<el-button type="text" class="button" @click="handleDelPic(img.normal.id,img.zip.id,img.normal.fittingSkuCode)">删除</el-button>
 									</div>
 								</div>
 							</el-card>
@@ -291,12 +291,12 @@
 <script>
 	import util from '../../common/js/util'
 	import NProgress from 'nprogress'
-	import { getFittingSkuListPage, removeFittingSku, batchRemoveFittingSku, saveFittingSku} from '../../api/fittingSkuApi';
+	import { getFittingSkuListPage, removeFittingSku, batchRemoveFittingSku, saveFittingSku,getFittingSkuPic,removeFittingSkuPic} from '../../api/fittingSkuApi';
     var codemaster = require('../../../static/codemaster.json');
 	export default {
 		data() {
 			return {
-                imgs: [{pic:'static/fittingSku/0270-1/test1.jpg',zipPic:'static/fittingSku/0270-1/test1-zip.jpg',uploadDate:'2017-05-28 23:25'}, {pic:'static/fittingSku/0270-1/test1.jpg',zipPic:'static/fittingSku/0270-1/test1-zip.jpg',uploadDate:'2017-05-28 23:25'}],
+                imgs: [],
 				is_packed:codemaster.WM_IS_PACKED,
 				filters: {
 				    fittingSkuCode:'',
@@ -432,7 +432,7 @@
 					this.listLoading = true;
 					NProgress.start();
 					let para = { id: row.id };
-					removeUser(para).then((res) => {
+                    removeFittingSku(para).then((res) => {
 						this.listLoading = false;
 						NProgress.done();
 
@@ -473,11 +473,59 @@
 				};
                 this.currentRow = this.addForm;
 			},
+            handleDelPic : function(idNormal,idZip,fittingSkuCode){
+                    let para ={idNormal:idNormal,idZip:idZip,fittingSkuCode:fittingSkuCode}
+                    removeFittingSkuPic(para).then((res) => {
+                        this.listLoading = false;
+                        NProgress.done();
+                        if(res.data.code == 200){
+                            this.$message({
+                                message: res.data.msg,
+                                type: 'success'
+                            });
+                            this.imgs = [];
+                            this.convertPicData(res.data);
+                        }else{
+                            this.$message.error("删除失败");
+                        }
+                    });
+			},
+            refreshPics : function(fittingSkuCode){
+                let para = { fittingSkuCode: fittingSkuCode };
+                getFittingSkuPic(para).then((res) => {
+                    this.listLoading = false;
+                    NProgress.done();
+                    this.imgs = [];
+                    this.convertPicData(res);
+                });
+            },
+			convertPicData : function(res){
+                let normalPics = [];
+                let zipPics = [];
+                for(let i = 0;i<res.data.length;i++){
+                    if(res.data[i].type ==='NORMAL'){
+                        normalPics.push(res.data[i]);
+                    }else if(res.data[i].type ==='ZIP'){
+                        zipPics.push(res.data[i]);
+                    }
+                }
+                console.log(normalPics);
+                console.log(zipPics);
+                for(let z = 0;z<normalPics.length;z++){
+                    for(let j = 0;j<zipPics.length;j++){
+                        if(normalPics[z].fittingSkuPicName === zipPics[j].fittingSkuPicName){
+                            this.imgs.push({'normal':normalPics[z],'zip':zipPics[j]});
+                        }
+                    }
+                }
+                console.log(this.imgs);
+			},
 			//点击图片管理
             handlePicManager:function(index, row){
                 this.fileList = [];
                 this.currentRow = Object.assign({}, row);
                 this.dialogPicManagerVisible  = true;
+                this.refreshPics(this.currentRow.fittingSkuCode);
 			},
 			//编辑
 			editSubmit: function () {
@@ -560,18 +608,23 @@
 
 				});
 			},
-            handleClick(tab, event) {
+            handleClick : function(tab, event) {
                 console.log(tab, event);
             },
-			startUpload() {
-				this.$refs.upload.submit();
-			},
-            uploadConnectSuccess(response, file, fileList){
+//			startUpload : function() {
+//				this.$refs.upload.submit();
+//			},
+            uploadConnectSuccess : function(response, file, fileList){
+                debugger;
                 if(response.code == 0){
                     this.$message.error(response.msg);
+
+				}else if(response.code == 200){
+                    this.refreshPics(this.currentRow.fittingSkuCode);
 				}
 			},
-            uploadConnectFail(err, file, fileList){
+
+            uploadConnectFail : function(err, file, fileList){
                 this.$message.error("网络连接错误，上传失败！");
 			}
 

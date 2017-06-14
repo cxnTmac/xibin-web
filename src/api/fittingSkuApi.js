@@ -17,3 +17,7 @@ export const batchRemoveFittingSku = params => { return axios.post(`/xibin/fitti
 
 export const saveFittingSku = params => { return axios.get(`/xibin/fittingSku/saveFittingSku.shtml`, { params: params }); };
 
+export const getFittingSkuPic = params => { return axios.get(`/xibin/fittingSku/getFittingSkuPic.shtml`, { params: params }); };
+
+export const removeFittingSkuPic = params => { return axios.get(`/xibin/fittingSku/removeFittingSkuPic.shtml`, { params: params }); };
+
