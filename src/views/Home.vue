@@ -15,7 +15,7 @@
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item>我的消息</el-dropdown-item>
                         <el-dropdown-item>设置</el-dropdown-item>
-                        <el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
+                        <el-dropdown-item divided @click.native="logoutHandler">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </el-col>
@@ -76,7 +76,7 @@
 	export default {
 		data() {
 			return {
-				sysName:'XIBIN',
+				sysName:'西滨精工',
 				collapsed:false,
 				sysUserName: '',
 				sysUserAvatar: '',
@@ -163,7 +163,7 @@
 		.header {
 			height: 60px;
 			line-height: 60px;
-			background: $color-primary;
+			background: #004DA1;
 			color:#fff;
 			.userinfo {
 				text-align: right;
@@ -191,7 +191,7 @@
 				border-right-width: 1px;
 				border-right-style: solid;
 				img {
-					width: 40px;
+					width: 100px;
 					float: left;
 					margin: 10px 10px 10px 18px;
 				}

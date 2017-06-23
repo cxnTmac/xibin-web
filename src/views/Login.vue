@@ -1,5 +1,6 @@
 <template>
   <el-form :model="ruleForm2" :rules="rules2" ref="ruleForm2" label-position="left" label-width="0px" class="demo-ruleForm login-container">
+    <img class="login-logo" src="../../static/logo/LOGO3.jpg" />
     <h3 class="title">系统登录</h3>
     <el-form-item prop="account">
       <el-input type="text" v-model="ruleForm2.userName" auto-complete="off" placeholder="账号"></el-input>
@@ -98,5 +99,8 @@
     .remember {
       margin: 0px 0px 35px 0px;
     }
+  }
+  .login-logo {
+    width: 100%;
   }
 </style>

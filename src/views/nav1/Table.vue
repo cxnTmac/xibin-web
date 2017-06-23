@@ -126,7 +126,7 @@
 <script>
 	import util from '../../common/js/util'
     //import NProgress from 'nprogress'
-	import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '../../api/api';
+	import { getUserListPage, removeUser, batchRemoveUser, saveUser} from '../../api/api';
     var codemaster = require('../../../static/codemaster.json');
     //查询弹出框
     require('../../components/popWin.vue');
@@ -268,7 +268,7 @@
 							//NProgress.start();
 							let para = Object.assign({}, this.editForm);
 							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							editUser({user:JSON.stringify(para)}).then((res) => {
+							saveUser({user:JSON.stringify(para)}).then((res) => {
 								this.editLoading = false;
 								//NProgress.done();
 								this.$message({
@@ -292,7 +292,7 @@
 							//NProgress.start();
 							let para = Object.assign({}, this.addForm);
 							para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-							addUser({user:JSON.stringify(para)}).then((res) => {
+                            saveUser({user:JSON.stringify(para)}).then((res) => {
 								this.addLoading = false;
 								//NProgress.done();
 								this.$message({

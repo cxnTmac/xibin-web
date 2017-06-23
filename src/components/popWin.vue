@@ -6,7 +6,21 @@
 <script>
     import Vue from 'vue'
     import { query } from '../api/popWinApi';
+    import {getFittingSkuListForInput} from '../api/fittingSkuApi';
     var popConfig = require('../../static/popwin.json');
+    Vue.component('my-item-zh', {
+        functional: true,
+        render: function (h, ctx) {
+            var item = ctx.props.item;
+            return h('li', ctx.data, [
+                h('div', { attrs: { class: 'name' } }, [item.value]),
+                h('span', { attrs: { class: 'addr' } }, [item.address])
+            ]);
+        },
+        props: {
+            item: { type: Object, required: true }
+        }
+    });
     Vue.component('popwin-button', {
         props: {
             // 基础类型检测 （`null` 意思是任何类型都可以）
@@ -44,7 +58,9 @@
 		 '</el-popover>'+
          '<el-row :gutter="0">'+
          '<el-col :span="18">'+
-         '<el-input v-model="selectValue" width="600"></el-input></el-col>'+
+         '<el-autocomplete popper-class="my-autocomplete" v-model="selectValue" :fetch-suggestions="querySearch" custom-item="my-item-zh" placeholder="请输入内容" @select="handleSelect" :trigger-on-focus=false icon="edit" :on-icon-click="handleIconClick">'+
+         '</el-autocomplete></el-col>'+
+//         '<el-input v-model="selectValue" width="600"></el-input></el-col>'+
          '<el-col :span="6">'+
 		 '<el-button v-popover:popBtn type="primary" icon="search" v-on:click="getData"></el-button></el-col></el-row></div>',
 //        template: '<button v-on:click="increment">{{ counter }}</button>',
@@ -64,6 +80,7 @@
 		},
         data: function () {
             return {
+                restaurants: [],
                 filters:{condtion:"",queryValue:""},
 				name:'',
 //				data2:[{
@@ -104,6 +121,48 @@
                     this.data2 = res.data.list;
                     this.listLoading = false;
                 });
+            },
+
+
+            converte(data){
+                debugger
+                let result = [];
+                let key1 = popConfig[this.popKey].columns[0].name
+                let key2 = popConfig[this.popKey].columns[1].name
+                for(let i = 0;i<data.length;i++){
+                    result.push({value: data[i][key1],address: data[i][key2]})
+                }
+                return result;
+            },
+
+            querySearch(queryString, cb) {
+                if(queryString.length< 4){
+                    return
+                }
+                var restaurants = this.restaurants;
+                var results = {};
+                // 调用 callback 返回建议列表的数据
+                //cb(results);
+                let para = {};
+                para['page'] = 1;
+                para['size'] = 10;
+                let queryConditions = {};
+                queryConditions[popConfig[this.popKey].quickCondition] = queryString;
+                para['queryType']= popConfig[this.popKey].query;
+                para['queryConditions'] = JSON.stringify(queryConditions);
+                debugger
+                query(para).then((res) => {
+                    debugger
+                    results = this.converte(res.data.list);
+                    cb(results);
+                    //NProgress.done();
+                });
+            },
+            handleSelect(item) {
+                console.log(item);
+            },
+            handleIconClick(ev) {
+                console.log(ev);
             }
         }
     })
@@ -113,5 +172,21 @@
 </script>
 
 <style scoped>
-
+    .my-autocomplete {
+    li {
+        line-height: normal;
+        padding: 7px;
+    .name {
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    .addr {
+        font-size: 12px;
+        color: #b4b4b4;
+    }
+    .highlighted .addr {
+        color: #ddd;
+    }
+    }
+    }
 </style>

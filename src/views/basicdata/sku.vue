@@ -277,7 +277,13 @@
 						</el-form-item>
 					</el-col>
 				</el-row>
-
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="产品" prop="fittingTypeCode">
+							<popwin-button popKey="POP_SKU" :selectValue="addForm.code" @changeValue="changeAddPopValueForFittingType"></popwin-button>
+						</el-form-item>
+					</el-col>
+				</el-row>
 
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -290,8 +296,9 @@
 
 <script>
 	import util from '../../common/js/util'
+	import Vue from 'vue'
 	import NProgress from 'nprogress'
-	import { getFittingSkuListPage, removeFittingSku, batchRemoveFittingSku, saveFittingSku,getFittingSkuPic,removeFittingSkuPic} from '../../api/fittingSkuApi';
+	import { getFittingSkuListPage, removeFittingSku, batchRemoveFittingSku, saveFittingSku,getFittingSkuPic,removeFittingSkuPic, getFittingSkuListForInput} from '../../api/fittingSkuApi';
     var codemaster = require('../../../static/codemaster.json');
 	export default {
 		data() {

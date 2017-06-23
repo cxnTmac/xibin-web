@@ -11,6 +11,8 @@ import Page6 from './views/nav3/Page6.vue'
 import fittingType from './views/basicdata/fittingType.vue'
 import model from './views/basicdata/model.vue'
 import sku from './views/basicdata/sku.vue'
+import area from './views/basicdata/area.vue'
+import zone from './views/basicdata/zone.vue'
 import inbound from './views/inbound/inbound.vue'
 import echarts from './views/charts/echarts.vue'
 
@@ -77,7 +79,9 @@ let routes = [
         children: [
             { path: '/fittingType', component: fittingType, name: '配件类型'},
             { path: '/model', component: model, name: '车型' },
-            { path: '/sku', component: sku, name: '产品' }
+            { path: '/sku', component: sku, name: '产品' },
+            { path: '/area', component: area, name: '区域' },
+            { path: '/zone', component: zone, name: '库区' }
         ]
     },
     {

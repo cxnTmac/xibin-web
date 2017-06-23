@@ -4,6 +4,7 @@
     "title": "角色",
     "value":"roleCode",
     "name":"roleName",
+    "quickCondition":"roleCode",
     "conditions":[
       {"title":"角色编码",
         "name":"roleCode"},
@@ -24,6 +25,7 @@
     "title": "配件类别",
     "value":"fittingTypeCode",
     "name":"fittingTypeName",
+    "quickCondition":"fittingTypeCode",
     "conditions":[
       {"title":"配件编码",
         "name":"fittingTypeCode"},
@@ -37,6 +39,48 @@
       },
       {"title":"配件名称",
         "name":"fittingTypeName"}
+    ]
+  },
+  "POP_SKU":{
+    "query": "BdFittingSkuMapper.selectAllByPage",
+    "title": "产品",
+    "value":"fittingSkuCode",
+    "name":"fittingSkuName",
+    "quickCondition":"fittingSkuCode",
+    "conditions":[
+      {"title":"产品编码",
+        "name":"fittingSkuCode"},
+      {"title":"产品名称",
+        "name":"fittingSkuName"}
+    ],
+    "columns":[
+      {
+        "title":"产品编码",
+        "name":"fittingSkuCode"
+      },
+      {"title":"产品名称",
+        "name":"fittingSkuName"}
+    ]
+  },
+  "POP_AREA":{
+    "query": "BdAreaMapper.selectAllByPage",
+    "title": "区域",
+    "value":"areaCode",
+    "name":"areaName",
+    "quickCondition":"areaCode",
+    "conditions":[
+      {"title":"区域编码",
+        "name":"areaCode"},
+      {"title":"区域名称",
+        "name":"areaName"}
+    ],
+    "columns":[
+      {
+        "title":"区域编码",
+        "name":"areaCode"
+      },
+      {"title":"区域名称",
+        "name":"areaName"}
     ]
   }
 }
