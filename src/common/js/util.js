@@ -28,6 +28,17 @@ export default {
         }
         return '';
     },
+    arrayToString : function(array){
+        let result = '';
+        for (let i = 0; i<array.length; i++){
+            if(i !== array.length-1){
+                result += (array[i]+',');
+            }else{
+                result += array[i];
+            }
+        }
+        return  result;
+    },
     errorCallBack:function(data,router,$message){
         if(data.response.status == 401){
             $message({

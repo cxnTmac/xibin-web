@@ -7,8 +7,8 @@
 				<el-form-item label="订单号" prop="orderNo">
 					<el-input v-model="filters.orderNo" placeholder="订单号"></el-input>
 				</el-form-item>
-				<el-form-item label="客户" prop="supplierCode">
-					<popwin-button popKey="POP_CUSTOMER"  :selectValue="filters.supplierCode"  @changeValue="changeFilterForSupplierCode"></popwin-button>
+				<el-form-item label="客户" prop="buyerCode">
+					<popwin-button popKey="POP_CUSTOMER"  :selectValue="filters.buyerCode"  @changeValue="changeFilterForBuyerCode"></popwin-button>
 				</el-form-item>
 				<el-form-item label="状态" prop="status">
 					<el-select v-model="filters.status" clearable  placeholder="请选择">
@@ -23,15 +23,15 @@
 					</el-select>
 					<!--<el-input v-model="orderHeader.auditStatus" auto-complete="off"></el-input>-->
 				</el-form-item>
-					<el-button type="primary" icon="caret-bottom" v-on:click="showMoreConditionHandler"></el-button>
-					<el-button type="danger" style="float: right"  @click="reset">重置</el-button>
-					<el-button type="primary" style="float: right" v-on:click="getOrders">查询</el-button>
+					    <el-button type="primary" icon="caret-bottom" v-on:click="showMoreConditionHandler"></el-button>
+						<el-button type="danger" style="float: right"  @click="reset">重置</el-button>
+						<el-button type="primary" style="float: right" v-on:click="getOrders">查询</el-button>
 				</el-row>
 				<el-row :gutter="0" v-if="showMoreQueryCondition">
-					<el-form-item label="订单类别" prop="inboundType">
-						<el-select v-model="filters.inboundType" clearable  placeholder="请选择">
+					<el-form-item label="订单类别" prop="outboundType">
+						<el-select v-model="filters.outboundType" clearable  placeholder="请选择">
 							<el-option
-									v-for="item in inboundType"
+									v-for="item in type"
 									:key="item.code"
 									:label="item.name"
 									:value="item.code">
@@ -67,9 +67,9 @@
 			</el-table-column>
 			<el-table-column prop="id" label="id" width="80" sortable>
 			</el-table-column>
-			<el-table-column prop="orderNo" label="入库单号" width="200" sortable>
+			<el-table-column prop="orderNo" label="出库单号" width="200" sortable>
 			</el-table-column>
-			<el-table-column prop="supplierCode" label="客户编码" width="200" sortable>
+			<el-table-column prop="buyerCode" label="客户编码" width="200" sortable>
 			</el-table-column>
 			<el-table-column prop="supplierName" label="客户名称" width="200" sortable>
 			</el-table-column>
@@ -77,7 +77,7 @@
 			</el-table-column>
 			<el-table-column prop="auditStatus" label="审核状态" width="200" sortable :formatter="formatAuditStatus">
 			</el-table-column>
-			<el-table-column prop="inboundType" label="入库单类型" width="200" sortable :formatter="formatInboundType">
+			<el-table-column prop="outboundType" label="出库单类型" width="200" sortable :formatter="formatOutboundType">
 			</el-table-column>
 			<el-table-column prop="auditTime" label="审核时间" width="200" sortable :formatter="formatAuditTime">
 			</el-table-column>
@@ -111,21 +111,21 @@
 <script>
 	import util from '../../common/js/util'
 	//import NProgress from 'nprogress'
-	import { getInboundOrderListPage,remove} from '../../api/inboundApi';
+	import { getOutboundOrderListPage,remove} from '../../api/outboundApi';
     var codemaster = require('../../../static/codemaster.json');
 	export default {
 		data() {
 			return {
                 showMoreQueryCondition:false,
-			    status:codemaster.WM_INBOUND_STATUS,
-                inboundType:codemaster.WM_INBOUND_TYPE,
+			    status:codemaster.WM_OUTBOUND_STATUS,
+				type:codemaster.WM_OUTBOUND_TYPE,
 				filters: {
                     orderNo: '',
-                    status:'',
-                    supplierCode:'',
+                    buyerCode:'',
 					orderTimeFm:'',
 					orderTimeTo:'',
-					inboundType:''
+					outboundType:'',
+                    status:''
 				},
                 orders: [],
 				total: 0,
@@ -141,12 +141,12 @@
 		methods: {
             reset(){
                 this.$refs['queryForm'].resetFields();
-            },
+			},
             showMoreConditionHandler:function(){
                 this.showMoreQueryCondition = !this.showMoreQueryCondition;
             },
-            changeFilterForSupplierCode:function(value){
-              this.filters.supplierCode = value[0];
+            changeFilterForBuyerCode:function(value){
+                this.filters.buyerCode = value[0];
 			},
             formatOrderTime: function(row, column){
                 if(row.orderTime!==null) {
@@ -160,11 +160,11 @@
                     return util.formatDate.format(unixTimestamp,'yyyy-MM-dd hh:mm:ss');
 				}
             },
-            formatInboundType: function (row, column) {
-                return util.getComboNameByValue(codemaster.WM_INBOUND_TYPE,row.inboundType);
+            formatOutboundType: function (row, column) {
+                return util.getComboNameByValue(codemaster.WM_OUTBOUND_TYPE,row.outboundType);
             },
             formatStatus: function (row, column) {
-                return util.getComboNameByValue(codemaster.WM_INBOUND_STATUS,row.status);
+                return util.getComboNameByValue(codemaster.WM_OUTBOUND_STATUS,row.status);
             },
             formatAuditStatus: function (row, column) {
                 return util.getComboNameByValue(codemaster.SYS_AUDIT_STATUS,row.auditStatus);
@@ -175,14 +175,14 @@
 			},
             //显示新增界面
             handleAdd: function () {
-                this.$store.commit('changeInboundOrderNo', '')
-                this.$store.commit('changeInboundStatus', 'ADD')
-                this.$router.push({ path: '/inboundDetail' });
+                this.$store.commit('changeOutboundOrderNo', '')
+                this.$store.commit('changeOutboundStatus', 'ADD')
+                this.$router.push({ path: '/outboundDetail' });
             },
             handleEdit:function(index,row){
-                this.$store.commit('changeInboundOrderNo', row.orderNo)
-                this.$store.commit('changeInboundStatus', 'EDIT')
-                this.$router.push({ path: '/inboundDetail' });
+                this.$store.commit('changeOutboundOrderNo', row.orderNo)
+                this.$store.commit('changeOutboundStatus', 'EDIT')
+                this.$router.push({ path: '/outboundDetail' });
 			},
 			//获取用户列表
             getOrders() {
@@ -196,7 +196,7 @@
 
 				this.listLoading = true;
 				//NProgress.start();
-                getInboundOrderListPage(para).then((res) => {
+                getOutboundOrderListPage(para).then((res) => {
 					this.total = res.data.size;
 					this.orders = res.data.list;
 					this.listLoading = false;
@@ -205,16 +205,16 @@
 			},
 			//删除
 			handleDel: function (index, row) {
-				this.$confirm('确认删除该记录吗?', '提示', {
-					type: 'warning'
-				}).then(() => {
-					this.listLoading = true;
-					//NProgress.start();
-					let para = {orderNos:[row.orderNo].join(',')};
+                this.$confirm('确认删除该记录吗?', '提示', {
+                    type: 'warning'
+                }).then(() => {
+                    this.listLoading = true;
+                    //NProgress.start();
+                    let para = {orderNos:[row.orderNo].join(',')};
                     remove(para).then((res) => {
-						this.listLoading = false;
-						debugger
-						//NProgress.done();
+                        this.listLoading = false;
+                        debugger
+                        //NProgress.done();
                         if(res.data.code == 200){
                             this.$message({
                                 message: res.data.msg,
@@ -225,10 +225,10 @@
                             this.$message.error(res.data.msg);
                         }
 
-					});
-				}).catch(() => {
+                    });
+                }).catch(() => {
 
-				});
+                });
 			},
 			selsChange: function (sels) {
 				this.sels = sels;

@@ -2,16 +2,23 @@
 	<section>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-			<el-form :inline="true" :model="filters">
-				<el-form-item>
-					<el-input v-model="filters.skuName" placeholder="产品名称"></el-input>
-				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" v-on:click="getSkus"><i class="el-icon-search el-icon--left"></i>查询</el-button>
-				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" @click="handleAdd"><i class="el-icon-plus el-icon--left"></i>新增</el-button>
-				</el-form-item>
+			<el-form :inline="true" :model="filters" ref="queryForm">
+				<el-row :gutter="0">
+					<el-form-item label="配件类型" prop="fittingTypeCode">
+						<popwin-button popKey="POP_FITTINGTYPE"  :selectValue="filters.fittingTypeCode"  @changeValue="changeFilterForFittingTypeCode"></popwin-button>
+					</el-form-item>
+					<el-form-item label="产品名称" prop="fittingSkuName">
+						<el-input v-model="filters.fittingSkuName" placeholder="产品名称"></el-input>
+					</el-form-item>
+					<el-form-item label="产品编码" prop="fittingSkuCode">
+						<el-input v-model="filters.fittingSkuCode" placeholder="产品编码"></el-input>
+					</el-form-item>
+					<el-button type="primary" icon="caret-bottom" v-on:click="showMoreConditionHandler"></el-button>
+					<el-button type="danger" style="float: right"  @click="reset">重置</el-button>
+					<el-button type="primary"  style="float: right" v-on:click="getSkus"><i class="el-icon-search el-icon--left"></i>查询</el-button>
+				</el-row>
+				<el-row :gutter="0" v-if="showMoreQueryCondition">
+				</el-row>
 			</el-form>
 		</el-col>
 
@@ -68,6 +75,7 @@
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
+			<el-button type="primary" @click="handleAdd"><i class="el-icon-plus el-icon--left"></i>新增</el-button>
 			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0"><i class="el-icon-delete2 el-icon--left"></i>批量删除</el-button>
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="size" :total="total" style="float:right;">
 			</el-pagination>
@@ -122,7 +130,7 @@
 				<el-row :gutter="0">
 					<el-col :span="12">
 						<el-form-item label="产品编码" prop="fittingSkuCode">
-							<el-input v-model="editForm.fittingSkuCode" auto-complete="off"></el-input>
+							<el-input v-model="editForm.fittingSkuCode" disabled="true" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
@@ -132,33 +140,34 @@
 					</el-col>
 				</el-row>
 				<el-row :gutter="0">
-					<el-col :span="20">
+					<el-col :span="12">
 						<el-form-item label="产品备注" prop="fittingSkuRemark">
 							<el-input v-model="editForm.fittingSkuRemark" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
+					<el-col :span="12">
+						<el-form-item label="参考价格" prop="price">
+							<el-input-number v-model="editForm.price" auto-complete="off"></el-input-number>
+						</el-form-item>
+					</el-col>
 				</el-row>
 				<el-row :gutter="0">
-					<el-col :span="6">
+					<el-col :span="8">
 						<el-form-item label="生产厂家" prop="manufacturer">
 							<el-input v-model="editForm.manufacturer" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
-					<el-col :span="6">
+					<el-col :span="8">
 						<el-form-item label="材质" prop="materialquality">
 							<el-input v-model="editForm.materialquality" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
-					<el-col :span="6">
+					<el-col :span="8">
 						<el-form-item label="单位" prop="uomDesc">
 							<el-input v-model="editForm.uomDesc" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
-					<el-col :span="6">
-						<el-form-item label="参考价格" prop="price">
-							<el-input v-model="editForm.price" auto-complete="off"></el-input>
-						</el-form-item>
-					</el-col>
+
 				</el-row>
 				<el-row :gutter="0">
 					<el-col :span="12">
@@ -216,33 +225,34 @@
 					</el-col>
 				</el-row>
 				<el-row :gutter="0">
-					<el-col :span="20">
+					<el-col :span="12">
 						<el-form-item label="产品备注" prop="fittingSkuRemark">
 							<el-input v-model="addForm.fittingSkuRemark" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
+					<el-col :span="12">
+						<el-form-item label="参考价格" prop="price">
+							<el-input-number v-model="addForm.price" auto-complete="off"></el-input-number>
+						</el-form-item>
+					</el-col>
 				</el-row>
 				<el-row :gutter="0">
-					<el-col :span="6">
+					<el-col :span="8">
 						<el-form-item label="生产厂家" prop="manufacturer">
 							<el-input v-model="addForm.manufacturer" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
-					<el-col :span="6">
+					<el-col :span="8">
 						<el-form-item label="材质" prop="materialquality">
 							<el-input v-model="addForm.materialquality" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
-					<el-col :span="6">
+					<el-col :span="8">
 						<el-form-item label="单位" prop="uomDesc">
 							<el-input v-model="addForm.uomDesc" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
-					<el-col :span="6">
-						<el-form-item label="参考价格" prop="price">
-							<el-input v-model="addForm.price" auto-complete="off"></el-input>
-						</el-form-item>
-					</el-col>
+
 				</el-row>
 				<el-row :gutter="0">
 					<el-col :span="12">
@@ -277,13 +287,6 @@
 						</el-form-item>
 					</el-col>
 				</el-row>
-				<el-row :gutter="0">
-					<el-col :span="12">
-						<el-form-item label="产品" prop="fittingTypeCode">
-							<popwin-button popKey="POP_SKU" :selectValue="addForm.code" @changeValue="changeAddPopValueForFittingType"></popwin-button>
-						</el-form-item>
-					</el-col>
-				</el-row>
 
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -303,11 +306,14 @@
 	export default {
 		data() {
 			return {
+                showMoreQueryCondition:false,
                 imgs: [],
 				is_packed:codemaster.WM_IS_PACKED,
 				filters: {
 				    fittingSkuCode:'',
-					fittingSkuName: ''
+					fittingSkuName: '',
+                    modelCode:'',
+                    fittingTypeCode:''
 				},
 				skus: [],
 				total: 0,
@@ -399,9 +405,17 @@
 			}
 		},
 		methods: {
+            reset(){
+                this.$refs['queryForm'].resetFields();
+            },
+            showMoreConditionHandler:function(){
+                this.showMoreQueryCondition = !this.showMoreQueryCondition;
+            },
+            changeFilterForFittingTypeCode:function(value){
+                this.filters.fittingTypeCode = value[0];
+			},
             changeAddPopValueForFittingType:function(value){
                 this.addForm.fittingTypeCode = value[0];
-
             },
             changeEditPopValueForFittingType:function(value){
                 this.editForm.fittingTypeCode = value[0];

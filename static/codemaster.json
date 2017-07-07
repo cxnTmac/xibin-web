@@ -1,9 +1,70 @@
-{"SYS_YES_NO":[
-  {"code":"Y","name":"是"},
-  {"code":"N","name":"否"}
-],
+{
+  "SYS_YES_NO":[
+    {"code":"Y","name":"是"},
+    {"code":"N","name":"否"}
+  ],
+  "SYS_AUDIT_STATUS":[
+    {"code":"00","name":"未审核"},
+    {"code":"10","name":"已审核"},
+    {"code":"99","name":"不审核"}
+  ],
   "WM_IS_PACKED":[
     {"code":"PACKED","name":"包装货"},
     {"code":"UNPACKED","name":"散装货"}
+  ],
+  "WM_LOC_TYPE":[
+    {"code":"01","name":"平面地堆库位"},
+    {"code":"02","name":"货架仓库位"},
+    {"code":"03","name":"高架仓库位"}
+  ],
+  "WM_USE_TYPE":[
+    {"code":"RS","name":"存储库位"},
+    {"code":"CS","name":"箱拣货库位"},
+    {"code":"EA","name":"件拣货库位"},
+    {"code":"PC","name":"箱件合并拣货库位"},
+    {"code":"ST","name":"过渡库位"},
+    {"code":"SS","name":"理货站"},
+    {"code":"KT","name":"加工台"},
+    {"code":"CD","name":"越库库位"}
+  ],
+  "WM_INBOUND_TYPE":[
+    {"code":"CI","name":"普通入库"},
+    {"code":"RI","name":"退货入库"}
+  ],
+  "WM_INBOUND_STATUS":[
+    {"code":"00","name":"创建"},
+    {"code":"10","name":"部分收货"},
+    {"code":"20","name":"完全收货"},
+    {"code":"90","name":"取消订单"},
+    {"code":"99","name":"关闭订单"}
+  ],
+  "WM_ACT_TRAN_TYPE":[
+    {"code":"REC","name":"收货"},
+    {"code":"SHIP","name":"发货"},
+    {"code":"PICK","name":"拣货"},
+    {"code":"CANCEL_SHIP","name":"取消发货"},
+    {"code":"CANCEL_PICK","name":"取消拣货"},
+    {"code":"CANCEL_REC","name":"取消收货"},
+    {"code":"CANCEL_ALLOC","name":"取消分配"},
+    {"code":"ALLOC","name":"分配"}
+  ],
+  "WM_ORDER_TYPE":[
+    {"code":"INB","name":"入库单"},
+    {"code":"OUB","name":"出库单"}
+  ],
+  "WM_OUTBOUND_STATUS":[
+    {"code":"00","name":"创建"},
+    {"code":"30","name":"部分分配"},
+    {"code":"40","name":"完全分配"},
+    {"code":"50","name":"部分拣货"},
+    {"code":"60","name":"完全拣货"},
+    {"code":"70","name":"部分发货"},
+    {"code":"80","name":"完全发货"},
+    {"code":"90","name":"取消订单"},
+    {"code":"99","name":"关闭订单"}
+  ],
+  "WM_OUTBOUND_TYPE":[
+    {"code":"PO","name":"普通出库"},
+    {"code":"RO","name":"退货出库"}
   ]
 }

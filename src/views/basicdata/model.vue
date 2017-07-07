@@ -3,15 +3,12 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters">
-				<el-form-item>
+				<el-form-item label="车型名称" prop="modelName">
 					<el-input v-model="filters.modelName" placeholder="车型名称"></el-input>
 				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" v-on:click="getModels">查询</el-button>
-				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" @click="handleAdd">新增</el-button>
-				</el-form-item>
+
+					<el-button type="primary"  style="float: right" v-on:click="getModels">查询</el-button>
+
 			</el-form>
 		</el-col>
 
@@ -37,6 +34,7 @@
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
+			<el-button type="primary" @click="handleAdd">新增</el-button>
 			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="size" :total="total" style="float:right;">
 			</el-pagination>
@@ -45,10 +43,10 @@
 		<!--编辑界面-->
 		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="车型编码">
+				<el-form-item label="车型编码" prop="modelCode">
 					<el-input v-model="editForm.modelCode" auto-complete="off" :disabled="true"></el-input>
 				</el-form-item>
-				<el-form-item label="车型名称">
+				<el-form-item label="车型名称" prop="modelName">
 					<el-input v-model="editForm.modelName" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="备注">
@@ -64,10 +62,10 @@
 		<!--新增界面-->
 		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-				<el-form-item label="车型编码">
+				<el-form-item label="车型编码" prop="modelCode">
 					<el-input v-model="addForm.modelCode" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="车型名称">
+				<el-form-item label="车型名称" prop="modelName">
 					<el-input v-model="addForm.modelName" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="备注">

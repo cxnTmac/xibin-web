@@ -2,16 +2,20 @@
 	<section>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-			<el-form :inline="true" :model="filters">
-				<el-form-item>
+			<el-form :inline="true" :model="filters" ref="queryForm">
+				<el-row :gutter="0">
+				<el-form-item label="区域名称" prop="areaName">
 					<el-input v-model="filters.areaName" placeholder="区域名称"></el-input>
 				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" v-on:click="getRecords">查询</el-button>
+				<el-form-item label="区域编码" prop="areaCode">
+					<el-input v-model="filters.areaCode" placeholder="区域编码"></el-input>
 				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" @click="handleAdd">新增</el-button>
-				</el-form-item>
+					<el-button type="primary" icon="caret-bottom" v-on:click="showMoreConditionHandler"></el-button>
+					<el-button type="danger" style="float: right"  @click="reset">重置</el-button>
+					<el-button type="primary" style="float: right" v-on:click="getRecords">查询</el-button>
+				</el-row>
+				<el-row :gutter="0"  v-if="showMoreQueryCondition">
+				</el-row>
 			</el-form>
 		</el-col>
 
@@ -40,6 +44,7 @@
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
+			<el-button type="primary" @click="handleAdd">新增</el-button>
 			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="size" :total="total" style="float:right;">
 			</el-pagination>
@@ -48,15 +53,25 @@
 		<!--新增界面-->
 		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-				<el-form-item label="区域编码">
-					<el-input v-model="addForm.areaCode" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="区域名称">
-					<el-input v-model="addForm.areaName" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="备注">
-					<el-input v-model="addForm.remark" auto-complete="off"></el-input>
-				</el-form-item>
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="区域编码" prop="areaCode">
+							<el-input v-model="addForm.areaCode" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="区域名称" prop="areaName">
+							<el-input v-model="addForm.areaName" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="24">
+						<el-form-item label="备注"  prop="remark">
+							<el-input v-model="addForm.remark" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="addFormVisible = false">取消</el-button>
@@ -68,13 +83,19 @@
 		<!--编辑界面-->
 		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-form-item label="区域编码">
-					<el-input v-model="editForm.areaCode" auto-complete="off" :disabled="true"></el-input>
-				</el-form-item>
-				<el-form-item label="区域名称">
-					<el-input v-model="editForm.areaName" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="备注">
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="区域编码" prop="areaCode">
+							<el-input v-model="editForm.areaCode" auto-complete="off" :disabled="true"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="区域名称" prop="areaName">
+							<el-input v-model="editForm.areaName" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-form-item label="备注" prop="remark">
 					<el-input v-model="editForm.remark" auto-complete="off"></el-input>
 				</el-form-item>
 			</el-form>
@@ -96,6 +117,7 @@
 	export default {
 		data() {
 			return {
+                showMoreQueryCondition:false,
 				filters: {
                     areaCode: '',
 					areaName: ''
@@ -132,10 +154,10 @@
                 editFormVisible: false,//编辑界面是否显示
                 editLoading: false,
                 editFormRules: {
-                    modelCode: [
+                    areaCode: [
                         { required: true, message: '请输入编码', trigger: 'blur' }
                     ],
-                    modelName:[
+                    areaName:[
                         { required: true, message: '请输入名称', trigger: 'blur' }
                     ]
                 },
@@ -149,6 +171,12 @@
 			}
 		},
 		methods: {
+            reset(){
+                this.$refs['queryForm'].resetFields();
+            },
+            showMoreConditionHandler:function(){
+                this.showMoreQueryCondition = !this.showMoreQueryCondition;
+            },
 			handleCurrentChange(val) {
 				this.page = val;
 				this.getRecords();

@@ -13,7 +13,14 @@ import model from './views/basicdata/model.vue'
 import sku from './views/basicdata/sku.vue'
 import area from './views/basicdata/area.vue'
 import zone from './views/basicdata/zone.vue'
+import loc from './views/basicdata/loc.vue'
+import customer from './views/basicdata/customer.vue'
 import inbound from './views/inbound/inbound.vue'
+import inboundDetail from './views/inbound/inboundDetail.vue'
+import outbound from './views/outbound/outbound.vue'
+import outboundDetail from './views/outbound/outboundDetail.vue'
+import inventory from './views/inventory/inventory.vue'
+import actTran from './views/inventory/actTran.vue'
 import echarts from './views/charts/echarts.vue'
 
 let routes = [
@@ -81,7 +88,9 @@ let routes = [
             { path: '/model', component: model, name: '车型' },
             { path: '/sku', component: sku, name: '产品' },
             { path: '/area', component: area, name: '区域' },
-            { path: '/zone', component: zone, name: '库区' }
+            { path: '/zone', component: zone, name: '库区' },
+            { path: '/loc', component: loc, name: '库位' },
+            { path: '/customer', component: customer, name: '客户' }
         ]
     },
     {
@@ -90,7 +99,28 @@ let routes = [
         name: '入库管理',
         iconCls: 'el-icon-message',//图标样式class
         children: [
-            { path: '/inboundOrder', component: inbound, name: '入库单'}
+            { path: '/inboundOrder', component: inbound, name: '入库单'},
+            { path: '/inboundDetail', component: inboundDetail, name: '入库单详细',hidden:true}
+        ]
+    },
+    {
+        path: '/',
+        component: Home,
+        name: '出库管理',
+        iconCls: 'el-icon-message',//图标样式class
+        children: [
+            { path: '/outboundOrder', component: outbound, name: '出库单'},
+            { path: '/outboundDetail', component: outboundDetail, name: '出库单详细',hidden:true}
+        ]
+    },
+    {
+        path: '/',
+        component: Home,
+        name: '库存',
+        iconCls: 'el-icon-message',//图标样式class
+        children: [
+            { path: '/inventory', component: inventory, name: '库存查询'},
+            { path: '/actTran', component: actTran, name: '库存记录查询'}
         ]
     },
     {

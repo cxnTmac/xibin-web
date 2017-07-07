@@ -9,15 +9,36 @@ let base = '';
 
 export const getInboundOrderListPage = params => { return axios.get(`/xibin/inbound/showAllInboundOrder.shtml`, { params: params }); };
 
+export const getInboundDetailListPage = params => { return axios.get(`/xibin/inbound/showAllInboundDetail.shtml`, { params: params }); };
+
+export const getInboundRecListPage = params => { return axios.get(`/xibin/inbound/showAllInboundRecieve.shtml`, { params: params }); };
 // export const removeFittingSku = params => { return axios.get(`/xibin/fittingSku/removeFittingSku.shtml`, { params: params }); };
 //
-// export const batchRemoveFittingSku = params => { return axios.post(`/xibin/fittingSku/batchRemove.shtml`,qs.stringify(params),{headers: {
-//     'Content-Type': 'application/x-www-form-urlencoded',
-// }} ).then(res => res); };
+export const removeInboundDetail = params => { return axios.post(`/xibin/inbound/removeInboundDetail.shtml`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
+
+export const remove = params => { return axios.post(`/xibin/inbound/remove.shtml`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
+
+export const audit = params => { return axios.post(`/xibin/inbound/audit.shtml`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
+
+export const cancelAudit = params => { return axios.post(`/xibin/inbound/cancelAudit.shtml`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
 //
-// export const saveFittingSku = params => { return axios.get(`/xibin/fittingSku/saveFittingSku.shtml`, { params: params }); };
+export const saveInboundOrder = params => { return axios.get(`/xibin/inbound/saveInboundOrder.shtml`, { params: params }); };
+
+export const saveInboundDetail = params => { return axios.get(`/xibin/inbound/saveInboundDetail.shtml`, { params: params }); };
+
+export const receive = params => { return axios.get(`/xibin/inbound/receive.shtml`, { params: params }); };
+
+export const cancelReceive = params => { return axios.get(`/xibin/inbound/cancelReceive.shtml`, { params: params }); };
 //
-// export const getFittingSkuPic = params => { return axios.get(`/xibin/fittingSku/getFittingSkuPic.shtml`, { params: params }); };
+export const getInboundOrderHeader = params => { return axios.get(`/xibin/inbound/getInboundHeaderByOderNo.shtml`, { params: params }); };
 //
 // export const removeFittingSkuPic = params => { return axios.get(`/xibin/fittingSku/removeFittingSkuPic.shtml`, { params: params }); };
 

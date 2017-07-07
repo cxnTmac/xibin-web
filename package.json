@@ -1,8 +1,8 @@
 {
-  "name": "vueadmin",
-  "version": "1.0.5",
-  "description": "vue admin project",
-  "author": "taylor <709161610@qq.com>",
+  "name": "xibin-web",
+  "version": "1.0.0",
+  "description": "xibin web project",
+  "author": "James <413870863@qq.com>",
   "license": "MIT",
   "scripts": {
     "dev": "node build/dev-server.js",
@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^0.15.3",
     "echarts": "^3.3.2",
+    "element-china-area-data": "^3.1.0",
     "element-ui": "^1.2.8",
     "font-awesome": "^4.7.0",
     "nprogress": "^0.2.0",

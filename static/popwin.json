@@ -62,6 +62,35 @@
         "name":"fittingSkuName"}
     ]
   },
+  "POP_CUSTOMER":{
+    "query": "BdCustomerMapper.selectAllByPage",
+    "title": "客户",
+    "value":"customerCode",
+    "name":"customerName",
+    "quickCondition":"customerName",
+    "conditions":[
+      {"title":"客户编码",
+        "name":"customerCode"},
+      {"title":"客户名称",
+        "name":"customerName"}
+    ],
+    "columns":[
+      {
+        "title":"客户编码",
+        "name":"customerCode"
+      },
+      {"title":"客户名称",
+        "name":"customerName"},
+      {"title":"省",
+        "name":"province"},
+      {"title":"市",
+        "name":"city"},
+      {"title":"区",
+        "name":"county"},
+      {"title":"客户类型",
+        "name":"customerType"}
+    ]
+  },
   "POP_AREA":{
     "query": "BdAreaMapper.selectAllByPage",
     "title": "区域",
@@ -81,6 +110,50 @@
       },
       {"title":"区域名称",
         "name":"areaName"}
+    ]
+  },
+  "POP_ZONE":{
+    "query": "BdZoneMapper.selectAllByPage",
+    "title": "库区",
+    "value":"zoneCode",
+    "name":"zoneName",
+    "quickCondition":"zoneCode",
+    "conditions":[
+      {"title":"库区编码",
+        "name":"zoneCode"},
+      {"title":"库区名称",
+        "name":"zoneName"}
+    ],
+    "columns":[
+      {
+        "title":"库区编码",
+        "name":"zoneCode"
+      },
+      {"title":"库区名称",
+        "name":"zoneName"}
+    ]
+  },
+  "POP_LOC":{
+    "query": "BdLocMapper.selectAllByPage",
+    "title": "库位",
+    "value":"locCode",
+    "name":"locCode",
+    "quickCondition":"locCode",
+    "conditions":[
+      {"title":"库区编码",
+        "name":"locCode"}
+    ],
+    "columns":[
+      {
+        "title":"库位编码",
+        "name":"locCode"
+      },
+      {"title":"所属库区",
+        "name":"zoneName"},
+      {"title":"库位类别",
+        "name":"locType"},
+      {"title":"使用类别",
+        "name":"useType"}
     ]
   }
 }

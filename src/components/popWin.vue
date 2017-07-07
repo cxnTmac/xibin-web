@@ -6,7 +6,6 @@
 <script>
     import Vue from 'vue'
     import { query } from '../api/popWinApi';
-    import {getFittingSkuListForInput} from '../api/fittingSkuApi';
     var popConfig = require('../../static/popwin.json');
     Vue.component('my-item-zh', {
         functional: true,
@@ -25,7 +24,9 @@
         props: {
             // 基础类型检测 （`null` 意思是任何类型都可以）
             popKey: String,
-			selectValue:String
+			selectValue:String,
+            disabled:Boolean,
+            staticCondition:{}
         },
 //        template:'<el-input v-model="getColumns" placeholder="请输入内容"></el-input>',
 //		  template:'<el-table :data="data2">'+
@@ -49,7 +50,7 @@
 		 '</el-form>'+
 //        				'</el-col>'+
 		 '<el-table :data="data2" highlight-current-row v-loading="listLoading" @current-change="handleCurrentChange" stripe>'+
-		 	'<el-table-column v-for="item in getColumns2" :prop="item.name" :label="item.title"></el-table-column>'+
+		 	'<el-table-column v-for="item in getColumns2" :width="columnWidth" :prop="item.name" :label="item.title" :key="item.name"></el-table-column>'+
 		 '</el-table>'+
          '<el-col :span="24" class="toolbar">'+
          '<el-pagination layout="prev, pager, next" @current-change="handleCurrentPageChange" :page-size="size" :total="total" style="float:right;">'+
@@ -58,11 +59,11 @@
 		 '</el-popover>'+
          '<el-row :gutter="0">'+
          '<el-col :span="18">'+
-         '<el-autocomplete popper-class="my-autocomplete" v-model="selectValue" :fetch-suggestions="querySearch" custom-item="my-item-zh" placeholder="请输入内容" @select="handleSelect" :trigger-on-focus=false icon="edit" :on-icon-click="handleIconClick">'+
+         '<el-autocomplete popper-class="my-autocomplete" :disabled="disabled" v-model="selectValue" :fetch-suggestions="querySearch" custom-item="my-item-zh" placeholder="请输入内容" @select="handleSelect" :trigger-on-focus=false icon="circle-close" :on-icon-click="handleIconClick">'+
          '</el-autocomplete></el-col>'+
 //         '<el-input v-model="selectValue" width="600"></el-input></el-col>'+
          '<el-col :span="6">'+
-		 '<el-button v-popover:popBtn type="primary" icon="search" v-on:click="getData"></el-button></el-col></el-row></div>',
+		 '<el-button v-popover:popBtn type="primary" :disabled="disabled" icon="search" v-on:click="getData"></el-button></el-col></el-row></div>',
 //        template: '<button v-on:click="increment">{{ counter }}</button>',
         computed:{
 			getColumns2 :function(){
@@ -76,7 +77,14 @@
 			},
 			getText:function(){
 			    return this.selectValue;
-			}
+			},
+            columnWidth:function(){
+			   if(this.getColumns2.length>=4){
+			       return 120;
+               }else{
+			       return 480/this.getColumns2.length;
+               }
+            }
 		},
         data: function () {
             return {
@@ -99,9 +107,11 @@
         },
         methods: {
             handleCurrentChange:function(currentRow,oldCurrentRow){
-				this.selectValue = currentRow[popConfig[this.popKey].value];
-                this.name = currentRow[popConfig[this.popKey].name];
-                this.$emit('changeValue',[this.selectValue,this.name]);
+                if(currentRow!==null){
+                    this.selectValue = currentRow[popConfig[this.popKey].value];
+                    this.name = currentRow[popConfig[this.popKey].name];
+                    this.$emit('changeValue',[this.selectValue,this.name]);
+                }
 			},
             handleCurrentPageChange(val) {
                 this.page = val;
@@ -112,6 +122,7 @@
                 let para = {};
                 let queryConditions = {};
                 queryConditions[this.filters.queryValue] =this.filters.condition;
+                queryConditions = Object.assign(queryConditions, this.staticCondition);
                 para['page'] = this.page;
                 para['size'] = this.size;
                 para['queryConditions'] = JSON.stringify(queryConditions);
@@ -122,10 +133,7 @@
                     this.listLoading = false;
                 });
             },
-
-
             converte(data){
-                debugger
                 let result = [];
                 let key1 = popConfig[this.popKey].columns[0].name
                 let key2 = popConfig[this.popKey].columns[1].name
@@ -150,19 +158,22 @@
                 queryConditions[popConfig[this.popKey].quickCondition] = queryString;
                 para['queryType']= popConfig[this.popKey].query;
                 para['queryConditions'] = JSON.stringify(queryConditions);
-                debugger
                 query(para).then((res) => {
-                    debugger
                     results = this.converte(res.data.list);
                     cb(results);
                     //NProgress.done();
                 });
             },
             handleSelect(item) {
-                console.log(item);
+                this.selectValue = item.value;
+                this.name = item.address;
+                this.$emit('changeValue',[this.selectValue,this.name]);
             },
             handleIconClick(ev) {
-                console.log(ev);
+                this.selectValue = '';
+                this.name = '';
+                this.$emit('changeValue',['','']);
+
             }
         }
     })

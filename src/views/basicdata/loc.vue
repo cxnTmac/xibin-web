@@ -4,22 +4,43 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters" ref="queryForm">
 				<el-row :gutter="0">
-					<el-form-item label="所属库区" prop="areaCode">
-						<popwin-button popKey="POP_AREA"  :selectValue="filters.areaCode"  @changeValue="changeFilterForAreaCode"></popwin-button>
-					</el-form-item>
-					<el-form-item label="库区名称" prop="zoneName">
-						<el-input v-model="filters.zoneName" placeholder="库区名称"></el-input>
-					</el-form-item>
-					<el-form-item label="库区编码" prop="zoneCode">
-						<el-input v-model="filters.zoneCode" placeholder="库区编码"></el-input>
-					</el-form-item >
-
-					<el-button type="primary" icon="caret-bottom" v-on:click="showMoreConditionHandler"></el-button>
-					<el-button type="danger" style="float: right"  @click="reset">重置</el-button>
-					<el-button type="primary" style="float: right"  v-on:click="getRecords">查询</el-button>
-
+				<el-form-item label="库位编码" prop="locCode">
+					<el-input v-model="filters.locCode" placeholder="库位编码"></el-input>
+				</el-form-item>
+				<el-form-item label="所属库区" prop="zoneCode">
+					<popwin-button popKey="POP_ZONE"  :selectValue="filters.zoneCode"  @changeValue="changeFilterForZoneCode"></popwin-button>
+				</el-form-item>
+				<el-form-item label="库位使用类型" prop="useType">
+					<el-select v-model="filters.useType" clearable  placeholder="请选择">
+						<el-option
+								v-for="item in useType"
+								:key="item.code"
+								:label="item.name"
+								:value="item.code">
+							<span style="float: left">{{ item.name }}</span>
+							<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
+						</el-option>
+					</el-select>
+					<!--<el-input v-model="orderHeader.auditStatus" auto-complete="off"></el-input>-->
+				</el-form-item>
+				<el-button type="primary" icon="caret-bottom" v-on:click="showMoreConditionHandler"></el-button>
+				<el-button type="danger" style="float: right"  @click="reset">重置</el-button>
+				<el-button type="primary" style="float: right" v-on:click="getRecords">查询</el-button>
 				</el-row>
 				<el-row :gutter="0" v-if="showMoreQueryCondition">
+					<el-form-item label="库位类型" prop="locType">
+						<el-select v-model="filters.locType" clearable  placeholder="请选择">
+							<el-option
+									v-for="item in locType"
+									:key="item.code"
+									:label="item.name"
+									:value="item.code">
+								<span style="float: left">{{ item.name }}</span>
+								<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
+							</el-option>
+						</el-select>
+						<!--<el-input v-model="orderHeader.auditStatus" auto-complete="off"></el-input>-->
+					</el-form-item>
 				</el-row>
 			</el-form>
 		</el-col>
@@ -30,13 +51,15 @@
 			</el-table-column>
 			<el-table-column prop="id" label="id" width="80" sortable>
 			</el-table-column>
-			<el-table-column prop="areaCode" label="所属区域编码" width="200" sortable>
+			<el-table-column prop="zoneCode" label="所属库区编码" width="200" sortable>
 			</el-table-column>
-			<el-table-column prop="areaName" label="所属区域名称" width="200" sortable>
+			<el-table-column prop="zoneName" label="所属库区名称" width="200" >
 			</el-table-column>
-			<el-table-column prop="zoneCode" label="库区编码" width="200" sortable>
+			<el-table-column prop="locCode" label="库区编码" width="200" sortable>
 			</el-table-column>
-			<el-table-column prop="zoneName" label="库区名称" width="200" sortable>
+			<el-table-column prop="locType" label="库位类型" width="200" :formatter="formatLocType">
+			</el-table-column>
+			<el-table-column prop="useType" label="库位使用类型" width="200" :formatter="formatUseType">
 			</el-table-column>
 			<el-table-column prop="remark" label="备注" width="400" >
 			</el-table-column>
@@ -64,30 +87,51 @@
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
 				<el-row :gutter="0">
 					<el-col :span="12">
-						<el-form-item label="库区编码" prop="zoneCode">
-							<el-input v-model="addForm.zoneCode" auto-complete="off"></el-input>
+						<el-form-item label="库位编码" prop="locCode">
+							<el-input v-model="addForm.locCode" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
 				</el-row>
 				<el-row :gutter="0">
 					<el-col :span="12">
-						<el-form-item label="库区名称" prop="zoneName">
-							<el-input v-model="addForm.zoneName" auto-complete="off"></el-input>
-						</el-form-item>
-					</el-col>
-					<el-col :span="12">
-						<el-form-item label="区域" prop="areaCode">
-							<popwin-button popKey="POP_AREA" :selectValue="addForm.areaCode" @changeValue="changeAddPopValueForAreaCode"></popwin-button>
+						<el-form-item label="所属库区" prop="zoneCode">
+							<popwin-button popKey="POP_ZONE" :selectValue="addForm.zoneCode" @changeValue="changeAddPopValueForZoneCode"></popwin-button>
 						</el-form-item>
 					</el-col>
 				</el-row>
 				<el-row :gutter="0">
-					<el-col :span="24">
-						<el-form-item label="备注" prop="remark">
-							<el-input v-model="addForm.remark" auto-complete="off"></el-input>
+					<el-col :span="12">
+						<el-form-item label="库位类型" prop="locType">
+							<el-select v-model="addForm.locType" placeholder="请选择">
+								<el-option
+										v-for="item in locType"
+										:key="item.code"
+										:label="item.name"
+										:value="item.code">
+									<span style="float: left">{{ item.name }}</span>
+									<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
+								</el-option>
+							</el-select>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="库位使用类型" prop="locType">
+							<el-select v-model="addForm.useType" placeholder="请选择">
+								<el-option
+										v-for="item in useType"
+										:key="item.code"
+										:label="item.name"
+										:value="item.code">
+									<span style="float: left">{{ item.name }}</span>
+									<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
+								</el-option>
+							</el-select>
 						</el-form-item>
 					</el-col>
 				</el-row>
+				<el-form-item label="备注" prop="remark">
+					<el-input v-model="addForm.remark" auto-complete="off"></el-input>
+				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="addFormVisible = false">取消</el-button>
@@ -101,26 +145,51 @@
 			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
 				<el-row :gutter="0">
 					<el-col :span="12">
-						<el-form-item label="库区编码" prop="zoneCode">
-							<el-input v-model="editForm.zoneCode" auto-complete="off" :disabled="true"></el-input>
+						<el-form-item label="库位编码" prop="locCode">
+							<el-input v-model="editForm.locCode" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
 				</el-row>
 				<el-row :gutter="0">
 					<el-col :span="12">
-						<el-form-item label="库区名称" prop="zoneName">
-							<el-input v-model="editForm.zoneName" auto-complete="off"></el-input>
+						<el-form-item label="所属库区" prop="zoneCode">
+							<popwin-button popKey="POP_ZONE" :selectValue="editForm.zoneCode" @changeValue="changeEditPopValueForZoneCode"></popwin-button>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="库位类型" prop="locType">
+							<el-select v-model="editForm.locType" placeholder="请选择">
+								<el-option
+										v-for="item in locType"
+										:key="item.code"
+										:label="item.name"
+										:value="item.code">
+									<span style="float: left">{{ item.name }}</span>
+									<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
+								</el-option>
+							</el-select>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="区域" prop="areaCode">
-							<popwin-button popKey="POP_AREA" :selectValue="editForm.areaCode" @changeValue="changeEditPopValueForAreaCode"></popwin-button>
+						<el-form-item label="库位使用类型" prop="locType">
+							<el-select v-model="editForm.useType" placeholder="请选择">
+								<el-option
+										v-for="item in useType"
+										:key="item.code"
+										:label="item.name"
+										:value="item.code">
+									<span style="float: left">{{ item.name }}</span>
+									<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
+								</el-option>
+							</el-select>
 						</el-form-item>
 					</el-col>
 				</el-row>
 				<el-row :gutter="0">
 					<el-col :span="24">
-						<el-form-item label="备注" prop="remark">
+						<el-form-item label="备注">
 							<el-input v-model="editForm.remark" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
@@ -138,17 +207,20 @@
 <script>
 	import util from '../../common/js/util'
 	//import NProgress from 'nprogress'
-	import { getZoneListPage, saveZone, removeZone} from '../../api/zoneApi';
+	import { getLocListPage, saveLoc, removeLoc} from '../../api/locApi';
     import NProgress from 'nprogress'
     var codemaster = require('../../../static/codemaster.json');
 	export default {
 		data() {
 			return {
                 showMoreQueryCondition:false,
+                locType:codemaster.WM_LOC_TYPE,
+				useType:codemaster.WM_USE_TYPE,
 				filters: {
-                    areaCode: '',
-                    zoneCode: '',
-					zoneName: ''
+                    locCode: '',
+                    locType: '',
+					useType: '',
+					zondeCode:''
 				},
                 records: [],
 				total: 0,
@@ -161,22 +233,26 @@
                 addFormVisible: false,//新增界面是否显示
                 addLoading: false,
                 addFormRules: {
-                    zoneCode: [
+                    locCode: [
                         { required: true, message: '请输入编码', trigger: 'blur' }
                     ],
-                    zoneName:[
-                        { required: true, message: '请输入名称', trigger: 'blur' }
+                    locType:[
+                        { required: true, message: '请输入库位类型', trigger: 'blur' }
                     ],
-                    areaCode:[
-                        { required: true, message: '请选择所属区域', trigger: 'blur' }
+                    useType:[
+                        { required: true, message: '请输入库位使用类型', trigger: 'blur' }
+                    ],
+                    zoneCode:[
+                        { required: true, message: '请选择所属库区', trigger: 'blur' }
                     ]
                 },
                 //新增界面数据
                 addForm: {
                     id: 0,
-                    areaCode: '',
+                    locCode: '',
                     zoneCode: '',
-                    zoneName: '',
+                    locType: '',
+                    useType: '',
                     remark: ''
                 },
 
@@ -186,22 +262,26 @@
                 editFormVisible: false,//编辑界面是否显示
                 editLoading: false,
                 editFormRules: {
-                    zoneCode: [
+                    locCode: [
                         { required: true, message: '请输入编码', trigger: 'blur' }
                     ],
-                    zoneName:[
-                        { required: true, message: '请输入名称', trigger: 'blur' }
+                    locType:[
+                        { required: true, message: '请输入库位类型', trigger: 'blur' }
                     ],
-                    areaCode:[
-                        { required: true, message: '请选择所属区域', trigger: 'blur' }
+                    useType:[
+                        { required: true, message: '请输入库位使用类型', trigger: 'blur' }
+                    ],
+                    zoneCode:[
+                        { required: true, message: '请选择所属库区', trigger: 'blur' }
                     ]
                 },
                 //编辑界面数据
                 editForm: {
                     id: 0,
-					areaCode: '',
+                    locCode: '',
                     zoneCode: '',
-                    zoneName: '',
+                    locType: '',
+                    useType: '',
                     remark: ''
                 },
 			}
@@ -213,14 +293,20 @@
             showMoreConditionHandler:function(){
                 this.showMoreQueryCondition = !this.showMoreQueryCondition;
             },
-            changeFilterForAreaCode:function(value){
-                this.filters.areaCode = value[0];
+            changeFilterForZoneCode:function(value){
+                this.filters.zoneCode = value[0];
+			},
+            changeAddPopValueForZoneCode:function(value){
+                this.addForm.zoneCode = value[0];
             },
-            changeAddPopValueForAreaCode:function(value){
-                this.addForm.areaCode = value[0];
+            changeEditPopValueForZoneCode:function(value){
+                this.editForm.zoneCode = value[0];
             },
-            changeEditPopValueForAreaCode:function(value){
-                this.editForm.areaCode = value[0];
+            formatUseType: function (row, column) {
+                return util.getComboNameByValue(codemaster.WM_USE_TYPE,row.useType);
+            },
+            formatLocType: function (row, column) {
+                return util.getComboNameByValue(codemaster.WM_LOC_TYPE,row.locType);
             },
 			handleCurrentChange(val) {
 				this.page = val;
@@ -236,21 +322,22 @@
                 this.addFormVisible = true;
                 this.addForm = {
                     id: 0,
-                    areaName: '',
-                    areaCode: '',
-                    remark:''
+                    locCode: '',
+                    zoneCode: '',
+                    locType: '',
+                    useType: '',
+                    remark: ''
                 };
             },
             //删除
             handleDel: function (index, row) {
-			    debugger
                 this.$confirm('确认删除该记录吗?', '提示', {
                     type: 'warning'
                 }).then(() => {
                     this.listLoading = true;
                     NProgress.start();
-                    let para = { id: row.id ,zoneCode: row.zoneCode};
-                    removeZone(para).then((res) => {
+                    let para = { id: row.id ,locCode: row.locCode};
+                    removeLoc(para).then((res) => {
                         this.listLoading = false;
                         NProgress.done();
                         this.getRecords();
@@ -267,7 +354,7 @@
                             this.editLoading = true;
                             //NProgress.start();
                             let para = Object.assign({}, this.editForm);
-                            saveZone({zone:JSON.stringify(para)}).then((res) => {
+                            saveLoc({loc:JSON.stringify(para)}).then((res) => {
                                 this.editLoading = false;
                                 //NProgress.done();
                                 if(res.data.code == 200){
@@ -294,7 +381,7 @@
                             this.addLoading = true;
                             //NProgress.start();
                             let para = Object.assign({}, this.addForm);
-                            saveZone({zone:JSON.stringify(para)}).then((res) => {
+                            saveLoc({loc:JSON.stringify(para)}).then((res) => {
                                 this.addLoading = false;
                                 //NProgress.done();
                                 if(res.data.code == 200){
@@ -322,7 +409,7 @@
 				};
 				this.listLoading = true;
 				//NProgress.start();
-                getZoneListPage(para).then((res) => {
+                getLocListPage(para).then((res) => {
 					this.total = res.data.size;
 					this.records = res.data.list;
 					this.listLoading = false;
