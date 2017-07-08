@@ -341,10 +341,11 @@
                         this.listLoading = false;
                         NProgress.done();
                         this.getRecords();
-                    });
-                }).catch(() => {
-
-                });
+                    }).catch((data) => {
+                        this.listLoading = false;
+                        util.errorCallBack(data,this.$router,this.$message);
+                    });;
+                })
             },
             //编辑
             editSubmit: function () {
@@ -368,8 +369,11 @@
                                 this.$refs['editForm'].resetFields();
                                 this.editFormVisible = false;
                                 this.getRecords();
+                            }).catch((data) => {
+                                this.editLoading = false;
+                                util.errorCallBack(data,this.$router,this.$message);
                             });
-                        });
+                        })
                     }
                 });
             },
@@ -395,8 +399,11 @@
                                 this.$refs['addForm'].resetFields();
                                 this.addFormVisible = false;
                                 this.getRecords();
+                            }).catch((data) => {
+                                this.addLoading = false;
+                                util.errorCallBack(data,this.$router,this.$message);
                             });
-                        });
+                        })
                     }
                 });
             },
@@ -414,7 +421,10 @@
 					this.records = res.data.list;
 					this.listLoading = false;
 					//NProgress.done();
-				});
+				}).catch((data) => {
+                    this.listLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
 			},
 			selsChange: function (sels) {
 				this.sels = sels;

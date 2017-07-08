@@ -162,7 +162,10 @@
 					this.users = res.data.list;
 					this.listLoading = false;
 					//NProgress.done();
-				});
+				}).catch((data) => {
+                    this.listLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
 			},
 			//删除
 			handleDel: function (index, row) {
@@ -184,10 +187,11 @@
                         }else{
                             this.$message.error(res.data.msg);
                         }
-					});
-				}).catch(() => {
-
-				});
+					}).catch((data) => {
+                        this.listLoading = false;
+                        util.errorCallBack(data,this.$router,this.$message);
+                    });;
+				})
 			},
 			//显示编辑界面
 			handleEdit: function (index, row) {
@@ -227,7 +231,10 @@
 								this.$refs['editForm'].resetFields();
 								this.editFormVisible = false;
 								this.getModels();
-							});
+							}).catch((data) => {
+                                this.editLoading = false;
+                                util.errorCallBack(data,this.$router,this.$message);
+                            });
 						});
 					}
 				});
@@ -254,7 +261,10 @@
 								this.$refs['addForm'].resetFields();
 								this.addFormVisible = false;
 								this.getModels();
-							});
+							}).catch((data) => {
+                                this.addLoading = false;
+                                util.errorCallBack(data,this.$router,this.$message);
+                            });
 						});
 					}
 				});
@@ -284,7 +294,10 @@
                             this.$message.error(res.data.msg);
                         }
 						this.getModels();
-					});
+					}).catch((data) => {
+                        this.listLoading = false;
+                        util.errorCallBack(data,this.$router,this.$message);
+                    });
 				}).catch(() => {
 
 				});

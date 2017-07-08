@@ -15,7 +15,9 @@ import routes from './routes'
 // Mock.bootstrap();
 import 'font-awesome/css/font-awesome.min.css'
 import vuePicturePreview from 'vue-picture-preview'
+import LoginPopWin from 'loginPopWin'
 Vue.use(vuePicturePreview)
+Vue.use(LoginPopWin)
 Vue.use(ElementUI)
 Vue.use(VueRouter)
 Vue.use(Vuex)

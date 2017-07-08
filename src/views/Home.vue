@@ -141,7 +141,7 @@
 		mounted() {
 			var user = sessionStorage.getItem('user');
 			if (user) {
-				user = JSON.parse(user).data;
+				user = JSON.parse(user);
 				this.sysUserName = user.userName || '';
 				//this.sysUserAvatar = user.avatar || '';
                 this.sysUserAvatar = 'static/logo/Lucian.jpg'

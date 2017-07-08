@@ -254,7 +254,10 @@
                         this.listLoading = false;
                         NProgress.done();
                         this.getRecords();
-                    });
+                    }).catch((data) => {
+                        this.listLoading = false;
+                        util.errorCallBack(data,this.$router,this.$message);
+                    });;
                 }).catch(() => {
 
                 });

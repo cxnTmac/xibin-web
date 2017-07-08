@@ -201,7 +201,10 @@
 					this.orders = res.data.list;
 					this.listLoading = false;
 					//NProgress.done();
-				});
+				}).catch((data) => {
+                    this.listLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
 			},
 			//删除
 			handleDel: function (index, row) {
@@ -225,10 +228,11 @@
                             this.$message.error(res.data.msg);
                         }
 
-					});
-				}).catch(() => {
-
-				});
+					}).catch((data) => {
+                        this.listLoading = false;
+                        util.errorCallBack(data,this.$router,this.$message);
+                    });
+				})
 			},
 			selsChange: function (sels) {
 				this.sels = sels;

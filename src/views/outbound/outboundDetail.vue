@@ -744,6 +744,9 @@
                             this.$store.commit('changeStatus','EDIT');
                             this.getDetails();
                             this.getDetailAllocs();
+                        }).catch((data) => {
+                            this.pageControl.saveBtnLoading = false;
+                            util.errorCallBack(data,this.$router,this.$message);
                         });
                     }
                 });
@@ -770,6 +773,9 @@
                                 this.pageControl.editFormVisible = false;
                                 this.getDetails();
                                 this.getDetailAllocs();
+                            }).catch((data) => {
+                                this.pageControl.editLoading = false;
+                                util.errorCallBack(data,this.$router,this.$message);
                             });
                         });
                     }
@@ -793,6 +799,9 @@
                     this.$refs['editForm'].resetFields();
                     this.pageControl.editFormVisible = false;
                     this.getOrder();
+                }).catch((data) => {
+                    this.pageControl.allocSubmitLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
                 });
 			},
 			cancelAllocSubmit(){
@@ -813,6 +822,9 @@
                     this.$refs['editForm'].resetFields();
                     this.pageControl.editFormVisible = false;
                     this.getOrder();
+                }).catch((data) => {
+                    this.pageControl.allocSubmitLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
                 });
             },
             pickAllocSubmit(){
@@ -836,6 +848,9 @@
                                 this.$refs['allocEditForm'].resetFields();
                                 this.pageControl.allocEditFormVisible = false;
                                 this.getOrder();
+                            }).catch((data) => {
+                                this.pageControl.pickAllocLoading = false;
+                                util.errorCallBack(data,this.$router,this.$message);
                             });
                         });
                     }
@@ -862,6 +877,9 @@
                                 this.$refs['allocEditForm'].resetFields();
                                 this.pageControl.allocEditFormVisible = false;
                                 this.getOrder();
+                            }).catch((data) => {
+                                this.pageControl.pickAllocLoading = false;
+                                util.errorCallBack(data,this.$router,this.$message);
                             });
                         });
                     }
@@ -888,6 +906,9 @@
                                 this.$refs['allocEditForm'].resetFields();
                                 this.pageControl.allocEditFormVisible = false;
                                 this.getOrder();
+                            }).catch((data) => {
+                                this.pageControl.pickAllocLoading = false;
+                                util.errorCallBack(data,this.$router,this.$message);
                             });
                         });
                     }
@@ -914,6 +935,9 @@
                                 this.$refs['allocEditForm'].resetFields();
                                 this.pageControl.allocEditFormVisible = false;
                                 this.getOrder();
+                            }).catch((data) => {
+                                this.pageControl.pickAllocLoading = false;
+                                util.errorCallBack(data,this.$router,this.$message);
                             });
                         });
                     }
@@ -935,6 +959,9 @@
                             this.$message.error(res.data.msg);
                         }
                         this.getOrder();
+                    }).catch((data) => {
+                        this.pageControl.shipByHeaderBtnLoading = false;
+                        util.errorCallBack(data,this.$router,this.$message);
                     });
                 });
             },
@@ -954,6 +981,9 @@
                             this.$message.error(res.data.msg);
                         }
                         this.getOrder();
+                    }).catch((data) => {
+                        this.pageControl.cancelShipByHeaderBtnLoading = false;
+                        util.errorCallBack(data,this.$router,this.$message);
                     });
                 });
             },
@@ -971,7 +1001,9 @@
                     }else{
                         this.$message.error(res.data.msg);
                     }
-                });
+                }).catch((data) => {
+                    util.errorCallBack(data,this.$router,this.$message);
+                });;
 			},
 			cancelAudit(){
                 let orderNos = [this.orderHeader.orderNo].join(',');
@@ -986,6 +1018,8 @@
                     }else{
                         this.$message.error(res.data.msg);
                     }
+                }).catch((data) => {
+                    util.errorCallBack(data,this.$router,this.$message);
                 });
 			},
 			getOrder(){
@@ -995,6 +1029,8 @@
                     this.orderHeader = Object.assign({}, res.data);
                     this.getDetails();
                     this.getDetailAllocs();
+                }).catch((data) => {
+                    util.errorCallBack(data,this.$router,this.$message);
                 });
 			},
             getDetails(){
@@ -1009,6 +1045,9 @@
                     this.detailGrid.orderDetail = res.data.list;
                     this.detailGrid.listLoading = false;
                     //NProgress.done();
+                }).catch((data) => {
+                    this.detailGrid.listLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
                 });
 			},
             handleCurrentDetailChange(val) {
@@ -1031,6 +1070,9 @@
                     this.detailAllocGrid.orderDetailAlloc = res.data.list;
                     this.detailAllocGrid.listLoading = false;
                     //NProgress.done();
+                }).catch((data) => {
+                    this.detailAllocGrid.listLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
                 });
 			},
             changePopValueForBuyerCode(value){
@@ -1088,9 +1130,10 @@
                             this.$message.error(res.data.msg);
                         }
 						this.getDetails();
-					});
-				}).catch(() => {
-
+					}).catch((data) => {
+                        this.detailGrid.listLoading = false;
+                        util.errorCallBack(data,this.$router,this.$message);
+                    });
 				});
             },
             handleAllocDetailEdit(index, row){
@@ -1119,7 +1162,10 @@
                                 this.$refs['allocEditForm'].resetFields();
                                 this.pageControl.allocEditFormVisible = false;
                                 this.getOrder();
-                            });
+                            }).catch((data) => {
+                                this.pageControl.allocEditFormVisible = false;
+                                util.errorCallBack(data,this.$router,this.$message);
+                            });;
                         });
                     }
                 });
@@ -1146,7 +1192,10 @@
 								this.$refs['allocEditForm'].resetFields();
 								this.pageControl.allocEditFormVisible = false;
 								this.getOrder();
-							});
+							}).catch((data) => {
+                                this.pageControl.allocEditFormVisible = false;
+                                util.errorCallBack(data,this.$router,this.$message);
+                            });
 						});
 					}
             	});

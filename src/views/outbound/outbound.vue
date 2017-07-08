@@ -109,6 +109,7 @@
 </template>
 
 <script>
+    import Vue from 'vue'
 	import util from '../../common/js/util'
 	//import NProgress from 'nprogress'
 	import { getOutboundOrderListPage,remove} from '../../api/outboundApi';
@@ -175,6 +176,7 @@
 			},
             //显示新增界面
             handleAdd: function () {
+                Vue.loginPopWin();
                 this.$store.commit('changeOutboundOrderNo', '')
                 this.$store.commit('changeOutboundStatus', 'ADD')
                 this.$router.push({ path: '/outboundDetail' });
@@ -201,7 +203,10 @@
 					this.orders = res.data.list;
 					this.listLoading = false;
 					//NProgress.done();
-				});
+				}).catch((data) => {
+                    this.listLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
+                });;
 			},
 			//删除
 			handleDel: function (index, row) {
@@ -225,10 +230,11 @@
                             this.$message.error(res.data.msg);
                         }
 
+                    }).catch((data) => {
+                        this.listLoading = false;
+                        util.errorCallBack(data,this.$router,this.$message);
                     });
-                }).catch(() => {
-
-                });
+                })
 			},
 			selsChange: function (sels) {
 				this.sels = sels;

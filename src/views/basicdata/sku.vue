@@ -443,7 +443,10 @@
 					this.skus = res.data.list;
 					this.listLoading = false;
 					//NProgress.done();
-				});
+				}).catch((data) => {
+                    this.listLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
 			},
 			//删除
 			handleDel: function (index, row) {
@@ -458,9 +461,10 @@
 						NProgress.done();
 
 						this.getSkus();
-					});
-				}).catch(() => {
-
+					}).catch((data) => {
+                        this.listLoading = false;
+                        util.errorCallBack(data,this.$router,this.$message);
+                    });
 				});
 			},
 			//显示编辑界面
@@ -509,6 +513,9 @@
                         }else{
                             this.$message.error("删除失败");
                         }
+                    }).catch((data) => {
+                        this.listLoading = false;
+                        util.errorCallBack(data,this.$router,this.$message);
                     });
 			},
             refreshPics : function(fittingSkuCode){
@@ -518,6 +525,9 @@
                     NProgress.done();
                     this.imgs = [];
                     this.convertPicData(res);
+                }).catch((data) => {
+                    this.listLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
                 });
             },
 			convertPicData : function(res){
@@ -571,7 +581,10 @@
 								this.$refs['editForm'].resetFields();
 								this.editFormVisible = false;
 								this.getSkus();
-							});
+							}).catch((data) => {
+                                this.editLoading = false;
+                                util.errorCallBack(data,this.$router,this.$message);
+                            });
 						});
 					}
 				});
@@ -599,8 +612,11 @@
 								this.$refs['addForm'].resetFields();
 								this.addFormVisible = false;
 								this.getSkus();
-							});
-						});
+							}).catch((data) => {
+                                this.addLoading = false;
+                                util.errorCallBack(data,this.$router,this.$message);
+                            });
+						})
 					}
 				});
 			},
@@ -624,10 +640,11 @@
 							type: 'success'
 						});
 						this.getSkus();
-					});
-				}).catch(() => {
-
-				});
+					}).catch((data) => {
+                        this.listLoading = false;
+                        util.errorCallBack(data,this.$router,this.$message);
+                    });
+				})
 			},
             handleClick : function(tab, event) {
                 console.log(tab, event);
@@ -636,7 +653,6 @@
 //				this.$refs.upload.submit();
 //			},
             uploadConnectSuccess : function(response, file, fileList){
-                debugger;
                 if(response.code == 0){
                     this.$message.error(response.msg);
 

@@ -669,6 +669,9 @@
                                 this.pageControl.editFormVisible = false;
                                 this.getDetails();
                                 this.getDetailReceives();
+                            }).catch((data) => {
+                                this.pageControl.editLoading = false;
+                                util.errorCallBack(data,this.$router,this.$message);
                             });
                         });
                     }
@@ -688,6 +691,8 @@
                     }else{
                         this.$message.error(res.data.msg);
                     }
+                }).catch((data) => {
+                    util.errorCallBack(data,this.$router,this.$message);
                 });
 			},
 			cancelAudit(){
@@ -703,6 +708,8 @@
                     }else{
                         this.$message.error(res.data.msg);
                     }
+                }).catch((data) => {
+                    util.errorCallBack(data,this.$router,this.$message);
                 });
 			},
 			getOrder(){
@@ -712,6 +719,8 @@
                     this.orderHeader = Object.assign({}, res.data);
                     this.getDetails();
                     this.getDetailReceives();
+                }).catch((data) => {
+                    util.errorCallBack(data,this.$router,this.$message);
                 });
 			},
             getDetails(){
@@ -726,6 +735,9 @@
                     this.detailGrid.orderDetail = res.data.list;
                     this.detailGrid.listLoading = false;
                     //NProgress.done();
+                }).catch((data) => {
+                    this.detailGrid.listLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
                 });
 			},
             handleCurrentDetailChange(val) {
@@ -748,6 +760,9 @@
                     this.detailReceiveGrid.orderDetailReceive = res.data.list;
                     this.detailReceiveGrid.listLoading = false;
                     //NProgress.done();
+                }).catch((data) => {
+                    this.detailReceiveGrid.listLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
                 });
 			},
             changePopValueForSupplierCode(value){
@@ -805,9 +820,10 @@
                         }
 						this.getDetails();
                         this.getDetailReceives();
-					});
-				}).catch(() => {
-
+					}).catch((data) => {
+                        this.detailGrid.listLoading = false;
+                        util.errorCallBack(data,this.$router,this.$message);
+                    });
 				});
             },
             handleRecDetailEdit(index, row){
@@ -836,6 +852,9 @@
                                 this.$refs['recEditForm'].resetFields();
                                 this.pageControl.recEditFormVisible = false;
                                 this.getOrder();
+                            }).catch((data) => {
+                                this.pageControl.recEditFormVisible = false;
+                                util.errorCallBack(data,this.$router,this.$message);
                             });
                         });
                     }
@@ -863,7 +882,10 @@
 								this.$refs['recEditForm'].resetFields();
 								this.pageControl.recEditFormVisible = false;
 								this.getOrder();
-							});
+							}).catch((data) => {
+                                this.pageControl.cancelRecEditLoading = false;
+                                util.errorCallBack(data,this.$router,this.$message);
+                            });
 						});
 					}
             	});
