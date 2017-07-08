@@ -107,7 +107,7 @@
 						<el-col :span="6"  v-for="(img,index) in imgs" :key="img" :offset="index > 0 ? 2 : 0">
 							<el-card :body-style="{ padding: '0px' }">
 								<el-tooltip :content="img.normal.fittingSkuPicName" placement="left" effect="dark">
-								<img :src=img.zip.fittingSkuPicUrl v-preview="img.normal.fittingSkuPicUrl" class="image" >
+								<img :src=img.zip.fittingSkuPicUrl class="image" @click="showNormalPic(img.normal)">
 								</el-tooltip>
 								<div style="padding: 14px;">
 									<span>{{img.normal.fittingSkuPicName}}</span>
@@ -287,17 +287,24 @@
 						</el-form-item>
 					</el-col>
 				</el-row>
-
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="addFormVisible = false">取消</el-button>
 				<el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
 			</div>
 		</el-dialog>
+
+		<div v-show="imagePreview.show" class="transition-box">
+			<transition name="el-zoom-in-top">
+			<img style="z-index: 9999" v-show="imagePreview.show" :src="imagePreview.src" :width="imagePreview.width" :height="imagePreview.height" @click="imagePreview.show = false">
+			</transition>
+		</div>
+
 	</section>
 </template>
 
 <script>
+    import fancyBox from 'vue-fancybox';
 	import util from '../../common/js/util'
 	import Vue from 'vue'
 	import NProgress from 'nprogress'
@@ -306,6 +313,12 @@
 	export default {
 		data() {
 			return {
+			    imagePreview:{
+                    show:false,
+			        width:300,
+					height:300,
+					src:''
+				},
                 showMoreQueryCondition:false,
                 imgs: [],
 				is_packed:codemaster.WM_IS_PACKED,
@@ -404,7 +417,14 @@
                 fileList:[]
 			}
 		},
+
 		methods: {
+            showNormalPic(imgNormal){
+                this.imagePreview.show = true;
+                this.imagePreview.src = imgNormal.fittingSkuPicUrl;
+                this.imagePreview.width = imgNormal.width*(document.body.scrollHeight-60)/imgNormal.height;
+                this.imagePreview.height = document.body.scrollHeight-60 ;
+			},
             reset(){
                 this.$refs['queryForm'].resetFields();
             },
@@ -697,5 +717,16 @@
 	}
 	.clearfix:after {
 		clear: both
+	}
+	.transition-box {
+		text-align:center;
+		position:absolute;
+		top:0;
+		bottom:0;
+		left:0;
+		right:0;
+		background:#000;
+		opacity:1;
+		z-index: 4444;
 	}
 </style>
