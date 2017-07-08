@@ -304,7 +304,6 @@
 </template>
 
 <script>
-    import fancyBox from 'vue-fancybox';
 	import util from '../../common/js/util'
 	import Vue from 'vue'
 	import NProgress from 'nprogress'
@@ -422,8 +421,8 @@
             showNormalPic(imgNormal){
                 this.imagePreview.show = true;
                 this.imagePreview.src = imgNormal.fittingSkuPicUrl;
-                this.imagePreview.width = imgNormal.width*(document.body.scrollHeight-60)/imgNormal.height;
-                this.imagePreview.height = document.body.scrollHeight-60 ;
+                this.imagePreview.width = imgNormal.width*(document.documentElement.clientHeight-60)/imgNormal.height;
+                this.imagePreview.height = document.documentElement.clientHeight-60 ;
 			},
             reset(){
                 this.$refs['queryForm'].resetFields();
