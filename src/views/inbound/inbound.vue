@@ -11,7 +11,7 @@
 					<popwin-button popKey="POP_CUSTOMER"  :selectValue="filters.supplierCode"  @changeValue="changeFilterForSupplierCode"></popwin-button>
 				</el-form-item>
 				<el-form-item label="状态" prop="status">
-					<el-select v-model="filters.status" clearable  placeholder="请选择">
+					<el-select v-model="filters.status" clearable  placeholder="请选择 ">
 						<el-option
 								v-for="item in status"
 								:key="item.code"
