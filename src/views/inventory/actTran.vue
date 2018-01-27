@@ -34,12 +34,13 @@
                     <!--<el-input v-model="orderHeader.auditStatus" auto-complete="off"></el-input>-->
                 </el-form-item>
 
-                        <el-button type="primary" icon="caret-bottom" v-on:click="showMoreConditionHandeler"></el-button>
+                        <el-button type="primary" class="el-icon-caret-bottom" v-on:click="showMoreConditionHandeler"></el-button>
                         <el-button type="danger" style="float: right"  @click="reset">重置</el-button>
                         <el-button type="primary" style="float: right" v-on:click="getRecords">查询</el-button>
 
 
                 </el-row>
+				<transition name="el-zoom-in-top">
                 <el-row :gutter="0" v-if="showMoreQueryCondition">
                 <el-form-item label="记录时间从" prop="tranTimeFm">
                     <el-date-picker
@@ -58,11 +59,12 @@
                     <!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
                 </el-form-item>
                 </el-row>
+				</transition>
             </el-form>
 		</el-col>
 
 		<!--列表-->
-		<el-table :data="records" highlight-current-row v-loading="listLoading" @selection-change="selsChange" stripe style="width: 100%;">
+		<el-table :data="records" border highlight-current-row v-loading="listLoading" @selection-change="selsChange" stripe style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
 			<!--<el-table-column prop="id" label="id" width="80" sortable>-->
@@ -94,6 +96,10 @@
 			<el-table-column prop="fmQtyBefore" label="操作前库存" width="250" >
 			</el-table-column>
 			<el-table-column prop="fmQtyAfter" label="操作后库存" width="250" >
+			</el-table-column>
+			<el-table-column prop="cost" label="成本" width="250" >
+			</el-table-column>
+			<el-table-column prop="price" label="价值" width="250" >
 			</el-table-column>
 			<el-table-column prop="toSku" label="目标产品" width="200" >
 			</el-table-column>

@@ -11,6 +11,8 @@ export const getInboundOrderListPage = params => { return axios.get(`/xibin/inbo
 
 export const getInboundDetailListPage = params => { return axios.get(`/xibin/inbound/showAllInboundDetail.shtml`, { params: params }); };
 
+export const showAllClosedOrderInboundDetail = params => { return axios.get(`/xibin/inbound/showAllClosedOrderInboundDetail.shtml`, { params: params }); };
+
 export const getInboundRecListPage = params => { return axios.get(`/xibin/inbound/showAllInboundRecieve.shtml`, { params: params }); };
 // export const removeFittingSku = params => { return axios.get(`/xibin/fittingSku/removeFittingSku.shtml`, { params: params }); };
 //
@@ -23,6 +25,14 @@ export const remove = params => { return axios.post(`/xibin/inbound/remove.shtml
 }} ).then(res => res); };
 
 export const audit = params => { return axios.post(`/xibin/inbound/audit.shtml`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
+
+export const close = params => { return axios.post(`/xibin/inbound/close.shtml`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
+
+export const createVoucher = params => { return axios.post(`/xibin/inbound/createVoucher.shtml`,qs.stringify(params),{headers: {
     'Content-Type': 'application/x-www-form-urlencoded',
 }} ).then(res => res); };
 
@@ -39,6 +49,12 @@ export const receive = params => { return axios.get(`/xibin/inbound/receive.shtm
 export const cancelReceive = params => { return axios.get(`/xibin/inbound/cancelReceive.shtml`, { params: params }); };
 //
 export const getInboundOrderHeader = params => { return axios.get(`/xibin/inbound/getInboundHeaderByOderNo.shtml`, { params: params }); };
+
+export const accountByOrderNo = params => { return axios.get(`/xibin/inbound/accountByOrderNo.shtml`, { params: params }); };
+
+export const accountByOrderNos = params => { return axios.post(`/xibin/inbound/accountByOrderNos.shtml`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
 //
 // export const removeFittingSkuPic = params => { return axios.get(`/xibin/fittingSku/removeFittingSkuPic.shtml`, { params: params }); };
 

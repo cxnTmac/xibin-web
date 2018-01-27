@@ -7,7 +7,6 @@ export default {
         console.log(Vue);
         console.log(popwin);
         function loginPopWin(msg, options = {}) {
-            debugger
             let popwin = new CONSTRUCTOR
             let vm = popwin.$mount()
             document.querySelector('body').appendChild(vm.$el)

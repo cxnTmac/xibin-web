@@ -11,6 +11,8 @@
             </el-col>
             <el-col :span="4" class="userinfo">
                 <el-dropdown trigger="hover">
+                    <span class="el-dropdown-link userinfo-inner">{{bookName}}</span>
+                    <span class="el-dropdown-link userinfo-inner">{{currentPeriod}}期</span>
                     <span class="el-dropdown-link userinfo-inner"><img :src="this.sysUserAvatar" /> {{sysUserName}}</span>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item>我的消息</el-dropdown-item>
@@ -80,6 +82,8 @@
 				collapsed:false,
 				sysUserName: '',
 				sysUserAvatar: '',
+                currentPeriod:'',
+                bookName:'',
 				form: {
 					name: '',
 					region: '',
@@ -142,6 +146,8 @@
 			var user = sessionStorage.getItem('user');
 			if (user) {
 				user = JSON.parse(user);
+				this.currentPeriod =  user.currentPeriod;
+				this.bookName = user.bookName;
 				this.sysUserName = user.userName || '';
 				//this.sysUserAvatar = user.avatar || '';
                 this.sysUserAvatar = 'static/logo/Lucian.jpg'

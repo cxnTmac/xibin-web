@@ -21,6 +21,17 @@ import outbound from './views/outbound/outbound.vue'
 import outboundDetail from './views/outbound/outboundDetail.vue'
 import inventory from './views/inventory/inventory.vue'
 import actTran from './views/inventory/actTran.vue'
+import createVoucherByInbound from './views/finace/createVoucherByInbound.vue'
+import createVoucherByOutbound from './views/finace/createVoucherByOutbound.vue'
+import financeHome from './views/finace/financeHome.vue'
+import course from './views/finace/course.vue'
+import voucher from './views/finace/voucher.vue'
+import voucherDetail from './views/finace/voucherDetail.vue'
+import generalLedger from './views/finace/generalLedger.vue'
+import accountBalance from './views/finace/accountBalance.vue'
+import credentialSummary from './views/finace/credentialSummary.vue'
+import assembleOrder from './views/assemble/assembleOrder.vue'
+import assembleDetail from './views/assemble/assembleDetail.vue'
 import echarts from './views/charts/echarts.vue'
 
 let routes = [
@@ -121,6 +132,41 @@ let routes = [
         children: [
             { path: '/inventory', component: inventory, name: '库存查询'},
             { path: '/actTran', component: actTran, name: '库存记录查询'}
+        ]
+    },
+    {
+        path: '/',
+        component: Home,
+        name: '组装',
+        iconCls: 'el-icon-message',//图标样式class
+        children: [
+            { path: '/assembleOrder', component: assembleOrder, name: '组装订单'},
+            { path: '/assembleDetail', component: assembleDetail, name: '组装单详细',hidden:true}
+        ]
+    },
+    {
+        path: '/',
+        component: Home,
+        name: '财务',
+        iconCls: 'el-icon-message',//图标样式class
+        children: [
+            { path: '/financeHome', component: financeHome, name: '财务首页'},
+            { path: '/createVoucherByInbound', component: createVoucherByInbound, name: '生成入库凭证'},
+            { path: '/createVoucherByOutbound', component: createVoucherByOutbound, name: '生成出库凭证'},
+            { path: '/course', component: course, name: '科目'},
+            { path: '/voucher', component: voucher, name: '凭证'},
+            { path: '/voucherDetail', component: voucherDetail, name: '凭证分录',hidden:true}
+        ]
+    },
+    {
+        path: '/',
+        component: Home,
+        name: '财务账簿',
+        iconCls: 'el-icon-message',//图标样式class
+        children: [
+            { path: '/generalLedger', component: generalLedger, name: '总账'},
+            { path: '/accountBalance', component: accountBalance, name: '科目余额表'},
+            { path: '/credentialSummary', component: credentialSummary, name: '凭证汇总表'}
         ]
     },
     {

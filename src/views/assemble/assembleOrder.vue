@@ -7,11 +7,8 @@
 				<el-form-item label="订单号" prop="orderNo">
 					<el-input v-model="filters.orderNo" placeholder="订单号"></el-input>
 				</el-form-item>
-				<el-form-item label="客户" prop="buyerCode">
-					<popwin-button popKey="POP_CUSTOMER"  :showName="true" :selectValue="filters.buyerCode" v-model="filters.buyerCode"></popwin-button>
-				</el-form-item>
 				<el-form-item label="状态" prop="status">
-					<el-select v-model="filters.status" clearable  placeholder="请选择">
+					<el-select v-model="filters.status" clearable  placeholder="请选择 ">
 						<el-option
 								v-for="item in status"
 								:key="item.code"
@@ -23,16 +20,10 @@
 					</el-select>
 					<!--<el-input v-model="orderHeader.auditStatus" auto-complete="off"></el-input>-->
 				</el-form-item>
-					    <el-button type="primary" class="el-icon-caret-bottom" v-on:click="showMoreConditionHandler"></el-button>
-						<el-button type="danger" style="float: right"  @click="reset">重置</el-button>
-						<el-button type="primary" style="float: right" v-on:click="getOrders">查询</el-button>
-				</el-row>
-				<transition name="el-zoom-in-top">
-				<el-row :gutter="0" v-if="showMoreQueryCondition">
-					<el-form-item label="订单类别" prop="outboundType">
-						<el-select v-model="filters.outboundType" clearable  placeholder="请选择">
+					<el-form-item label="加工类别" prop="assembleType">
+						<el-select v-model="filters.assembleType" clearable  placeholder="请选择">
 							<el-option
-									v-for="item in type"
+									v-for="item in assembleType"
 									:key="item.code"
 									:label="item.name"
 									:value="item.code">
@@ -42,6 +33,13 @@
 						</el-select>
 						<!--<el-input v-model="orderHeader.auditStatus" auto-complete="off"></el-input>-->
 					</el-form-item>
+					<el-button type="primary" class="el-icon-caret-bottom" v-on:click="showMoreConditionHandler"></el-button>
+					<el-button type="danger" style="float: right"  @click="reset">重置</el-button>
+					<el-button type="primary" style="float: right" v-on:click="getOrders">查询</el-button>
+				</el-row>
+				<transition name="el-zoom-in-top">
+				<el-row :gutter="0" v-if="showMoreQueryCondition">
+
 					<el-form-item label="订单时间从" prop="orderTimeFm">
 						<el-date-picker
 								v-model="filters.orderTimeFm"
@@ -69,25 +67,17 @@
 			</el-table-column>
 			<el-table-column prop="id" label="id" width="80" sortable>
 			</el-table-column>
-			<el-table-column prop="orderNo" label="出库单号" width="200" sortable>
-			</el-table-column>
-			<el-table-column prop="buyerCode" label="客户编码" width="200" sortable>
-			</el-table-column>
-			<el-table-column prop="supplierName" label="客户名称" width="200" sortable>
+			<el-table-column prop="orderNo" label="加工单号" width="200" sortable>
 			</el-table-column>
 			<el-table-column prop="status" label="状态" width="200" sortable :formatter="formatStatus">
 			</el-table-column>
 			<el-table-column prop="auditStatus" label="审核状态" width="200" sortable :formatter="formatAuditStatus">
 			</el-table-column>
-			<el-table-column prop="outboundType" label="出库单类型" width="200" sortable :formatter="formatOutboundType">
+			<el-table-column prop="assembleType" label="加工类型" width="200" sortable :formatter="formatAssembleType">
 			</el-table-column>
-			<el-table-column prop="auditTime" label="审核时间" width="200" sortable :formatter="formatAuditTime">
+			<el-table-column prop="auditDate" label="审核时间" width="200" sortable :formatter="formatAuditTime">
 			</el-table-column>
 			<el-table-column prop="orderTime" label="订单时间" width="200" sortable :formatter="formatOrderTime">
-			</el-table-column>
-			<el-table-column prop="isCalculated" label="是否核算" width="200" >
-			</el-table-column>
-			<el-table-column prop="calculate_time" label="核算时间" width="200">
 			</el-table-column>
 			<el-table-column prop="remark" label="备注" >
 			</el-table-column>
@@ -105,7 +95,7 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
 			<el-button type="primary" @click="handleAdd">新增</el-button>
-			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
+			<!--<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>-->
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="size" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
@@ -115,24 +105,23 @@
 </template>
 
 <script>
-    import Vue from 'vue'
 	import util from '../../common/js/util'
 	//import NProgress from 'nprogress'
-	import { getOutboundOrderListPage,remove} from '../../api/outboundApi';
+	import { getInboundOrderListPage,remove} from '../../api/inboundApi';
+    import { getAssembleOrderListPage} from '../../api/assembleApi';
     var codemaster = require('../../../static/codemaster.json');
 	export default {
 		data() {
 			return {
                 showMoreQueryCondition:false,
-			    status:codemaster.WM_OUTBOUND_STATUS,
-				type:codemaster.WM_OUTBOUND_TYPE,
+			    status:codemaster.WM_ASSEMBLE_STATUS,
+                assembleType:codemaster.WM_ASSEMBLE_TYPE,
 				filters: {
                     orderNo: '',
-                    buyerCode:'',
+                    status:'',
 					orderTimeFm:'',
 					orderTimeTo:'',
-					outboundType:'',
-                    status:''
+					assembleType:''
 				},
                 orders: [],
 				total: 0,
@@ -141,17 +130,16 @@
 				listLoading: false,
                 loading:true,
 				sels: [],//列表选中列
-
-
 			}
 		},
 		methods: {
             reset(){
                 this.$refs['queryForm'].resetFields();
-			},
+            },
             showMoreConditionHandler:function(){
                 this.showMoreQueryCondition = !this.showMoreQueryCondition;
             },
+
             formatOrderTime: function(row, column){
                 if(row.orderTime!==null) {
                     let unixTimestamp = new Date(row.orderTime)
@@ -159,16 +147,16 @@
                 }
             },
             formatAuditTime: function(row, column){
-                if(row.auditTime!==null){
-                    let unixTimestamp = new Date(row.auditTime)
+                if(row.auditDate!==null){
+                    let unixTimestamp = new Date(row.auditDate)
                     return util.formatDate.format(unixTimestamp,'yyyy-MM-dd hh:mm:ss');
 				}
             },
-            formatOutboundType: function (row, column) {
-                return util.getComboNameByValue(codemaster.WM_OUTBOUND_TYPE,row.outboundType);
+            formatAssembleType: function (row, column) {
+                return util.getComboNameByValue(codemaster.WM_ASSEMBLE_TYPE,row.assembleType);
             },
             formatStatus: function (row, column) {
-                return util.getComboNameByValue(codemaster.WM_OUTBOUND_STATUS,row.status);
+                return util.getComboNameByValue(codemaster.WM_ASSEMBLE_STATUS,row.status);
             },
             formatAuditStatus: function (row, column) {
                 return util.getComboNameByValue(codemaster.SYS_AUDIT_STATUS,row.auditStatus);
@@ -179,14 +167,14 @@
 			},
             //显示新增界面
             handleAdd: function () {
-                this.$store.commit('changeOutboundOrderNo', '')
-                this.$store.commit('changeOutboundStatus', 'ADD')
-                this.$router.push({ path: '/outboundDetail' });
+                this.$store.commit('changeAssembleOrderNo', '')
+                this.$store.commit('changeAssembleStatus', 'ADD')
+                this.$router.push({ path: '/assembleDetail' })
             },
             handleEdit:function(index,row){
-                this.$store.commit('changeOutboundOrderNo', row.orderNo)
-                this.$store.commit('changeOutboundStatus', 'EDIT')
-                this.$router.push({ path: '/outboundDetail' });
+                this.$store.commit('changeAssembleOrderNo', row.orderNo)
+                this.$store.commit('changeAssembleStatus', 'EDIT')
+                this.$router.push({ path: '/assembleDetail' })
 			},
 			//获取用户列表
             getOrders() {
@@ -200,7 +188,7 @@
 
 				this.listLoading = true;
 				//NProgress.start();
-                getOutboundOrderListPage(para).then((res) => {
+                getAssembleOrderListPage(para).then((res) => {
 					this.total = res.data.size;
 					this.orders = res.data.list;
 					this.listLoading = false;
@@ -208,20 +196,20 @@
 				}).catch((data) => {
                     this.listLoading = false;
                     util.errorCallBack(data,this.$router,this.$message);
-                });;
+                });
 			},
 			//删除
 			handleDel: function (index, row) {
-                this.$confirm('确认删除该记录吗?', '提示', {
-                    type: 'warning'
-                }).then(() => {
-                    this.listLoading = true;
-                    //NProgress.start();
-                    let para = {orderNos:[row.orderNo].join(',')};
+				this.$confirm('确认删除该记录吗?', '提示', {
+					type: 'warning'
+				}).then(() => {
+					this.listLoading = true;
+					//NProgress.start();
+					let para = {orderNos:[row.orderNo].join(',')};
                     remove(para).then((res) => {
-                        this.listLoading = false;
-                        debugger
-                        //NProgress.done();
+						this.listLoading = false;
+						debugger
+						//NProgress.done();
                         if(res.data.code == 200){
                             this.$message({
                                 message: res.data.msg,
@@ -232,41 +220,14 @@
                             this.$message.error(res.data.msg);
                         }
 
-                    }).catch((data) => {
+					}).catch((data) => {
                         this.listLoading = false;
                         util.errorCallBack(data,this.$router,this.$message);
                     });
-                })
+				})
 			},
 			selsChange: function (sels) {
 				this.sels = sels;
-			},
-			//批量删除
-			batchRemove: function () {
-//				var ids = this.sels.map(item => item.id).join(",");
-//				var fittingTypeCodes = this.sels.map(item => item.fittingTypeCode).join(",");
-//				this.$confirm('确认删除选中记录吗？', '提示', {
-//					type: 'warning'
-//				}).then(() => {
-//					this.listLoading = true;
-//					//NProgress.start();
-//					let para = { ids: ids ,fittingTypeCodes:fittingTypeCodes};
-//                    batchRemoveFittingType(para).then((res) => {
-//						this.listLoading = false;
-//                        if(res.data.code == 200){
-//                            this.$message({
-//                                message: res.data.msg,
-//                                type: 'success'
-//                            });
-//                        }else{
-//                            this.$message.error(res.data.msg);
-//                        }
-//
-//						this.getFittingTypes();
-//					});
-//				}).catch(() => {
-//
-//				});
 			}
 		},
 		mounted() {

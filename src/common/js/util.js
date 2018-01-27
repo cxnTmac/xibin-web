@@ -1,6 +1,6 @@
 var SIGN_REGEXP = /([yMdhsm])(\1*)/g;
 var DEFAULT_PATTERN = 'yyyy-MM-dd';
-import ElementUI from 'element-ui';
+// import ElementUI from 'element-ui';
 import Vue from 'vue';
 function padding(s, len) {
     var len = len - (s + '').length;
@@ -43,17 +43,16 @@ export default {
     errorCallBack:function(data,router,$message){
         if(data.response.status == 401){
             Vue.loginPopWin();
-            // $message({
-            //     message: "登陆超时，请重新登陆",
-            //     type: 'error'
-            // });
-            // router.push({ path: '/Login' });
-            // console.log("session过期");
         }
     },
+    isNullOrUndefined:function (value) {
+      if(value === undefined||value === null){
+          return true
+      } else{
+          return false
+      }
+    },
     formatDate: {
-
-
         format: function (date, pattern) {
             pattern = pattern || DEFAULT_PATTERN;
             return pattern.replace(SIGN_REGEXP, function ($0) {

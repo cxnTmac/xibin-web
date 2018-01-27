@@ -4,7 +4,8 @@ import * as actions from './actions'
 import * as getters from './getters'
 import inboundDetail from './modules/inboundDetail/inboundDetail'
 import outboundDetail from './modules/outboundDetail/outboundDetail'
-
+import voucherDetail from './modules/voucherDetail/voucherDetail'
+import assembleDetail from './modules/assembleDetail/assembleDetail'
 
 Vue.use(Vuex)
 
@@ -14,6 +15,8 @@ export default new Vuex.Store({
     getters,
     modules: {
         'inboundDetail': inboundDetail,
-        'outboundDetail': outboundDetail
+        'outboundDetail': outboundDetail,
+        'voucherDetail': voucherDetail,
+        'assembleDetail': assembleDetail
     }
 })

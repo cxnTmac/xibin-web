@@ -46,6 +46,10 @@ export const ship = params => { return axios.get(`/xibin/outbound/shipByAlloc.sh
 
 export const cancelShip = params => { return axios.get(`/xibin/outbound/cancelShipByAlloc.shtml`, { params: params }); };
 
+export const close = params => { return axios.post(`/xibin/outbound/close.shtml`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
+
 export const pick = params => { return axios.get(`/xibin/outbound/pickByAlloc.shtml`, { params: params }); };
 
 export const cancelPick = params => { return axios.get(`/xibin/outbound/cancelPickByAlloc.shtml`, { params: params }); };
@@ -55,6 +59,27 @@ export const saveOutboundOrder = params => { return axios.get(`/xibin/outbound/s
 export const saveOutboundDetail = params => { return axios.get(`/xibin/outbound/saveOutboundDetail.shtml`, { params: params }); };
 
 export const getOutboundOrderHeader = params => { return axios.get(`/xibin/outbound/getOutboundHeaderByOderNo.shtml`, { params: params }); };
+
+export const queryHistoryPrice = params => { return axios.get(`/xibin/outbound/queryHistoryPrice.shtml`, { params: params }); };
+
+export const batchSaveOutboundDetail = params => { return axios.post(`/xibin/outbound/batchSaveOutboundDetail.shtml`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
+
+export const showAllClosedOrderOutboundDetail = params => { return axios.get(`/xibin/outbound/showAllClosedOrderOutboundDetail.shtml`, { params: params }); };
+
+export const accountByOrderNo = params => { return axios.get(`/xibin/outbound/accountByOrderNo.shtml`, { params: params }); };
+
+export const accountByOrderNos = params => { return axios.post(`/xibin/outbound/accountByOrderNos.shtml`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
+
+
+export const accountCostByOrderNo = params => { return axios.get(`/xibin/outbound/accountCostByOrderNo.shtml`, { params: params }); };
+
+export const accountCostByOrderNos = params => { return axios.post(`/xibin/outbound/accountCostByOrderNos.shtml`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
 
 // export const receive = params => { return axios.get(`/xibin/outbound/receive.shtml`, { params: params }); };
 //

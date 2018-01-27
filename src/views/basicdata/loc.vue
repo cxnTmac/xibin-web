@@ -8,7 +8,7 @@
 					<el-input v-model="filters.locCode" placeholder="库位编码"></el-input>
 				</el-form-item>
 				<el-form-item label="所属库区" prop="zoneCode">
-					<popwin-button popKey="POP_ZONE"  :selectValue="filters.zoneCode"  @changeValue="changeFilterForZoneCode"></popwin-button>
+					<popwin-button popKey="POP_ZONE" :showName="true" :selectValue="filters.zoneCode" v-model="filters.zoneCode"></popwin-button>
 				</el-form-item>
 				<el-form-item label="库位使用类型" prop="useType">
 					<el-select v-model="filters.useType" clearable  placeholder="请选择">
@@ -23,10 +23,11 @@
 					</el-select>
 					<!--<el-input v-model="orderHeader.auditStatus" auto-complete="off"></el-input>-->
 				</el-form-item>
-				<el-button type="primary" icon="caret-bottom" v-on:click="showMoreConditionHandler"></el-button>
+				<el-button type="primary" class="el-icon-caret-bottom" v-on:click="showMoreConditionHandler"></el-button>
 				<el-button type="danger" style="float: right"  @click="reset">重置</el-button>
 				<el-button type="primary" style="float: right" v-on:click="getRecords">查询</el-button>
 				</el-row>
+				<transition name="el-zoom-in-top">
 				<el-row :gutter="0" v-if="showMoreQueryCondition">
 					<el-form-item label="库位类型" prop="locType">
 						<el-select v-model="filters.locType" clearable  placeholder="请选择">
@@ -42,11 +43,12 @@
 						<!--<el-input v-model="orderHeader.auditStatus" auto-complete="off"></el-input>-->
 					</el-form-item>
 				</el-row>
+				</transition>
 			</el-form>
 		</el-col>
 
 		<!--列表-->
-		<el-table :data="records" highlight-current-row v-loading="listLoading" @selection-change="selsChange" stripe style="width: 100%;">
+		<el-table :data="records" border highlight-current-row v-loading="listLoading" @selection-change="selsChange" stripe style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
 			<el-table-column prop="id" label="id" width="80" sortable>
@@ -83,7 +85,7 @@
 		</el-col>
 
 		<!--新增界面-->
-		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
+		<el-dialog title="新增" :visible.sync="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
 				<el-row :gutter="0">
 					<el-col :span="12">
@@ -95,7 +97,7 @@
 				<el-row :gutter="0">
 					<el-col :span="12">
 						<el-form-item label="所属库区" prop="zoneCode">
-							<popwin-button popKey="POP_ZONE" :selectValue="addForm.zoneCode" @changeValue="changeAddPopValueForZoneCode"></popwin-button>
+							<popwin-button popKey="POP_ZONE" :selectValue="addForm.zoneCode" v-model="addForm.zoneCode"></popwin-button>
 						</el-form-item>
 					</el-col>
 				</el-row>
@@ -141,7 +143,7 @@
 
 
 		<!--编辑界面-->
-		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
+		<el-dialog title="编辑" :visible.sync="editFormVisible" :close-on-click-modal="false">
 			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
 				<el-row :gutter="0">
 					<el-col :span="12">
@@ -153,7 +155,7 @@
 				<el-row :gutter="0">
 					<el-col :span="12">
 						<el-form-item label="所属库区" prop="zoneCode">
-							<popwin-button popKey="POP_ZONE" :selectValue="editForm.zoneCode" @changeValue="changeEditPopValueForZoneCode"></popwin-button>
+							<popwin-button popKey="POP_ZONE" :selectValue="editForm.zoneCode" v-model="editForm.zoneCode" ></popwin-button>
 						</el-form-item>
 					</el-col>
 				</el-row>
@@ -292,15 +294,6 @@
             },
             showMoreConditionHandler:function(){
                 this.showMoreQueryCondition = !this.showMoreQueryCondition;
-            },
-            changeFilterForZoneCode:function(value){
-                this.filters.zoneCode = value[0];
-			},
-            changeAddPopValueForZoneCode:function(value){
-                this.addForm.zoneCode = value[0];
-            },
-            changeEditPopValueForZoneCode:function(value){
-                this.editForm.zoneCode = value[0];
             },
             formatUseType: function (row, column) {
                 return util.getComboNameByValue(codemaster.WM_USE_TYPE,row.useType);

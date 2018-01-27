@@ -1,11 +1,21 @@
 <template>
 	<section>
+		<el-steps :active="active" finish-status="success" style="margin-top: 20px;margin-bottom: 20px">
+			<el-step title="创建订单"></el-step>
+			<el-step title="完成审核（可取消）"></el-step>
+			<el-step title="完成收货（可取消）"></el-step>
+			<el-step title="关闭订单"></el-step>
+			<el-step title="完成入库核算"></el-step>
+		</el-steps>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
 				<el-button type="primary" :disabled="btnAuditStatus" @click="audit" :loading="pageControl.auditBtnLoading">审核</el-button>
 				<el-button type="primary" :disabled="btnCancelAuditStatus" @click="cancelAudit" :loading="pageControl.cancelAuditBtnLoading">取消审核</el-button>
+				<el-button type="danger" :disabled="btnCloseStatus" @click="close" :loading="pageControl.closeBtnLoading">关闭订单</el-button>
+				<el-button type="success" :disabled="btnAccountStatus" @click="account" :loading="pageControl.accountBtnLoading">核算订单</el-button>
 			<el-button  @click="back" style="float: right">返回</el-button>
 		</el-col>
+
 		<el-form :model="orderHeader" label-width="80px" :rules="orderHeaderRules" ref="orderHeader">
 			<el-card class="box-card">
 				<div slot="header" class="clearfix">
@@ -23,7 +33,7 @@
 					</el-col>
 					<el-col :span="6">
 						<el-form-item label="货主" prop="supplierCode">
-							<popwin-button popKey="POP_CUSTOMER" :selectValue="orderHeader.supplierCode" @changeValue="changePopValueForSupplierCode"></popwin-button>
+							<popwin-button popKey="POP_CUSTOMER" :selectValue="orderHeader.supplierCode" v-model="orderHeader.supplierCode"></popwin-button>
 							<!--<el-input v-model="orderHeader.supplierCode" auto-complete="off"></el-input>-->
 						</el-form-item>
 					</el-col>
@@ -113,7 +123,7 @@
 				<div slot="header" class="clearfix">
 					<span style="line-height: 15px;">入库单明细</span>
 				</div>
-				<el-table :data="detailGrid.orderDetail" highlight-current-row v-loading="detailGrid.listLoading" @selection-change="selsChange" stripe style="width: 100%;">
+				<el-table :data="detailGrid.orderDetail" border highlight-current-row v-loading="detailGrid.listLoading" @selection-change="selsChange" stripe style="width: 100%;">
 					<el-table-column type="selection" width="55">
 					</el-table-column>
 					<el-table-column prop="lineNo" label="行号" width="100" sortable>
@@ -135,6 +145,10 @@
 					<el-table-column prop="inboundPrice" label="收货价格" width="200">
 					</el-table-column>
 					<el-table-column prop="planLoc" label="计划库位" width="200">
+					</el-table-column>
+					<el-table-column prop="isCreatedVoucher" label="是否已生成凭证" width="200">
+					</el-table-column>
+					<el-table-column prop="voucherNo" label="凭证号" width="200">
 					</el-table-column>
 					<el-table-column prop="remark" label="备注" >
 					</el-table-column>
@@ -162,7 +176,7 @@
 				<div slot="header" class="clearfix">
 					<span style="line-height: 15px;">入库单收货明细</span>
 				</div>
-				<el-table :data="detailReceiveGrid.orderDetailReceive" highlight-current-row v-loading="detailReceiveGrid.listLoading" @selection-change="recSelsChange" stripe style="width: 100%;">
+				<el-table :data="detailReceiveGrid.orderDetailReceive" border highlight-current-row v-loading="detailReceiveGrid.listLoading" @selection-change="recSelsChange" stripe style="width: 100%;">
 					<el-table-column type="selection" width="55">
 					</el-table-column>
 					<el-table-column prop="lineNo" label="行号" width="100" sortable>
@@ -216,17 +230,17 @@
 
 
 		<!--编辑界面-->
-		<el-dialog title="编辑" v-model="pageControl.editFormVisible" :close-on-click-modal="false">
+		<el-dialog title="编辑" :visible.sync="pageControl.editFormVisible" :close-on-click-modal="false">
 			<el-form :model="detailGrid.editForm" label-width="80px" :rules="detailGrid.editFormRules" ref="editForm">
 				<el-row :gutter="0">
 					<el-col :span="12">
 						<el-form-item label="货主" prop="supplierCode">
-							<popwin-button popKey="POP_CUSTOMER" :disabled="true" :selectValue="detailGrid.editForm.supplierCode" @changeValue="changeEditPopValueForSupplierCode"></popwin-button>
+							<popwin-button popKey="POP_CUSTOMER" :disabled="true" :selectValue="detailGrid.editForm.supplierCode" v-model="detailGrid.editForm.supplierCode"></popwin-button>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="产品" prop="skuCode">
-							<popwin-button popKey="POP_SKU" :selectValue="detailGrid.editForm.skuCode"  @changeValue="changeEditPopValueForSkuCode"></popwin-button>
+							<popwin-button popKey="POP_SKU" :selectValue="detailGrid.editForm.skuCode" v-model="detailGrid.editForm.skuCode"></popwin-button>
 						</el-form-item>
 					</el-col>
 				</el-row>
@@ -267,7 +281,7 @@
 				<el-row :gutter="0">
 					<el-col :span="12">
 						<el-form-item label="计划库位" prop="planLoc">
-							<popwin-button popKey="POP_LOC" :selectValue="detailGrid.editForm.planLoc"  @changeValue="changeEditPopValueForPlanLoc"></popwin-button>
+							<popwin-button popKey="POP_LOC" :selectValue="detailGrid.editForm.planLoc" v-model="detailGrid.editForm.planLoc"></popwin-button>
 							<!--<el-input v-model="detailGrid.editForm.planLoc" auto-complete="off"></el-input>-->
 						</el-form-item>
 					</el-col>
@@ -289,17 +303,17 @@
 
 
 		<!--编辑界面-->
-		<el-dialog title="编辑" v-model="pageControl.recEditFormVisible" :close-on-click-modal="false">
+		<el-dialog title="编辑" :visible.sync="pageControl.recEditFormVisible" :close-on-click-modal="false">
 			<el-form :model="detailReceiveGrid.editForm" label-width="80px" :rules="detailReceiveGrid.editFormRules" ref="recEditForm">
 				<el-row :gutter="0">
 					<el-col :span="12">
 						<el-form-item label="货主" prop="supplierCode">
-							<popwin-button popKey="POP_CUSTOMER" :disabled="true" :selectValue="detailReceiveGrid.editForm.supplierCode" @changeValue="changeRecEditPopValueForSupplierCode"></popwin-button>
+							<popwin-button popKey="POP_CUSTOMER" :disabled="true" :selectValue="detailReceiveGrid.editForm.supplierCode" v-model="detailReceiveGrid.editForm.supplierCode"></popwin-button>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="产品" prop="skuCode">
-							<popwin-button popKey="POP_SKU" :selectValue="detailReceiveGrid.editForm.skuCode" :disabled="true" @changeValue="changeRecEditPopValueForSkuCode"></popwin-button>
+							<popwin-button popKey="POP_SKU" :selectValue="detailReceiveGrid.editForm.skuCode" :disabled="true" v-model="detailReceiveGrid.editForm.skuCode"></popwin-button>
 						</el-form-item>
 					</el-col>
 				</el-row>
@@ -339,13 +353,13 @@
 				<el-row :gutter="0">
 					<el-col :span="12">
 						<el-form-item label="计划库位" prop="planLoc">
-							<popwin-button popKey="POP_LOC" :selectValue="detailReceiveGrid.editForm.planLoc" :disabled="true" @changeValue="changeRecevieEditPopValueForPlanLoc"></popwin-button>
+							<popwin-button popKey="POP_LOC" :selectValue="detailReceiveGrid.editForm.planLoc" :disabled="true" v-model="detailReceiveGrid.editForm.planLoc"></popwin-button>
 							<!--<el-input v-model="detailGrid.editForm.planLoc" auto-complete="off"></el-input>-->
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="实际库位" prop="inboundLocCode">
-							<popwin-button popKey="POP_LOC" :selectValue="detailReceiveGrid.editForm.inboundLocCode" @changeValue="changeRecevieEditPopValueForInboundLoc"></popwin-button>
+							<popwin-button popKey="POP_LOC" :selectValue="detailReceiveGrid.editForm.inboundLocCode" v-model="detailReceiveGrid.editForm.inboundLocCode" ></popwin-button>
 							<!--<el-input v-model="detailGrid.editForm.planLoc" auto-complete="off"></el-input>-->
 						</el-form-item>
 					</el-col>
@@ -370,7 +384,7 @@
 <script>
 	import util from '../../common/js/util'
 	import NProgress from 'nprogress'
-	import { getInboundOrderListPage, saveInboundOrder, getInboundOrderHeader,getInboundDetailListPage,saveInboundDetail,removeInboundDetail,getInboundRecListPage,receive,cancelReceive,audit,cancelAudit} from '../../api/inboundApi';
+	import { getInboundOrderListPage, saveInboundOrder, getInboundOrderHeader,getInboundDetailListPage,saveInboundDetail,removeInboundDetail,getInboundRecListPage,receive,cancelReceive,audit,cancelAudit,close,accountByOrderNo} from '../../api/inboundApi';
     var codemaster = require('../../../static/codemaster.json');
 	export default {
 		data() {
@@ -385,6 +399,7 @@
 					auditStatus:'',
                     auditTime:'',
                     inboundType:'',
+                    isCalculated:'N',
                     remark:'',
                     creator:'',
                     createTime:'',
@@ -406,6 +421,8 @@
                         inboundNum:0,
                         inboundPrice:0,
                         planLoc:'',
+						isCreatedVoucher:'N',
+						voucherNo:'',
                         remark:'',
                         creator:'',
                         createTime:'',
@@ -444,7 +461,9 @@
                     editLoading:false,
                     recEditFormVisible:false,
                     recEditLoading:false,
-                    cancelRecEditLoading:false
+                    cancelRecEditLoading:false,
+                    closeBtnLoading:false,
+                    accountBtnLoading:false
 				},
 				detailReceiveGrid:{
                     editForm:{
@@ -505,6 +524,22 @@
 			}
 		},
         computed: {
+            active:function () {
+                if(this.orderHeader === undefined){
+                    return 1;
+                }
+				if(this.orderHeader.status === '00'&&this.orderHeader.auditStatus=== '00'){
+				    return 1;
+				}else if((this.orderHeader.status == '00'||this.orderHeader.status == '10')&&this.orderHeader.auditStatus!== '00'){
+                    return 2;
+				}else if(this.orderHeader.status == '20'){
+                    return 3;
+				}else if(this.orderHeader.status == '99'){
+                    return 4;
+                }else if(this.orderHeader.status == '30'){
+                    return 5;
+                }
+            },
             btnEditSubmitStatus:function(){
                 if(this.orderHeader.auditStatus === '00'){
                     return false;
@@ -540,7 +575,7 @@
 				}
 			},
             btnCancelRecEditStatus:function(){
-                if(this.orderHeader.auditStatus == '00'){
+                if(this.orderHeader.auditStatus == '00'||this.orderHeader.status == '99'){
                     return true;
                 }
                 if(this.detailReceiveGrid.editForm.status ===  '00'){
@@ -565,6 +600,22 @@
                     return true;
 				}
             },
+            btnCloseStatus:function(){
+                if(this.orderHeader.auditStatus === '00'){
+                    return true;
+                }else if(this.orderHeader.status === '20'){
+                    return false;
+                }else{
+                    return true;
+                }
+			},
+            btnAccountStatus:function () {
+                if(this.orderHeader.status === '99'){
+                    return false;
+                }else{
+                    return true;
+                }
+            },
             btnAuditStatus:function () {
                 if(this.orderHeader.id === ''){
                     return true;
@@ -583,27 +634,11 @@
 			}
         },
 		methods: {
-            changeEditPopValueForSupplierCode:function(value){
-                this.detailGrid.editForm.supplierCode = value[0];
-            },
-            changeEditPopValueForSkuCode:function(value){
-                this.detailGrid.editForm.skuCode = value[0];
-            },
-            changeRecEditPopValueForSupplierCode:function(value){
-                this.detailReceiveGrid.editForm.supplierCode = value[0];
-            },
-            changeRecEditPopValueForSkuCode:function(value){
-                this.detailReceiveGrid.editForm.skuCode = value[0];
-            },
-            changeEditPopValueForPlanLoc:function(value){
-                this.detailGrid.editForm.planLoc = value[0];
-            },
-            changeRecevieEditPopValueForPlanLoc:function(value){
-                this.detailReceiveGrid.editForm.planLoc = value[0];
-            },
-            changeRecevieEditPopValueForInboundLoc:function(value){
-                this.detailReceiveGrid.editForm.inboundLocCode = value[0];
-            },
+
+
+
+
+
             formatTime: function(row, column){
                 if(row[column.property]!==null) {
                     let unixTimestamp = new Date(row[column.property])
@@ -669,6 +704,7 @@
                                 this.pageControl.editFormVisible = false;
                                 this.getDetails();
                                 this.getDetailReceives();
+
                             }).catch((data) => {
                                 this.pageControl.editLoading = false;
                                 util.errorCallBack(data,this.$router,this.$message);
@@ -709,6 +745,47 @@
                         this.$message.error(res.data.msg);
                     }
                 }).catch((data) => {
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+			},
+            close(){
+			    this.pageControl.closeBtnLoading = true;
+
+                //NProgress.start();
+                let orderNos = [this.orderHeader.orderNo].join(',');
+                let para = { orderNos:orderNos};
+                close(para).then((res) => {
+                    this.pageControl.closeBtnLoading = false;
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: res.data.msg,
+                            type: 'success'
+                        });
+                        this.getOrder();
+                    }else{
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch((data) => {
+                    this.pageControl.closeBtnLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+            },
+			account(){
+                this.pageControl.accountBtnLoading= true;
+                let para = { orderNo:this.orderHeader.orderNo};
+                accountByOrderNo(para).then((res) => {
+                    this.pageControl.accountBtnLoading= false;
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: res.data.msg,
+                            type: 'success'
+                        });
+                        this.getOrder();
+                    }else{
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch((data) => {
+                    this.pageControl.accountBtnLoading= false;
                     util.errorCallBack(data,this.$router,this.$message);
                 });
 			},
@@ -765,9 +842,7 @@
                     util.errorCallBack(data,this.$router,this.$message);
                 });
 			},
-            changePopValueForSupplierCode(value){
-                this.orderHeader.supplierCode = value[0];
-			},
+
             back(){
                 this.$router.push({ path: '/inboundOrder' });
 			},
@@ -783,6 +858,8 @@
                     inboundNum:0,
                     inboundPrice:0,
                     planLoc:'',
+                    isCreatedVoucher:'N',
+                    voucherNo:'',
                     remark:'',
                     creator:'',
                     createTime:'',
@@ -912,6 +989,7 @@
                     auditStatus:'00',
 					auditTime:'',
 					inboundType:'',
+                    isCalculated:'N',
 					remark:'',
 					creator:'',
 					createTime:'',

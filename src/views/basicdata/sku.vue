@@ -5,7 +5,7 @@
 			<el-form :inline="true" :model="filters" ref="queryForm">
 				<el-row :gutter="0">
 					<el-form-item label="配件类型" prop="fittingTypeCode">
-						<popwin-button popKey="POP_FITTINGTYPE"  :selectValue="filters.fittingTypeCode"  @changeValue="changeFilterForFittingTypeCode"></popwin-button>
+						<popwin-button popKey="POP_FITTINGTYPE" :showName="true" :selectValue="filters.fittingTypeCode" v-model="filters.fittingTypeCode" ></popwin-button>
 					</el-form-item>
 					<el-form-item label="产品名称" prop="fittingSkuName">
 						<el-input v-model="filters.fittingSkuName" placeholder="产品名称"></el-input>
@@ -13,17 +13,22 @@
 					<el-form-item label="产品编码" prop="fittingSkuCode">
 						<el-input v-model="filters.fittingSkuCode" placeholder="产品编码"></el-input>
 					</el-form-item>
-					<el-button type="primary" icon="caret-bottom" v-on:click="showMoreConditionHandler"></el-button>
+					<el-form-item label="车型" prop="modelCode">
+						<el-input v-model="filters.modelCode" placeholder="车型"></el-input>
+					</el-form-item>
+					<el-button type="primary" class="el-icon-caret-bottom" v-on:click="showMoreConditionHandler"></el-button>
 					<el-button type="danger" style="float: right"  @click="reset">重置</el-button>
 					<el-button type="primary"  style="float: right" v-on:click="getSkus"><i class="el-icon-search el-icon--left"></i>查询</el-button>
 				</el-row>
+				<transition name="el-zoom-in-top">
 				<el-row :gutter="0" v-if="showMoreQueryCondition">
 				</el-row>
+				</transition>
 			</el-form>
 		</el-col>
 
 		<!--列表-->
-		<el-table :data="skus" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
+		<el-table :data="skus" border highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
 			<el-table-column prop="id" label="id" width="80" sortable>
@@ -33,6 +38,13 @@
 			<el-table-column prop="fittingSkuName" label="产品名称" width="120" sortable>
 			</el-table-column>
 			<el-table-column prop="modelCode" label="车型" width="120" >
+			</el-table-column>
+			<el-table-column prop="fittingSkuStatus" label="状态"  width="80" >
+				<template scope="scope">
+					<div slot="reference" class="name-wrapper">
+						<el-tag :type="getStatusTagType(scope.row)">{{ formateType(scope.row) }}</el-tag>
+					</div>
+				</template>
 			</el-table-column>
 			<el-table-column prop="fittingTypeCode" label="配件类别编码" width="120" >
 			</el-table-column>
@@ -64,8 +76,9 @@
 			<el-table-column prop="def5" label="自定义5" width="120" >
 			</el-table-column>
 
-			<el-table-column label="操作" fixed="right" min-width="270">
+			<el-table-column label="操作" fixed="right" min-width="430">
 				<template scope="scope">
+					<el-button type="success" size="small" @click="handleSetNew(scope.$index, scope.row)">设置为新品</el-button>
 					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)"><i class="el-icon-delete2 el-icon--left"></i>删除</el-button>
 					<el-button type="primary" size="small" @click="handlePicManager(scope.$index, scope.row)"><i class="el-icon-picture el-icon--left"></i>图片管理</el-button>
@@ -75,6 +88,7 @@
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
+
 			<el-button type="primary" @click="handleAdd"><i class="el-icon-plus el-icon--left"></i>新增</el-button>
 			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0"><i class="el-icon-delete2 el-icon--left"></i>批量删除</el-button>
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="size" :total="total" style="float:right;">
@@ -125,92 +139,164 @@
 			</el-tabs>
 		</el-dialog>
 		<!--编辑界面-->
-		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
-				<el-row :gutter="0">
-					<el-col :span="12">
-						<el-form-item label="产品编码" prop="fittingSkuCode">
-							<el-input v-model="editForm.fittingSkuCode" disabled="true" auto-complete="off"></el-input>
-						</el-form-item>
-					</el-col>
-					<el-col :span="12">
-						<el-form-item label="产品名称" prop="fittingSkuName">
-							<el-input v-model="editForm.fittingSkuName" auto-complete="off"></el-input>
-						</el-form-item>
-					</el-col>
-				</el-row>
-				<el-row :gutter="0">
-					<el-col :span="12">
-						<el-form-item label="产品备注" prop="fittingSkuRemark">
-							<el-input v-model="editForm.fittingSkuRemark" auto-complete="off"></el-input>
-						</el-form-item>
-					</el-col>
-					<el-col :span="12">
-						<el-form-item label="参考价格" prop="price">
-							<el-input-number v-model="editForm.price" auto-complete="off"></el-input-number>
-						</el-form-item>
-					</el-col>
-				</el-row>
-				<el-row :gutter="0">
-					<el-col :span="8">
-						<el-form-item label="生产厂家" prop="manufacturer">
-							<el-input v-model="editForm.manufacturer" auto-complete="off"></el-input>
-						</el-form-item>
-					</el-col>
-					<el-col :span="8">
-						<el-form-item label="材质" prop="materialquality">
-							<el-input v-model="editForm.materialquality" auto-complete="off"></el-input>
-						</el-form-item>
-					</el-col>
-					<el-col :span="8">
-						<el-form-item label="单位" prop="uomDesc">
-							<el-input v-model="editForm.uomDesc" auto-complete="off"></el-input>
-						</el-form-item>
-					</el-col>
+		<el-dialog title="编辑" :visible.sync="editFormVisible" :close-on-click-modal="false">
+			<el-tabs v-model="editFormActiveName"  @tab-click="assembleTabClick">
+				<el-tab-pane label="产品信息" name="first">
+					<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
+						<el-row :gutter="0">
+							<el-col :span="12">
+								<el-form-item label="产品编码" prop="fittingSkuCode">
+									<el-input v-model="editForm.fittingSkuCode" :disabled="true" auto-complete="off"></el-input>
+								</el-form-item>
+							</el-col>
+							<el-col :span="12">
+								<el-form-item label="产品名称" prop="fittingSkuName">
+									<el-input v-model="editForm.fittingSkuName" auto-complete="off"></el-input>
+								</el-form-item>
+							</el-col>
+						</el-row>
+						<el-row :gutter="0">
+							<el-col :span="12">
+								<el-form-item label="产品备注" prop="fittingSkuRemark">
+									<el-input v-model="editForm.fittingSkuRemark" auto-complete="off"></el-input>
+								</el-form-item>
+							</el-col>
+							<el-col :span="12">
+								<el-form-item label="参考价格" prop="price">
+									<el-input-number v-model="editForm.price" auto-complete="off"></el-input-number>
+								</el-form-item>
+							</el-col>
+						</el-row>
+						<el-row :gutter="0">
+							<el-col :span="8">
+								<el-form-item label="生产厂家" prop="manufacturer">
+									<el-input v-model="editForm.manufacturer" auto-complete="off"></el-input>
+								</el-form-item>
+							</el-col>
+							<el-col :span="8">
+								<el-form-item label="材质" prop="materialquality">
+									<el-input v-model="editForm.materialquality" auto-complete="off"></el-input>
+								</el-form-item>
+							</el-col>
+							<el-col :span="8">
+								<el-form-item label="单位" prop="uomDesc">
+									<el-input v-model="editForm.uomDesc" auto-complete="off"></el-input>
+								</el-form-item>
+							</el-col>
 
-				</el-row>
-				<el-row :gutter="0">
-					<el-col :span="12">
-						<el-form-item label="车型" prop="modelCode">
-							<el-input v-model="editForm.modelCode" auto-complete="off"></el-input>
-						</el-form-item>
+						</el-row>
+						<el-row :gutter="0">
+							<el-col :span="12">
+								<el-form-item label="车型" prop="modelCode">
+									<el-input v-model="editForm.modelCode" auto-complete="off"></el-input>
+								</el-form-item>
+							</el-col>
+							<el-col :span="12">
+								<el-form-item label="配件类别" prop="fittingTypeCode">
+									<popwin-button popKey="POP_FITTINGTYPE" :selectValue="editForm.fittingTypeCode" v-model="editForm.fittingTypeCode" ></popwin-button>
+								</el-form-item>
+							</el-col>
+						</el-row>
+						<el-row :gutter="0">
+							<el-col :span="12">
+								<el-form-item label="包装类别" prop="type">
+									<el-select v-model="editForm.type" placeholder="请选择">
+										<el-option
+												v-for="item in is_packed"
+												:key="item.code"
+												:label="item.name"
+												:value="item.code">
+											<span style="float: left">{{ item.name }}</span>
+											<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
+										</el-option>
+									</el-select>
+								</el-form-item>
+							</el-col>
+							<el-col :span="12">
+								<el-form-item label="详细尺寸" prop="def1">
+									<el-input v-model="editForm.def1" auto-complete="off"></el-input>
+								</el-form-item>
+							</el-col>
+						</el-row>
+						<el-row :gutter="0">
+							<el-col :span="12">
+								<el-form-item label="是否组合件" prop="needToAssemble">
+									<el-select v-model="editForm.needToAssemble"  placeholder="请选择">
+										<el-option
+												v-for="item in yesOrNo"
+												:key="item.code"
+												:label="item.name"
+												:value="item.code">
+											<span style="float: left">{{ item.name }}</span>
+											<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
+										</el-option>
+									</el-select>
+									<!--<el-input v-model="orderHeader.status" auto-complete="off"></el-input>-->
+								</el-form-item>
+							</el-col>
+							<el-col :span="12">
+								<el-form-item label="组装类型" prop="assembleType">
+									<el-select v-model="editForm.assembleType" :disabled="editFormAssembleTypeStatus" placeholder="请选择">
+										<el-option
+												v-for="item in assembleType"
+												:key="item.code"
+												:label="item.name"
+												:value="item.code">
+											<span style="float: left">{{ item.name }}</span>
+											<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
+										</el-option>
+									</el-select>
+									<!--<el-input v-model="orderHeader.status" auto-complete="off"></el-input>-->
+								</el-form-item>
+							</el-col>
+						</el-row>
+					</el-form>
+					<div style="float:right;">
+						<el-button @click.native="editFormVisible = false">取消</el-button>
+						<el-button type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
+					</div>
+				</el-tab-pane>
+				<el-tab-pane label="组装信息" name="second" :disabled="editFormAssembleSkuTabStatus">
+					<el-table :data="assembleSkus"  border highlight-current-row v-loading="assembleListLoading" @current-change="handleCurrentAssembleSkuChange" @selection-change="assembleSelsChange" style="width: 100%;">
+						<el-table-column type="selection" width="55">
+						</el-table-column>
+						<el-table-column prop="id" width="55">
+						</el-table-column>
+						<el-table-column prop="sSkuCode" label="子件编码" width="200" >
+							<template scope="scope">
+								<div slot="reference" class="name-wrapper">
+									<popwin-button popKey="POP_SKU" :selectValue="scope.row.sSkuCode" v-model="scope.row.sSkuCode" @changeValue="changePopValueForSkuCode"></popwin-button>
+								</div>
+							</template>
+						</el-table-column>
+						<el-table-column prop="sSkuName" label="子件名称" width="250" >
+						</el-table-column>
+						<el-table-column prop="num" label="数量" width="200">
+							<template scope="scope">
+								<div slot="reference" class="name-wrapper">
+									<el-input-number  :min="1"  v-model="scope.row.num"   auto-complete="off"></el-input-number>
+								</div>
+							</template>
+						</el-table-column>
+						<el-table-column label="操作" fixed="right" min-width="150">
+							<template scope="scope">
+								<!--<el-button size="small"  @click="handleDetailEdit(scope.$index, scope.row)">编辑</el-button>-->
+								<el-button type="danger"  size="small" @click="handleAssembleSkuDel(scope.$index, scope.row)">删除</el-button>
+							</template>
+						</el-table-column>
+					</el-table>
+					<!--工具条-->
+					<el-col :span="24" class="toolbar">
+						<el-button type="primary" :disabled="btnAssembleSkuGridAddStatus" @click="addAssembleSkuHandler">新增</el-button>
+						<el-button type="primary" style="float: right" :disabled="btnAssembleSkuGridAddStatus" @click.native="saveSkuAssemble">保存</el-button>
 					</el-col>
-					<el-col :span="12">
-						<el-form-item label="配件类别" prop="fittingTypeCode">
-							<popwin-button popKey="POP_FITTINGTYPE" :selectValue="editForm.fittingTypeCode" @changeValue="changeEditPopValueForFittingType"></popwin-button>
-						</el-form-item>
-					</el-col>
-				</el-row>
-				<el-row :gutter="0">
-					<el-col :span="12">
-						<el-form-item label="包装类别" prop="type">
-							<el-select v-model="editForm.type" placeholder="请选择">
-								<el-option
-										v-for="item in is_packed"
-										:key="item.code"
-										:label="item.name"
-										:value="item.code">
-									<span style="float: left">{{ item.name }}</span>
-									<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
-								</el-option>
-							</el-select>
-						</el-form-item>
-					</el-col>
-					<el-col :span="12">
-						<el-form-item label="详细尺寸" prop="def1">
-							<el-input v-model="editForm.def1" auto-complete="off"></el-input>
-						</el-form-item>
-					</el-col>
-				</el-row>
-			</el-form>
-			<div slot="footer" class="dialog-footer">
-				<el-button @click.native="editFormVisible = false">取消</el-button>
-				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
-			</div>
+				</el-tab-pane>
+			</el-tabs>
+
 		</el-dialog>
 
 		<!--新增界面-->
-		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
+		<el-dialog title="新增" :visible.sync="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
 				<el-row :gutter="0">
 					<el-col :span="12">
@@ -262,7 +348,7 @@
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="配件类别" prop="fittingTypeCode">
-							<popwin-button popKey="POP_FITTINGTYPE" :selectValue="addForm.fittingTypeCode" @changeValue="changeAddPopValueForFittingType"></popwin-button>
+							<popwin-button popKey="POP_FITTINGTYPE" :selectValue="addForm.fittingTypeCode" v-model="addForm.fittingTypeCode" ></popwin-button>
 						</el-form-item>
 					</el-col>
 				</el-row>
@@ -287,6 +373,38 @@
 						</el-form-item>
 					</el-col>
 				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="是否组合件" prop="needToAssemble">
+							<el-select v-model="addForm.needToAssemble"  placeholder="请选择">
+								<el-option
+										v-for="item in yesOrNo"
+										:key="item.code"
+										:label="item.name"
+										:value="item.code">
+									<span style="float: left">{{ item.name }}</span>
+									<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
+								</el-option>
+							</el-select>
+							<!--<el-input v-model="orderHeader.status" auto-complete="off"></el-input>-->
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="组装类型" prop="assembleType">
+							<el-select v-model="addForm.assembleType" :disabled="addFormAssembleTypeStatus" placeholder="请选择">
+								<el-option
+										v-for="item in assembleType"
+										:key="item.code"
+										:label="item.name"
+										:value="item.code">
+									<span style="float: left">{{ item.name }}</span>
+									<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
+								</el-option>
+							</el-select>
+							<!--<el-input v-model="orderHeader.status" auto-complete="off"></el-input>-->
+						</el-form-item>
+					</el-col>
+				</el-row>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="addFormVisible = false">取消</el-button>
@@ -307,7 +425,7 @@
 	import util from '../../common/js/util'
 	import Vue from 'vue'
 	import NProgress from 'nprogress'
-	import { getFittingSkuListPage, removeFittingSku, batchRemoveFittingSku, saveFittingSku,getFittingSkuPic,removeFittingSkuPic, getFittingSkuListForInput} from '../../api/fittingSkuApi';
+	import { saveFittingSkuAssemble,getFittingSkuAssemble,getFittingSkuListPage, removeFittingSku, batchRemoveFittingSku, saveFittingSku,getFittingSkuPic,removeFittingSkuPic, getFittingSkuListForInput} from '../../api/fittingSkuApi';
     var codemaster = require('../../../static/codemaster.json');
 	export default {
 		data() {
@@ -328,11 +446,16 @@
                     fittingTypeCode:''
 				},
 				skus: [],
+				assembleSkus:[],
+				removeAssembleSkus:[],
 				total: 0,
 				page: 1,
 				size:10,
 				listLoading: false,
                 loading:true,
+				assembleListLoading:false,
+				assembleSels:[],
+                currentAssembleSkuRow:{},
 				sels: [],//列表选中列
 				currentRow:{},//当前点击按钮对应的列
 				editFormVisible: false,//编辑界面是否显示
@@ -370,7 +493,9 @@
                     def2:'',
                     def3:'',
                     def4:'',
-                    def5:''
+                    def5:'',
+                    assembleType:'',
+                    needToAssemble:''
 				},
 
 				addFormVisible: false,//新增界面是否显示
@@ -408,16 +533,75 @@
                     def2:'',
                     def3:'',
                     def4:'',
-                    def5:''
+                    def5:'',
+                    assembleType:'',
+                    needToAssemble:''
 				},
+                assembleType:codemaster.WM_ASSEMBLE_TYPE,
+				yesOrNo:codemaster.SYS_YES_NO,
 				//UI控制数据
                 dialogPicManagerVisible : false,
                 activeName:'picUpload',
+				editFormActiveName:'first',
                 fileList:[]
 			}
 		},
-
+        computed: {
+            btnAssembleSkuGridAddStatus: function () {
+                return false;
+            },
+            addFormAssembleTypeStatus:function () {
+				if(this.addForm.needToAssemble === 'Y'){
+				    return false;
+				}else if(this.addForm.needToAssemble === 'N'){
+				    return true;
+				}
+            },
+            editFormAssembleTypeStatus:function () {
+                if(this.editForm.needToAssemble === 'Y'){
+                    return false;
+                }else if(this.editForm.needToAssemble === 'N'){
+                    return true;
+                }
+            },
+            editFormAssembleSkuTabStatus:function () {
+                if(this.editForm.needToAssemble === 'Y'){
+                    return false;
+                }else if(this.editForm.needToAssemble === 'N'){
+                    return true;
+                }
+            }
+        },
 		methods: {
+            handleCurrentAssembleSkuChange:function (currentRow,oldCurrentRow) {
+                this.currentAssembleRow = currentRow;
+
+            },
+            changePopValueForSkuCode:function (row) {
+                this.currentAssembleRow['sSkuName'] = row.fittingSkuName;
+            },
+            handleAssembleSkuDel:function (index,row) {
+                debugger
+                if(row.id!==null){
+                    this.removeAssembleSkus.push(row);
+                }
+                this.assembleSkus.splice(index,1)
+            },
+            addAssembleSkuHandler:function () {
+                this.assembleSkus.push({
+                    id:'',
+                    fSkuCode:this.currentRow.fittingSkuCode,
+                    sSkuCode:'',
+                    num:1,
+                    remark:'',
+                    creator:'',
+                    createTime:'',
+                    modifier:'',
+                    modifyTime:'',
+                    rec_ver:'',
+                    companyId:''
+                });
+            },
             showNormalPic(imgNormal){
                 this.imagePreview.show = true;
                 this.imagePreview.src = imgNormal.fittingSkuPicUrl;
@@ -430,15 +614,6 @@
             showMoreConditionHandler:function(){
                 this.showMoreQueryCondition = !this.showMoreQueryCondition;
             },
-            changeFilterForFittingTypeCode:function(value){
-                this.filters.fittingTypeCode = value[0];
-			},
-            changeAddPopValueForFittingType:function(value){
-                this.addForm.fittingTypeCode = value[0];
-            },
-            changeEditPopValueForFittingType:function(value){
-                this.editForm.fittingTypeCode = value[0];
-            },
             formatISPACKED: function (row, column) {
                 return util.getComboNameByValue(codemaster.WM_IS_PACKED,row.type);
 			},
@@ -446,7 +621,15 @@
 				this.page = val;
 				this.getSkus();
 			},
-			//获取用户列表
+            getStatusTagType:function(row){
+                if(row.fittingSkuStatus === 'NEW'){
+                    return 'success'
+                }
+            },
+            formateType:function(row){
+                return util.getComboNameByValue(codemaster.BD_SKU_STATUS,row.fittingSkuStatus);
+            },
+			//
 			getSkus() {
 				let para = {
 					page: this.page,
@@ -467,6 +650,74 @@
                     util.errorCallBack(data,this.$router,this.$message);
                 });
 			},
+            assembleTabClick(tab) {
+				if(tab.name === 'second'){
+                    this.getSkuAssemble()
+				}
+            },
+            getSkuAssemble(){
+                let para = {
+                    conditions:JSON.stringify({fSkuCode:this.currentRow.fittingSkuCode})
+                };
+                this.assembleListLoading = true;
+                //NProgress.start();
+                getFittingSkuAssemble(para).then((res) => {
+                    this.assembleSkus = res.data.list;
+                    this.assembleListLoading = false;
+                    //NProgress.done();
+                }).catch((data) => {
+                    this.assembleListLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+			},
+            beforeSaveAssemble:function () {
+                for(let i = 0;i<this.assembleSkus.length;i++){
+                    if(this.assembleSkus[i].sSkuCode === null||this.assembleSkus[i].sSkuCode === ''){
+                        this.$message.error('输入数据不完整');
+                        return false;
+					}
+				}
+				return true
+            },
+            saveSkuAssemble:function(){
+                if(this.beforeSaveAssemble()){
+                    let para = {
+                        details:JSON.stringify(this.assembleSkus),
+                        removeDetails:JSON.stringify(this.removeAssembleSkus)
+                    }
+                    saveFittingSkuAssemble(para).then((res) => {
+                        if(res.data.code == 200){
+                            this.$message({
+                                message: res.data.msg,
+                                type: 'success'
+                            });
+                            this.getSkuAssemble();
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
+                        //NProgress.done();
+                    }).catch((data) => {
+                        util.errorCallBack(data,this.$router,this.$message);
+                    });
+                }
+            },
+            handleSetNew:function(index, row){
+                this.currentRow = Object.assign({}, row);
+                this.currentRow.fittingSkuStatus = 'NEW';
+                saveFittingSku({fittingSku:JSON.stringify(this.currentRow)}).then((res) => {
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: res.data.msg,
+                            type: 'success'
+                        });
+                    }else{
+                        this.$message.error(res.data.msg);
+                    }
+                    this.getSkus();
+                }).catch((data) => {
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+            },
 			//删除
 			handleDel: function (index, row) {
 				this.$confirm('确认删除该记录吗?', '提示', {
@@ -488,6 +739,7 @@
 			},
 			//显示编辑界面
 			handleEdit: function (index, row) {
+                this.editFormActiveName='first';
 				this.editFormVisible = true;
 				this.editForm = Object.assign({}, row);
                 this.currentRow = Object.assign({}, row);
@@ -513,7 +765,9 @@
                     def2:'',
                     def3:'',
                     def4:'',
-                    def5:''
+                    def5:'',
+                    assembleType:'',
+                    needToAssemble:'N'
 				};
                 this.currentRow = this.addForm;
 			},
@@ -642,6 +896,9 @@
 			selsChange: function (sels) {
 				this.sels = sels;
 			},
+            assembleSelsChange: function (sels) {
+                this.assembleSels = sels;
+            },
 			//批量删除
 			batchRemove: function () {
 				var ids = this.sels.map(item => item.id).toString();

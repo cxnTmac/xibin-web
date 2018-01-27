@@ -1,5 +1,6 @@
 {
   "POP_ROLE":{
+    "sys":"wms",
     "query": "SysRoleMapper.selectAllByPage",
     "title": "角色",
     "value":"roleCode",
@@ -21,6 +22,7 @@
     ]
   },
   "POP_FITTINGTYPE":{
+    "sys":"wms",
     "query": "BdFittingTypeMapper.selectAllByPage",
     "title": "配件类别",
     "value":"fittingTypeCode",
@@ -42,6 +44,7 @@
     ]
   },
   "POP_SKU":{
+    "sys":"wms",
     "query": "BdFittingSkuMapper.selectAllByPage",
     "title": "产品",
     "value":"fittingSkuCode",
@@ -63,6 +66,7 @@
     ]
   },
   "POP_CUSTOMER":{
+    "sys":"wms",
     "query": "BdCustomerMapper.selectAllByPage",
     "title": "客户",
     "value":"customerCode",
@@ -92,6 +96,7 @@
     ]
   },
   "POP_AREA":{
+    "sys":"wms",
     "query": "BdAreaMapper.selectAllByPage",
     "title": "区域",
     "value":"areaCode",
@@ -113,6 +118,7 @@
     ]
   },
   "POP_ZONE":{
+    "sys":"wms",
     "query": "BdZoneMapper.selectAllByPage",
     "title": "库区",
     "value":"zoneCode",
@@ -134,10 +140,11 @@
     ]
   },
   "POP_LOC":{
+    "sys":"wms",
     "query": "BdLocMapper.selectAllByPage",
     "title": "库位",
     "value":"locCode",
-    "name":"locCode",
+    "name":"locName",
     "quickCondition":"locCode",
     "conditions":[
       {"title":"库区编码",
@@ -154,6 +161,70 @@
         "name":"locType"},
       {"title":"使用类别",
         "name":"useType"}
+    ]
+  },
+  "POP_COURSE":{
+    "sys":"fin",
+    "query": "FiCourseMapper.selectAllByPage",
+    "title": "科目",
+    "value":"courseNo",
+    "name":"courseName",
+    "quickCondition":"courseNo",
+    "conditions":[
+      {"title":"科目编码",
+        "name":"courseNo"}
+    ],
+    "columns":[
+      {
+        "title":"科目编码",
+        "name":"courseNo"
+      },
+      {"title":"科目名称",
+        "name":"courseName"}
+    ]
+  },
+  "POP_AUXILIARY":{
+    "sys":"fin",
+    "query": "FiAuxiliaryMapper.selectAllByPage",
+    "title": "辅助核算",
+    "value":"id",
+    "name":"name",
+    "quickCondition":"name",
+    "conditions":[
+      {"title":"名称",
+        "name":"name"}
+    ],
+    "columns":[
+      {
+        "title":"id",
+        "name":"id"
+      },
+      {
+        "title":"父id",
+        "name":"fid"
+      },
+      {"title":"名称",
+        "name":"name"}
+    ]
+  },
+  "POP_PERIOD":{
+    "sys":"fin",
+    "query": "FiTermMapper.selectAllByPage",
+    "title": "期间",
+    "value":"period",
+    "name":"period",
+    "quickCondition":"period",
+    "conditions":[
+      {"title":"期间",
+        "name":"period"}
+    ],
+    "columns":[
+      {"title":"期间",
+        "name":"period"},
+      {"title":"开始日期",
+        "name":"carryDate"},
+      {"title":"结束日期",
+        "name":"endDate"}
     ]
   }
 }

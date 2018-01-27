@@ -8,7 +8,7 @@
 					<el-input v-model="filters.orderNo" placeholder="订单号"></el-input>
 				</el-form-item>
 				<el-form-item label="客户" prop="supplierCode">
-					<popwin-button popKey="POP_CUSTOMER"  :selectValue="filters.supplierCode"  @changeValue="changeFilterForSupplierCode"></popwin-button>
+					<popwin-button popKey="POP_CUSTOMER" :showName="true"  :selectValue="filters.supplierCode" v-model="filters.supplierCode"></popwin-button>
 				</el-form-item>
 				<el-form-item label="状态" prop="status">
 					<el-select v-model="filters.status" clearable  placeholder="请选择 ">
@@ -23,10 +23,11 @@
 					</el-select>
 					<!--<el-input v-model="orderHeader.auditStatus" auto-complete="off"></el-input>-->
 				</el-form-item>
-					<el-button type="primary" icon="caret-bottom" v-on:click="showMoreConditionHandler"></el-button>
+					<el-button type="primary" class="el-icon-caret-bottom" v-on:click="showMoreConditionHandler"></el-button>
 					<el-button type="danger" style="float: right"  @click="reset">重置</el-button>
 					<el-button type="primary" style="float: right" v-on:click="getOrders">查询</el-button>
 				</el-row>
+				<transition name="el-zoom-in-top">
 				<el-row :gutter="0" v-if="showMoreQueryCondition">
 					<el-form-item label="订单类别" prop="inboundType">
 						<el-select v-model="filters.inboundType" clearable  placeholder="请选择">
@@ -58,11 +59,12 @@
 						<!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
 					</el-form-item>
 				</el-row>
+				</transition>
 			</el-form>
 		</el-col>
 
 		<!--列表-->
-		<el-table :data="orders" highlight-current-row v-loading="listLoading" @selection-change="selsChange" stripe style="width: 100%;">
+		<el-table :data="orders" border highlight-current-row v-loading="listLoading" @selection-change="selsChange" stripe style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
 			<el-table-column prop="id" label="id" width="80" sortable>
@@ -82,6 +84,10 @@
 			<el-table-column prop="auditTime" label="审核时间" width="200" sortable :formatter="formatAuditTime">
 			</el-table-column>
 			<el-table-column prop="orderTime" label="订单时间" width="200" sortable :formatter="formatOrderTime">
+			</el-table-column>
+			<el-table-column prop="isCalculated" label="是否核算" width="200" >
+			</el-table-column>
+			<el-table-column prop="calculate_time" label="核算时间" width="200">
 			</el-table-column>
 			<el-table-column prop="remark" label="备注" >
 			</el-table-column>
@@ -145,9 +151,7 @@
             showMoreConditionHandler:function(){
                 this.showMoreQueryCondition = !this.showMoreQueryCondition;
             },
-            changeFilterForSupplierCode:function(value){
-              this.filters.supplierCode = value[0];
-			},
+
             formatOrderTime: function(row, column){
                 if(row.orderTime!==null) {
                     let unixTimestamp = new Date(row.orderTime)
@@ -177,12 +181,12 @@
             handleAdd: function () {
                 this.$store.commit('changeInboundOrderNo', '')
                 this.$store.commit('changeInboundStatus', 'ADD')
-                this.$router.push({ path: '/inboundDetail' });
+                this.$router.push({ path: '/inboundDetail' })
             },
             handleEdit:function(index,row){
                 this.$store.commit('changeInboundOrderNo', row.orderNo)
                 this.$store.commit('changeInboundStatus', 'EDIT')
-                this.$router.push({ path: '/inboundDetail' });
+                this.$router.push({ path: '/inboundDetail' })
 			},
 			//获取用户列表
             getOrders() {

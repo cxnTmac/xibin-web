@@ -4,10 +4,10 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters">
 				<el-form-item label="产品">
-					<popwin-button popKey="POP_SKU"  :selectValue="filters.skuCode"  @changeValue="changeFilterForSkuCode"></popwin-button>
+					<popwin-button popKey="POP_SKU"  :selectValue="filters.skuCode" v-model="filters.skuCode"></popwin-button>
 				</el-form-item>
 				<el-form-item label="库位">
-					<popwin-button popKey="POP_LOC"  :selectValue="filters.locCode"  @changeValue="changeFilterForLocCode"></popwin-button>
+					<popwin-button popKey="POP_LOC"  :selectValue="filters.locCode" v-model="filters.locCode" ></popwin-button>
 				</el-form-item>
 
 					<el-button type="primary" style="float: right" v-on:click="getRecords">查询</el-button>
@@ -16,7 +16,7 @@
 		</el-col>
 
 		<!--列表-->
-		<el-table :data="records" highlight-current-row v-loading="listLoading" @selection-change="selsChange" stripe style="width: 100%;">
+		<el-table :data="records" border highlight-current-row v-loading="listLoading" @selection-change="selsChange" stripe style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
 			<!--<el-table-column prop="id" label="id" width="80" sortable>-->
@@ -37,7 +37,8 @@
 			</el-table-column>
 			<el-table-column prop="invAvailableNum" label="库存可用数" width="250">
 			</el-table-column>
-
+			<el-table-column prop="totalPrice" label="总价值" width="250">
+			</el-table-column>
 			<el-table-column label="操作" fixed="right" min-width="150">
 				<template scope="scope">
 				</template>
@@ -76,12 +77,6 @@
 			}
 		},
 		methods: {
-            changeFilterForSkuCode(value){
-				this.filters.skuCode = value[0];
-			},
-            changeFilterForLocCode(value){
-                this.filters.locCode = value[0];
-			},
 			handleCurrentChange(val) {
 				this.page = val;
 				this.getRecords();

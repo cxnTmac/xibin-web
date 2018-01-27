@@ -9,6 +9,10 @@ let base = '';
 
 export const getFittingSkuListPage = params => { return axios.get(`/xibin/fittingSku/showAllFittingSku.shtml`, { params: params }); };
 
+export const getFittingSkuAssemble = params => { return axios.get(`/xibin/fittingSku/querySkuAssembleByFSkuCode.shtml`, { params: params }); };
+
+export const saveFittingSkuAssemble = params => { return axios.get(`/xibin/fittingSku/saveSkuAssemble.shtml`, { params: params }); };
+
 export const removeFittingSku = params => { return axios.get(`/xibin/fittingSku/removeFittingSku.shtml`, { params: params }); };
 
 export const batchRemoveFittingSku = params => { return axios.post(`/xibin/fittingSku/batchRemove.shtml`,qs.stringify(params),{headers: {
