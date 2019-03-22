@@ -34,6 +34,14 @@ module.exports = {
                 '^/xibin': ''
             }
         },
+        // '/xibin': {
+        //     target: 'https://dsn.apizza.net/mock/104dd5d6ec5e86488b4463ee51c18e3f',
+        //     secure:false,
+        //     changeOrigin:true,
+        //     pathRewrite: {
+        //         '^/xibin': ''
+        //     }
+        // },
         '/pic': {
             target: 'http://127.0.0.1:83/pic',
             pathRewrite: {

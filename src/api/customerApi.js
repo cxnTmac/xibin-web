@@ -17,4 +17,6 @@ export const batchRemoveCustomer = params => { return axios.post(`/xibin/custome
 
 export const saveCustomer = params => { return axios.get(`/xibin/customer/saveCustomer.shtml`, { params: params }); };
 
+export const addCustomerCourseAuxiliaryBlance = params => { return axios.get(`/xibin/customer/addCustomerCourseAuxiliaryBlance.shtml`, { params: params }); };
+
 

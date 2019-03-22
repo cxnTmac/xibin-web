@@ -9,6 +9,10 @@ let base = '';
 
 export const getInventoryListPage = params => { return axios.get(`/xibin/inventory/showAllInventory.shtml`, { params: params }); };
 
+export const getAvailbleInventoryListPage = params => { return axios.get(`/xibin/inventory/showAllAvailbleInventory.shtml`, { params: params }); };
 
+export const move = params => { return axios.get(`/xibin/inventory/move.shtml`, { params: params }); };
+
+export const transfer = params => { return axios.get(`/xibin/inventory/transfer.shtml`, { params: params }); };
 // export const removeFittingSkuPic = params => { return axios.get(`/xibin/fittingSku/removeFittingSkuPic.shtml`, { params: params }); };
 

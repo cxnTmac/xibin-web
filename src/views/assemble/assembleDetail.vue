@@ -4,6 +4,9 @@
 		<el-col :span="24" class="toolbar">
 				<el-button type="primary" :disabled="btnAuditStatus" @click="audit" :loading="pageControl.auditBtnLoading">审核</el-button>
 				<el-button type="danger" :disabled="btnCancelAuditStatus" @click="cancelAudit" :loading="pageControl.cancelAuditBtnLoading">取消审核</el-button>
+                <el-button type="primary" :disabled="btnCreateSDetailStatus" @click="createSDetail" :loading="pageControl.createSDetailBtnLoading">生成子件</el-button>
+                <el-button type="danger" :disabled="btnCancelCreateSDetailStatus" @click="cancelCreateSDetail" :loading="pageControl.cancelCreateSDetailBtnLoading">取消生成子件</el-button>
+				<el-button type="primary" style="float: right"  @click="printPickUpOrder">打印拣货单</el-button>
 			<el-button  @click="back" style="float: right">返回</el-button>
 		</el-col>
 
@@ -132,7 +135,7 @@
 				<!--</el-table-column>-->
 
 				<el-table-column label="操作" fixed="right" min-width="150">
-					<template scope="scope">
+					<template slot-scope="scope">
 						<el-button size="small"  @click="handleFDetailEdit(scope.$index, scope.row)">编辑</el-button>
 						<el-button type="danger" :disabled="btnFDetailGridDelStatus" size="small" @click="handleFDetailDel(scope.$index, scope.row)">删除</el-button>
 					</template>
@@ -180,21 +183,56 @@
 				<!--<el-table-column prop="password" label="密码" width="100" :formatter="formatSex" sortable>-->
 				<!--</el-table-column>-->
 
-				<el-table-column label="操作" fixed="right" min-width="150">
-					<template scope="scope">
-						<el-button size="small"  @click="handleFDetailEdit(scope.$index, scope.row)">编辑</el-button>
-						<el-button type="danger" :disabled="btnFDetailGridDelStatus" size="small" @click="handleFDetailDel(scope.$index, scope.row)">删除</el-button>
+				<el-table-column label="操作" fixed="right" min-width="175">
+					<template slot-scope="scope">
+						<el-button type="primary" size="small"    @click="handleSDetailAlloc(scope.$index, scope.row)">分配</el-button>
+                        <el-button type="danger" size="small" @click="handleSDetailCancelAlloc(scope.$index, scope.row)">取消分配</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
-			<!--工具条-->
-			<el-col :span="24" class="toolbar">
-				<el-button type="primary" :disabled="btnFDetailGridAddStatus" @click="addFDetailHandler">新增</el-button>
-				<!--<el-button type="danger"  @click="batchRemove" :disabled="this.detailGrid.sels.length===0">批量删除</el-button>-->
-				<!--<el-pagination layout="prev, pager, next" @current-change="handleCurrentDetailChange" :page-size="detailGrid.size" :total="detailGrid.total" style="float:right;">-->
-				<!--</el-pagination>-->
-			</el-col>
+
 		</el-card>
+        <el-card class="box-card">
+            <div slot="header" class="clearfix">
+                <span style="line-height: 15px;">子件分配明细</span>
+            </div>
+            <el-table :data="allocGrid.alloc" border highlight-current-row v-loading="allocGrid.listLoading" stripe style="width: 100%;">
+                <el-table-column type="selection" width="55">
+                </el-table-column>
+                <el-table-column prop="sLineNo" label="子件行号" width="100" >
+                </el-table-column>
+                <el-table-column prop="allocId" label="分配ID" width="100" >
+                </el-table-column>
+                <el-table-column prop="orderNo" label="组装单号" width="200" >
+                </el-table-column>
+                <el-table-column prop="fittingSkuCode" label="产品编码" width="200" >
+                </el-table-column>
+                <el-table-column prop="fittingSkuName" label="产品名称" width="200" >
+                </el-table-column>
+                <el-table-column prop="status" label="状态" width="200" :formatter="formatStatus">
+                </el-table-column>
+                <el-table-column prop="allocLoc" label="分配库位" width="200">
+                </el-table-column>
+                <el-table-column prop="allocNum" label="分配数" width="200">
+                </el-table-column>
+				<el-table-column prop="toLoc" label="加工库位" width="200">
+				</el-table-column>
+                <el-table-column prop="pickTime" label="拣货时间" width="200">
+                </el-table-column>
+                <el-table-column prop="remark" label="备注" >
+                </el-table-column>
+                <!--<el-table-column prop="password" label="密码" width="100" :formatter="formatSex" sortable>-->
+                <!--</el-table-column>-->
+
+                <el-table-column label="操作" fixed="right" min-width="175">
+                    <template slot-scope="scope">
+                        <el-button type="primary" size="small"    @click="handleSDetailAllocPick(scope.$index, scope.row)">拣货</el-button>
+                        <el-button type="danger" size="small" @click="handleSDetailCancelAllocPick(scope.$index, scope.row)">取消拣货</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+
+        </el-card>
 		<!--编辑界面-->
 		<el-dialog title="编辑" :visible.sync="pageControl.fDetailEditFormVisible" :close-on-click-modal="false">
 			<el-form :model="fDetailGrid.editForm" label-width="80px" :rules="fDetailGrid.editFormRules" ref="fDetailEditForm">
@@ -235,7 +273,7 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="组装数" prop="num">
+						<el-form-item label="已组装数" prop="num">
 							<el-input-number v-model="fDetailGrid.editForm.num" :disabled="true" auto-complete="off"></el-input-number>
 						</el-form-item>
 					</el-col>
@@ -243,8 +281,13 @@
 				<el-row :gutter="0">
 					<el-col :span="12">
 						<el-form-item label="组装库位" prop="planLoc">
-							<popwin-button popKey="POP_LOC" :selectValue="fDetailGrid.editForm.assembleLoc" v-model="fDetailGrid.editForm.assembleLoc"></popwin-button>
+							<popwin-button popKey="POP_LOC" :staticCondition="assembleLocCondition" :selectValue="fDetailGrid.editForm.assembleLoc" v-model="fDetailGrid.editForm.assembleLoc"></popwin-button>
 							<!--<el-input v-model="detailGrid.editForm.planLoc" auto-complete="off"></el-input>-->
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="组装数" prop="num">
+							<el-input-number v-model="fDetailGrid.editForm.toAssembleNum"  auto-complete="off"></el-input-number>
 						</el-form-item>
 					</el-col>
 				</el-row>
@@ -259,20 +302,25 @@
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="pageControl.fDetailEditFormVisible = false">取消</el-button>
 				<el-button type="primary" :disabled="btnFDetailEditSubmitStatus" @click.native="fDetailEditSubmit" :loading="pageControl.fDetailEditBtnLoading">提交</el-button>
+				<el-button type="primary" :disabled="btnFDetailAssembleStatus" @click.native="fDetailAssemble" :loading="pageControl.fDetailAssembleBtnLoading">组装确认</el-button>
 			</div>
 		</el-dialog>
+
+
+
 	</section>
 </template>
 
 <script>
 	import util from '../../common/js/util'
 	import NProgress from 'nprogress'
-    import {saveAssembleOrder,saveAssembleFDetail,removeAssembleFDetail,audit,cancelAudit,getAssembleOrderHeader,getAssembleFDetailList} from '../../api/assembleApi';
+    import {saveAssembleOrder,saveAssembleFDetail,removeAssembleFDetail,audit,cancelAudit,getAssembleOrderHeader,getAssembleFDetailList,getAssembleSDetailList,getAllAssembleAllocList,createAssembleSDetailByOrderNo,cancelCreateByOrderNo,allocByOrderNoAndLineNo,cancelAllocByOrderNoAndLineNo,pickByAlloc,cancelPickByAlloc,assemble} from '../../api/assembleApi';
     var codemaster = require('../../../static/codemaster.json');
 	export default {
 		data() {
 			return {
 			    fSkuCondtion:{needToAssemble:'Y'},
+                assembleLocCondition:{useType:'KT'},
 				orderHeader:{
 			        id:'',
 					orderNo:'',
@@ -308,7 +356,8 @@
                         modifyTime:'',
                         rec_ver:'',
                         companyId:'',
-                        warehouseId:''
+                        warehouseId:'',
+                        toAssembleNum:0
                     },
                     editFormRules:{
 
@@ -342,20 +391,45 @@
                     listLoading:false,
                     sels:[]
                 },
+                sDetailAllocGrid:{
+                    editForm:{
+                        id:'',
+                        remark:'',
+                        creator:'',
+                        createTime:'',
+                        modifier:'',
+                        modifyTime:'',
+                        rec_ver:'',
+                        companyId:'',
+                        warehouseId:''
+                    },
+                    editFormRules:{
+
+                    },
+                    sDetailAlloc:[],
+                    page:1,
+                    size:10,
+                    total:0,
+                    listLoading:false,
+                    sels:[]
+                },
 				pageControl:{
 				    saveBtnLoading:false,
 					auditBtnLoading:false,
 					cancelAuditBtnLoading:false,
                     fDetailEditFormVisible:false,
+					fDetailAssembleFormVisible:false,
                     fDetailEditBtnLoading:false,
+                    createSDetailBtnLoading:false,
+                    cancelCreateSDetailBtnLoading:false,
                     recEditFormVisible:false,
                     recEditLoading:false,
-                    cancelRecEditLoading:false
+                    cancelRecEditLoading:false,
+                    fDetailAssembleBtnLoading:false
 				},
 				allocGrid:{
                     editForm:{
                         id:'',
-
                         remark:'',
                         creator:'',
                         createTime:'',
@@ -422,6 +496,13 @@
                     return true;
                 }
             },
+            btnFDetailAssembleStatus:function () {
+                if(this.orderHeader.status === '00' || this.orderHeader.status === '70'){
+                    return true;
+                }else{
+                    return false;
+                }
+            },
             btnFDetailGridAddStatus:function(){
                 if(this.orderHeader.id ===''){
                     return true;
@@ -439,6 +520,20 @@
                     return true;
                 }
             },
+            btnCreateSDetailStatus:function () {
+                if(this.orderHeader.auditStatus !== '00'&&this.orderHeader.status === '00'){
+                    return false;
+                }else{
+                    return true;
+                }
+            },
+            btnCancelCreateSDetailStatus:function () {
+                if(this.orderHeader.auditStatus !== '00'&&this.orderHeader.status === '10'){
+                    return false;
+                }else{
+                    return true;
+                }
+            },
             orderNo:function() {
                 return this.$store.state.assembleDetail.orderNo
             },
@@ -447,6 +542,10 @@
 			}
         },
 		methods: {
+            printPickUpOrder(){
+                let user = JSON.parse(sessionStorage.getItem('user'));
+                window.open("/xibin/ReportServer?reportlet=assemblePickUp.cpt&orderNo="+this.orderHeader.orderNo+"&companyId="+user.companyId+"&warehouseId="+user.warehouseId);
+            },
             formatTime: function(row, column){
                 if(row[column.property]!==null) {
                     let unixTimestamp = new Date(row[column.property])
@@ -481,6 +580,7 @@
                 this.fDetailGrid.editForm = {};
                 this.pageControl.fDetailEditFormVisible = true;
                 this.fDetailGrid.editForm = Object.assign({}, row);
+                this.fDetailGrid.editForm.toAssembleNum = 0;
             },
             addFDetailHandler(){
                 this.fDetailGrid.editForm = {
@@ -499,7 +599,8 @@
                     modifyTime:'',
                     rec_ver:'',
                     companyId:'',
-                    warehouseId:''
+                    warehouseId:'',
+                    toAssembleNum:0
                 }
                 this.pageControl.fDetailEditFormVisible = true;
             },
@@ -532,15 +633,31 @@
                     }
                 });
 			},
+            fDetailAssemble(){
+                let para = { orderNo: this.fDetailGrid.editForm.orderNo ,lineNo:this.fDetailGrid.editForm.lineNo,assembleNum:this.fDetailGrid.editForm.toAssembleNum};
+                assemble(para).then((res) => {
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: res.data.msg,
+                            type: 'success'
+                        });
+                        this.orderHeader = Object.assign({}, res.data.data);
+                        this.getAssembleFDetail();
+                        this.getAssembleSDetail();
+                    }else{
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch((data) => {
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+			},
             handleFDetailDel(index, row){
                 this.$confirm('确认删除记录吗？', '提示', {
                     type: 'warning'
                 }).then(() => {
-
                     //NProgress.start();
                     let para = { orderNo: row.orderNo ,lineNo:row.lineNo};
                     removeAssembleFDetail(para).then((res) => {
-
                         if(res.data.code == 200){
                             this.$message({
                                 message: res.data.msg,
@@ -553,6 +670,78 @@
                     }).catch((data) => {
                         util.errorCallBack(data,this.$router,this.$message);
                     });
+                });
+            },
+            handleSDetailAlloc(index, row){
+                allocByOrderNoAndLineNo({orderNo:this.orderHeader.orderNo,lineNo:row.lineNo}).then((res) => {
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: res.data.msg,
+                            type: 'success'
+                        });
+//                        this.orderHeader = Object.assign({}, res.data.data);
+                        this.getAssembleSDetail();
+                        this.getAllAssembleAlloc();
+                    }else{
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch((data) => {
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+            },
+            handleSDetailCancelAlloc(index, row){
+                cancelAllocByOrderNoAndLineNo({orderNo:this.orderHeader.orderNo,lineNo:row.lineNo}).then((res) => {
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: res.data.msg,
+                            type: 'success'
+                        });
+//                        this.orderHeader = Object.assign({}, res.data.data);
+                        this.getAssembleSDetail();
+                        this.getAllAssembleAlloc();
+                    }else{
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch((data) => {
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+            },
+            handleSDetailAllocPick(index, row){
+                let para = Object.assign({}, row);
+                pickByAlloc({alloc:JSON.stringify(para)}).then((res) => {
+                    //NProgress.done();
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: res.data.msg,
+                            type: 'success'
+                        });
+
+                    }else{
+                        this.$message.error(res.data.msg);
+                    }
+                    this.getAssembleSDetail();
+                    this.getAllAssembleAlloc();
+                }).catch((data) => {
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+            },
+            handleSDetailCancelAllocPick(index, row){
+                debugger
+                let para = Object.assign({}, row);
+                cancelPickByAlloc({alloc:JSON.stringify(para)}).then((res) => {
+                    //NProgress.done();
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: res.data.msg,
+                            type: 'success'
+                        });
+                    }else{
+                        this.$message.error(res.data.msg);
+                    }
+                    this.getAssembleSDetail();
+                    this.getAllAssembleAlloc();
+                }).catch((data) => {
+                    util.errorCallBack(data,this.$router,this.$message);
                 });
             },
             audit(){
@@ -590,13 +779,53 @@
                     util.errorCallBack(data,this.$router,this.$message);
                 });
 			},
+            createSDetail(){
+                this.createSDetailBtnLoading = true;
+                createAssembleSDetailByOrderNo({orderNo:this.orderHeader.orderNo}).then((res) => {
+                    this.createSDetailBtnLoading = false;
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: res.data.msg,
+                            type: 'success'
+                        });
+                        this.orderHeader = Object.assign({}, res.data.data);
+                        this.getAssembleSDetail();
+                    }else{
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch((data) => {
+                    this.createSDetailBtnLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+
+            },
+            cancelCreateSDetail(){
+                this.cancelCreateSDetailBtnLoading = true;
+                cancelCreateByOrderNo({orderNo:this.orderHeader.orderNo}).then((res) => {
+                    this.cancelCreateSDetailBtnLoading = false;
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: res.data.msg,
+                            type: 'success'
+                        });
+                        this.orderHeader = Object.assign({}, res.data.data);
+                        this.getAssembleSDetail();
+                    }else{
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch((data) => {
+                    this.cancelCreateSDetailBtnLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+            },
 			getOrder(){
                 NProgress.start();
                 getAssembleOrderHeader({orderNo:this.orderNo}).then((res) => {
                     NProgress.done();
                     this.orderHeader = Object.assign({}, res.data);
                     this.getAssembleFDetail();
-//                    this.getDetailReceives();
+                    this.getAssembleSDetail();
+                    this.getAllAssembleAlloc();
                 }).catch((data) => {
                     util.errorCallBack(data,this.$router,this.$message);
                 });
@@ -616,7 +845,36 @@
                     util.errorCallBack(data,this.$router,this.$message);
                 });
 			},
-
+            getAssembleSDetail(){
+                this.sDetailGrid.listLoading = true;
+                let para = {
+                    conditions:JSON.stringify({orderNo:this.orderHeader.orderNo})
+                }
+                getAssembleSDetailList(para).then((res) => {
+                    this.sDetailGrid.total = res.data.size;
+                    this.sDetailGrid.sDetail = res.data.list;
+                    this.sDetailGrid.listLoading = false;
+                    //NProgress.done();
+                }).catch((data) => {
+                    this.sDetailGrid.listLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+            },
+            getAllAssembleAlloc(){
+                this.allocGrid.listLoading = true;
+                let para = {
+                    conditions:JSON.stringify({orderNo:this.orderHeader.orderNo})
+                }
+                getAllAssembleAllocList(para).then((res) => {
+                    this.allocGrid.total = res.data.size;
+                    this.allocGrid.alloc = res.data.list;
+                    this.allocGrid.listLoading = false;
+                    //NProgress.done();
+                }).catch((data) => {
+                    this.allocGrid.listLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+			},
             back(){
                 this.$router.push({ path: '/assembleOrder' });
 			}

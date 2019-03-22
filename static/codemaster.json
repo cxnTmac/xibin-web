@@ -3,6 +3,15 @@
     {"code":"Y","name":"是"},
     {"code":"N","name":"否"}
   ],
+  "SYS_USER_STATUS":[
+    {"code":"NEW","name":"创建"},
+    {"code":"Y","name":"启用"},
+    {"code":"N","name":"禁用"}
+  ],
+  "SYS_FUNCTION_TYPE":[
+    {"code":"M","name":"菜单"},
+    {"code":"B","name":"按钮"}
+  ],
   "SYS_AUDIT_STATUS":[
     {"code":"00","name":"未审核"},
     {"code":"10","name":"已审核"},
@@ -28,8 +37,9 @@
     {"code":"CD","name":"越库库位"}
   ],
   "WM_INBOUND_TYPE":[
-    {"code":"CI","name":"普通入库"},
-    {"code":"RI","name":"退货入库"},
+    {"code":"CI","name":"赊购入库"},
+    {"code":"XG","name":"现购入库"},
+    {"code":"RI","name":"销售退货"},
     {"code":"PI","name":"盘盈入库"}
   ],
   "WM_INBOUND_STATUS":[
@@ -44,33 +54,45 @@
     {"code":"REC","name":"收货"},
     {"code":"SHIP","name":"发货"},
     {"code":"PICK","name":"拣货"},
+    {"code":"OVER_PICK","name":"超量拣货"},
     {"code":"CANCEL_SHIP","name":"取消发货"},
     {"code":"CANCEL_PICK","name":"取消拣货"},
     {"code":"CANCEL_REC","name":"取消收货"},
     {"code":"CANCEL_ALLOC","name":"取消分配"},
-    {"code":"ALLOC","name":"分配"}
+    {"code":"ALLOC","name":"分配"},
+    {"code":"PRE_ASSEMBLE_ALLOC","name":"预加工分配"},
+    {"code":"CANCEL_PRE_ASSEMBLE_ALLOC","name":"取消预加工分配"},
+    {"code":"ASSEMBLE_S","name":"组装消耗子件"},
+    {"code":"ASSEMBLE_F","name":"组装生成父件"},
+    {"code":"MOVE","name":"移动"},
+    {"code":"TRANSFER","name":"转变"}
   ],
   "WM_ORDER_TYPE":[
     {"code":"INB","name":"入库单"},
-    {"code":"OUB","name":"出库单"}
+    {"code":"OUB","name":"出库单"},
+    {"code":"ASS","name":"组装单"}
   ],
   "WM_OUTBOUND_STATUS":[
     {"code":"00","name":"创建"},
-    {"code":"20","name":"已销售核算"},
-    {"code":"25","name":"已成本核算"},
     {"code":"30","name":"部分分配"},
     {"code":"40","name":"完全分配"},
     {"code":"50","name":"部分拣货"},
     {"code":"60","name":"完全拣货"},
+    {"code":"65","name":"超量拣货"},
     {"code":"70","name":"部分发货"},
     {"code":"80","name":"完全发货"},
     {"code":"90","name":"取消订单"},
     {"code":"99","name":"关闭订单"}
   ],
   "WM_OUTBOUND_TYPE":[
-    {"code":"PO","name":"普通出库"},
-    {"code":"RO","name":"退货出库"},
+    {"code":"PO","name":"赊销出库"},
+    {"code":"XX","name":"现销出库"},
+    {"code":"RO","name":"外购退货"},
     {"code":"CO","name":"盘亏出库"}
+  ],
+  "WM_ALLOC_TYPE":[
+    {"code":"AUTO","name":"自动分配"},
+    {"code":"ASS","name":"预加工分配"}
   ],
   "WM_ASSEMBLE_TYPE":[
     {"code":"ROU","name":"粗加工（A->A1+A2）"},
@@ -81,16 +103,21 @@
   ],
   "WM_ASSEMBLE_STATUS":[
     {"code":"00","name":"创建"},
-    {"code":"05","name":"部分分配"},
-    {"code":"10","name":"完全分配"},
-    {"code":"15","name":"部分拣货"},
-    {"code":"20","name":"完全拣货"},
-    {"code":"25","name":"部分加工"},
-    {"code":"30","name":"完全加工"}
+    {"code":"10","name":"已生成子件"},
+    {"code":"20","name":"部分分配"},
+    {"code":"30","name":"完全分配"},
+    {"code":"40","name":"部分拣货"},
+    {"code":"50","name":"完全拣货"},
+    {"code":"60","name":"部分加工"},
+    {"code":"70","name":"完全加工"}
   ],
   "BD_SKU_STATUS":[
     {"code":"NEW","name":"新品"},
     {"code":"NORMAL","name":"普通"}
+  ],
+  "FI_TO_GO":[
+    {"code":"借","name":"借"},
+    {"code":"贷","name":"贷"}
   ],
   "FI_COURSE_TYPE":[
     {"code":"1","name":"资产"},
@@ -126,5 +153,28 @@
   "FI_BOOK_STATUS":[
     {"code":"00","name":"创建"},
     {"code":"10","name":"已结账"}
+  ],
+  "FI_FROM_ORDER_TYPE":[
+    {"code":"INB","name":"入库单"},
+    {"code":"OUB_SALE","name":"出库销售"},
+    {"code":"OUB_COST","name":"出库成本"}
+  ],
+  "FI_CUS_COURSE":[
+    {"code":"1131","name":"应收账款"},
+    {"code":"2121","name":"应付账款"}
+  ],
+  "CRM_CASE_STATUS":[
+    {"code":"GONE","name":"GONE"},
+    {"code":"DEAD","name":"DEAD"},
+    {"code":"ACTIVE","name":"ACTIVE"}
+  ],
+  "CRM_VISA_STATUS":[
+    {"code":"OK","name":"OK"},
+    {"code":"DEAD","name":"DEAD"}
+  ],
+  "CRM_COMMISSION_RATE_TYPE":[
+    {"code":"ONCE","name":"一次性"},
+    {"code":"PERYEAR","name":"每年"}
   ]
+
 }

@@ -2,19 +2,21 @@
 	<section>
 
 		<el-tabs v-model="activeName" @tab-click="handleClick">
-			<el-tab-pane label="未生成销售凭证" name="first">
+			<el-tab-pane label="未生成赊销凭证" name="first">
 			</el-tab-pane>
-			<el-tab-pane label="已生成销售凭证" name="second">
+			<el-tab-pane label="已生成赊销凭证" name="second">
 			</el-tab-pane>
-			<el-tab-pane label="已生成成本凭证" name="seventh">
+			<el-tab-pane label="未生成现销凭证" name="third">
 			</el-tab-pane>
-			<el-tab-pane label="未生成退货凭证" name="third">
+			<el-tab-pane label="已生成现销凭证" name="fouth">
 			</el-tab-pane>
-			<el-tab-pane label="已生成退货凭证" name="fouth">
+			<el-tab-pane label="未生成退货凭证" name="fifth">
 			</el-tab-pane>
-			<el-tab-pane label="未生成盘亏凭证" name="fifth">
+			<el-tab-pane label="已生成退货凭证" name="sixth">
 			</el-tab-pane>
-			<el-tab-pane label="已生成盘亏凭证" name="sixth">
+			<el-tab-pane label="未生成盘亏凭证" name="seventh">
+			</el-tab-pane>
+			<el-tab-pane label="已生成盘亏凭证" name="eighth">
 			</el-tab-pane>
 		</el-tabs>
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
@@ -102,7 +104,7 @@
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
-			<el-button type="primary"  @click="account" :loading="pageControl.btnAccountLoading" :disabled="this.sels.length===0||this.activeName === 'seventh'">生成凭证</el-button>
+			<el-button type="primary"  @click="account" :loading="pageControl.btnAccountLoading" :disabled="createVoucherStatus">生成凭证</el-button>
 		</el-col>
 
 
@@ -131,7 +133,8 @@
 					orderTimeFm:'',
 					orderTimeTo:'',
                     outboundType:'',
-					headerStatus:''
+					headerStatus:'',
+					isCalculated:''
 				},
                 orders: [],
                 orderGroup:[],
@@ -222,12 +225,35 @@
                 if(this.activeName === 'first'){
                     this.filters.headerStatus = '99';
                     this.filters.outboundType = 'PO';
+                    this.filters.isCalculated = 'N';
 				}else if(this.activeName === 'second'){
-                    this.filters.headerStatus = '20';
+                    this.filters.headerStatus = '99';
                     this.filters.outboundType = 'PO';
-				}else if(this.activeName === 'seventh'){
-                    this.filters.headerStatus = '25';
-                    this.filters.outboundType = 'PO';
+                    this.filters.isCalculated = 'Y';
+				}else if(this.activeName === 'third'){
+                    this.filters.headerStatus = '99';
+                    this.filters.outboundType = 'XX';
+                    this.filters.isCalculated = 'N';
+                } else if(this.activeName === 'fouth'){
+                    this.filters.headerStatus = '99';
+                    this.filters.outboundType = 'XX';
+                    this.filters.isCalculated = 'Y';
+                }else if(this.activeName === 'fifth'){
+                    this.filters.headerStatus = '99';
+                    this.filters.outboundType = 'RO';
+                    this.filters.isCalculated = 'N';
+                } else if(this.activeName === 'sixth'){
+                    this.filters.headerStatus = '99';
+                    this.filters.outboundType = 'RO';
+                    this.filters.isCalculated = 'Y';
+                }else if(this.activeName === 'seventh'){
+                    this.filters.headerStatus = '99';
+                    this.filters.outboundType = 'CO';
+                    this.filters.isCalculated = 'N';
+                } else if(this.activeName === 'eighth'){
+                    this.filters.headerStatus = '99';
+                    this.filters.outboundType = 'CO';
+                    this.filters.isCalculated = 'Y';
                 }
 				let para = {
                     conditions:JSON.stringify(this.filters)
@@ -260,8 +286,7 @@
                         orderNos.push(this.sels[i].orderNo);
                     }
                 }
-                let para = { orderNos:orderNos.join(',')};
-				if(this.activeName === 'first'){
+                let para = { orderNos:orderNos.join(','),outboundType:this.filters.outboundType };
                     accountByOrderNos(para).then((res) => {
                         this.pageControl.btnAccountLoading = false;
                         this.getOrders();
@@ -277,32 +302,21 @@
                         this.pageControl.btnAccountLoading = false;
                         util.errorCallBack(data,this.$router,this.$message);
                     });
-				}else if(this.activeName === 'second'){
-                    accountCostByOrderNos(para).then((res) => {
-                        this.pageControl.btnAccountLoading = false;
-                        this.getOrders();
-                        if(res.data.code == 200){
-                            this.$message({
-                                message: res.data.msg,
-                                type: 'success'
-                            });
-                        }else{
-                            this.$message.error(res.data.msgs);
-                        }
-                    }).catch((data) => {
-                        this.pageControl.btnAccountLoading = false;
-                        util.errorCallBack(data,this.$router,this.$message);
-                    });
-				}
-
             },
 			selsChange: function (sels) {
 				this.sels = sels;
 			},
 
 		},
-		computed:{
-		},
+        computed:{
+            createVoucherStatus(){
+                if(this.sels.length===0||this.activeName === 'second'||this.activeName === 'fouth'||this.activeName === 'sixth'||this.activeName === 'eighth'){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        },
 		mounted() {
 
 			this.getOrders();

@@ -25,19 +25,17 @@
 		<el-table :data="records" border highlight-current-row v-loading="listLoading" @selection-change="selsChange" stripe style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
-			<el-table-column prop="id" label="id" width="80" sortable>
+			<el-table-column prop="id" label="id" width="80" >
 			</el-table-column>
-			<el-table-column prop="customerCode" label="客户编码" width="200" sortable>
+			<el-table-column prop="customerCode" label="客户编码" width="200" >
 			</el-table-column>
-			<el-table-column prop="customerName" label="客户名称" width="200" sortable>
+			<el-table-column prop="customerName" label="客户名称" width="200" >
 			</el-table-column>
-			<el-table-column prop="status" label="状态" width="200" sortable>
+			<el-table-column prop="province" label="省" width="200" >
 			</el-table-column>
-			<el-table-column prop="province" label="省" width="200" sortable>
+			<el-table-column prop="city" label="市" width="200" >
 			</el-table-column>
-			<el-table-column prop="city" label="市" width="200" sortable>
-			</el-table-column>
-			<el-table-column prop="county" label="区/县" width="200" sortable>
+			<el-table-column prop="county" label="区/县" width="200" >
 			</el-table-column>
 			<el-table-column prop="customerType" label="客户类型" width="200" >
 			</el-table-column>
@@ -54,9 +52,10 @@
 			<el-table-column prop="remark" label="备注" width="400" >
 			</el-table-column>
 
-			<el-table-column label="操作" fixed="right" min-width="150">
-				<template scope="scope">
+			<el-table-column label="操作" fixed="right" min-width="350">
+				<template slot-scope="scope">
 					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+					<el-button size="small" @click="handleAddBalance(scope.$index, scope.row)">设置关联科目年初余额</el-button>
 					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
@@ -165,7 +164,7 @@
 
 		<!--编辑界面-->
 		<el-dialog title="编辑" :visible.sync="editFormVisible" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
+			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm" >
 				<el-row :gutter="0">
 					<el-col :span="12">
 						<el-form-item label="客户编码" prop="customerCode">
@@ -255,13 +254,48 @@
 			</div>
 		</el-dialog>
 
+
+		<el-dialog title="设置关联科目期初余额" :visible.sync="courseAuxilaryBalanceFormVisible" :close-on-click-modal="false">
+			<el-form :model="courseAuxilaryBalanceForm" label-width="80px" :rules="courseAuxilaryBalanceFormRules" ref="courseAuxilaryBalanceForm">
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="关联科目" prop="courseNo">
+							<el-select v-model="courseAuxilaryBalanceForm.courseNo"  placeholder="请选择">
+								<el-option
+										v-for="item in cusCourse"
+										:key="item.code"
+										:label="item.name"
+										:value="item.code">
+									<span style="float: left">{{ item.name }}</span>
+									<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
+								</el-option>
+							</el-select>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="年初余额" prop="balance">
+							<el-input-number v-model="courseAuxilaryBalanceForm.balance" auto-complete="off"></el-input-number>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<!--<el-input v-model="addForm.customerType" auto-complete="off"></el-input>-->
+				<!--<el-input type="hidden" v-model="addForm.province" auto-complete="off"></el-input>-->
+				<!--<el-input type="hidden" v-model="addForm.city" auto-complete="off"></el-input>-->
+				<!--<el-input type="hidden" v-model="addForm.county" auto-complete="off"></el-input>-->
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click.native="courseAuxilaryBalanceFormVisible = false">取消</el-button>
+				<el-button type="primary" @click.native="addBalanceSubmit" :loading="addBalanceLoading">提交</el-button>
+			</div>
+		</el-dialog>
+
 	</section>
 </template>
 
 <script>
 	import util from '../../common/js/util'
 	//import NProgress from 'nprogress'
-	import { getCustomerListPage, saveCustomer, removeCustomer} from '../../api/customerApi';
+	import { getCustomerListPage, saveCustomer, removeCustomer,addCustomerCourseAuxiliaryBlance} from '../../api/customerApi';
     import NProgress from 'nprogress'
     import { regionData ,CodeToText ,TextToCode} from 'element-china-area-data'
     var codemaster = require('../../../static/codemaster.json');
@@ -282,6 +316,7 @@
 					county:''
 				},
                 records: [],
+				currentRow:{},
 				total: 0,
 				page: 1,
 				size:10,
@@ -341,10 +376,10 @@
                 editLoading: false,
                 editFormRules: {
                     customerCode: [
-                        { required: true, message: '请输入编码', trigger: 'blur' }
+                        { required: true, message: '请选择关联科目', trigger: 'blur' }
                     ],
                     customerName:[
-                        { required: true, message: '请输入名称', trigger: 'blur' }
+                        { required: true, message: '请输入年初余额', trigger: 'blur' }
                     ]
                 },
                 //编辑界面数据
@@ -365,6 +400,18 @@
                     contactTel:'',
                     remark:''
                 },
+                courseAuxilaryBalanceFormVisible:false,
+                addBalanceLoading:false,
+                courseAuxilaryBalanceFormRules: {
+                    courseNo: [
+                        { required: true, message: '请输入编码', trigger: 'blur' }
+                    ]
+                },
+                courseAuxilaryBalanceForm:{
+                    courseNo:'',
+					balance:0
+				},
+				cusCourse:codemaster.FI_CUS_COURSE
 			}
 		},
         watch: {
@@ -410,12 +457,21 @@
 			},
             //显示编辑界面
             handleEdit: function (index, row) {
-                
                 this.editFormVisible = true;
+                this.currentRow = row;
                 this.editForm = Object.assign({}, row);
-                this.editForm.customerType = row.customerType.split(',')
-
-                this.selectedEditFormLocationOptions = [TextToCode[this.editForm.province].code,TextToCode[this.editForm.province][this.editForm.city].code,TextToCode[this.editForm.province][this.editForm.city][this.editForm.county].code]
+				this.editForm.customerType = row.customerType.split(',')
+				if(this.editForm.province!==''&&this.editForm.city!==''&&this.editForm.county!==''){
+					this.selectedEditFormLocationOptions = [TextToCode[this.editForm.province].code,TextToCode[this.editForm.province][this.editForm.city].code,TextToCode[this.editForm.province][this.editForm.city][this.editForm.county].code]
+				}else if(this.editForm.province!==''&&this.editForm.city!==''){
+					this.selectedEditFormLocationOptions = [TextToCode[this.editForm.province].code,TextToCode[this.editForm.province][this.editForm.city].code]
+				}else if(this.editForm.province!==''){
+					this.selectedEditFormLocationOptions = [TextToCode[this.editForm.province].code]
+				}
+            },
+            handleAddBalance:function (index, row) {
+				this.courseAuxilaryBalanceFormVisible = true;
+                this.currentRow = row;
             },
             //显示新增界面
             handleAdd: function () {
@@ -456,6 +512,34 @@
                         util.errorCallBack(data,this.$router,this.$message);
                     });
                 })
+            },
+            addBalanceSubmit: function () {
+                this.$refs.courseAuxilaryBalanceForm.validate((valid) => {
+                    if (valid) {
+                        this.$confirm('确认提交吗？', '提示', {}).then(() => {
+                            this.addBalanceLoading = true;
+                            //NProgress.start();
+                            addCustomerCourseAuxiliaryBlance({customerCode:this.currentRow.customerCode,balance:this.courseAuxilaryBalanceForm.balance,courseNo:this.courseAuxilaryBalanceForm.courseNo}).then((res) => {
+                                this.addBalanceLoading = false;
+                                //NProgress.done();
+                                if(res.data.code == 200){
+                                    this.$message({
+                                        message: res.data.msg,
+                                        type: 'success'
+                                    });
+                                }else{
+                                    this.$message.error(res.data.msg);
+                                }
+                                this.$refs['courseAuxilaryBalanceForm'].resetFields();
+                                this.courseAuxilaryBalanceFormVisible = false;
+                                this.getRecords();
+                            }).catch((data) => {
+                                this.addBalanceLoading = false;
+                                util.errorCallBack(data,this.$router,this.$message);
+                            });
+                        })
+                    }
+                });
             },
             //编辑
             editSubmit: function () {

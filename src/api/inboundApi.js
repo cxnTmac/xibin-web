@@ -46,15 +46,27 @@ export const saveInboundDetail = params => { return axios.get(`/xibin/inbound/sa
 
 export const receive = params => { return axios.get(`/xibin/inbound/receive.shtml`, { params: params }); };
 
+export const batchReceive = params => { return axios.post(`/xibin/inbound/batchReceive.shtml`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
+
 export const cancelReceive = params => { return axios.get(`/xibin/inbound/cancelReceive.shtml`, { params: params }); };
 //
 export const getInboundOrderHeader = params => { return axios.get(`/xibin/inbound/getInboundHeaderByOderNo.shtml`, { params: params }); };
 
 export const accountByOrderNo = params => { return axios.get(`/xibin/inbound/accountByOrderNo.shtml`, { params: params }); };
 
+export const accountCostByOrderNo = params => { return axios.get(`/xibin/inbound/accountCostByOrderNo.shtml`, { params: params }); };
+
 export const accountByOrderNos = params => { return axios.post(`/xibin/inbound/accountByOrderNos.shtml`,qs.stringify(params),{headers: {
     'Content-Type': 'application/x-www-form-urlencoded',
 }} ).then(res => res); };
-//
+
+export const accountCostByOrderNos = params => { return axios.post(`/xibin/inbound/accountCostByOrderNos.shtml`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
+
+export const queryWmInboundDetailByPage = params => { return axios.get(`/xibin/inbound/queryWmInboundDetailByPage.shtml`, { params: params }); };
+
 // export const removeFittingSkuPic = params => { return axios.get(`/xibin/fittingSku/removeFittingSkuPic.shtml`, { params: params }); };
 

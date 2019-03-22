@@ -13,4 +13,12 @@ export const removeCourse = params => { return axios.get(`/xibin/course/removeCo
 
 export const saveCourse = params => { return axios.get(`/xibin/course/saveCourse.shtml`, { params: params }); };
 
+export const addChildCourse = params => { return axios.get(`/xibin/course/addChildCourse.shtml`, { params: params }); };
+
+// export const saveCourseBalance = params => { return axios.get(`/xibin/course/saveCourseBalance.shtml`, { params: params }); };
+
+export const saveCourseBalance = params => { return axios.post(`/xibin/course/saveCourseBalance.shtml`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
+
 

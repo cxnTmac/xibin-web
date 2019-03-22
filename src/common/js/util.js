@@ -40,10 +40,18 @@ export default {
         }
         return  result;
     },
+    reLogin:function(){
+        Vue.loginPopWin();
+    },
     errorCallBack:function(data,router,$message){
-        if(data.response.status == 401){
-            Vue.loginPopWin();
+        if(data.response !== undefined){
+            if(data.response.status == 401){
+                Vue.loginPopWin();
+            }
+        }else{
+            alert(data.message)
         }
+
     },
     isNullOrUndefined:function (value) {
       if(value === undefined||value === null){

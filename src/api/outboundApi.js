@@ -17,6 +17,10 @@ export const removeOutboundDetail = params => { return axios.post(`/xibin/outbou
     'Content-Type': 'application/x-www-form-urlencoded',
 }} ).then(res => res); };
 
+export const removeOutboundDetailAndCreateNewOrder = params => { return axios.post(`/xibin/outbound/removeOutboundDetailAndCreateNewOrder.shtml`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
+
 export const remove = params => { return axios.post(`/xibin/outbound/remove.shtml`,qs.stringify(params),{headers: {
     'Content-Type': 'application/x-www-form-urlencoded',
 }} ).then(res => res); };
@@ -40,7 +44,13 @@ export const cancelAlloc = params => { return axios.post(`/xibin/outbound/cancel
 
 export const shipByHeader = params => { return axios.get(`/xibin/outbound/shipByHeader.shtml`, { params: params }); };
 
+export const pickByHeader = params => { return axios.get(`/xibin/outbound/pickByHeader.shtml`, { params: params }); };
+
 export const cancelShipByHeader = params => { return axios.get(`/xibin/outbound/cancelShipByHeader.shtml`, { params: params }); };
+
+export const allocByHeader = params => { return axios.get(`/xibin/outbound/allocByOrderNo.shtml`, { params: params }); };
+
+export const cancelAllocByHeader = params => { return axios.get(`/xibin/outbound/cancelAllocByOrderNo.shtml`, { params: params }); };
 
 export const ship = params => { return axios.get(`/xibin/outbound/shipByAlloc.shtml`, { params: params }); };
 
@@ -58,9 +68,13 @@ export const saveOutboundOrder = params => { return axios.get(`/xibin/outbound/s
 
 export const saveOutboundDetail = params => { return axios.get(`/xibin/outbound/saveOutboundDetail.shtml`, { params: params }); };
 
+export const saveOutboundAllocDetail = params => { return axios.get(`/xibin/outbound/saveOutboundAllocDetail.shtml`, { params: params }); };
+
 export const getOutboundOrderHeader = params => { return axios.get(`/xibin/outbound/getOutboundHeaderByOderNo.shtml`, { params: params }); };
 
 export const queryHistoryPrice = params => { return axios.get(`/xibin/outbound/queryHistoryPrice.shtml`, { params: params }); };
+
+export const queryHistorySale = params => { return axios.get(`/xibin/outbound/queryHistorySale.shtml`, { params: params }); };
 
 export const batchSaveOutboundDetail = params => { return axios.post(`/xibin/outbound/batchSaveOutboundDetail.shtml`,qs.stringify(params),{headers: {
     'Content-Type': 'application/x-www-form-urlencoded',
@@ -81,6 +95,11 @@ export const accountCostByOrderNos = params => { return axios.post(`/xibin/outbo
     'Content-Type': 'application/x-www-form-urlencoded',
 }} ).then(res => res); };
 
+
+export const importOutboundDetailByExcel = params => { return axios.get(`/xibin/outbound/importOutboundDetailByExcel.shtml`, { params: params }); };
+
+export const aiForOrders = params => { return axios.get(`/xibin/outbound/aiForOrders.shtml`, { params: params }); };
+export const queryWmOutboundDetailByPage = params => { return axios.get(`/xibin/outbound/queryWmOutboundDetailByPage.shtml`, { params: params }); };
 // export const receive = params => { return axios.get(`/xibin/outbound/receive.shtml`, { params: params }); };
 //
 // export const cancelReceive = params => { return axios.get(`/xibin/outbound/cancelReceive.shtml`, { params: params }); };

@@ -2,17 +2,21 @@
 	<section>
 
 		<el-tabs v-model="activeName" @tab-click="handleClick">
-			<el-tab-pane label="未生成购货凭证" name="first"><!--工具条-->
+			<el-tab-pane label="未生成赊购凭证" name="first"><!--工具条-->
 			</el-tab-pane>
-			<el-tab-pane label="已生成购货凭证" name="second">
+			<el-tab-pane label="已生成赊购凭证" name="second">
 			</el-tab-pane>
-			<el-tab-pane label="未生成退货凭证" name="third"><!--工具条-->
+			<el-tab-pane label="未生成现购凭证" name="third"><!--工具条-->
 			</el-tab-pane>
-			<el-tab-pane label="已生成退货凭证" name="fouth">
+			<el-tab-pane label="已生成现购凭证" name="fouth">
 			</el-tab-pane>
-			<el-tab-pane label="未生成盘盈凭证" name="fifth"><!--工具条-->
+			<el-tab-pane label="未生成退货凭证" name="fifth"><!--工具条-->
 			</el-tab-pane>
-			<el-tab-pane label="已生成盘盈凭证" name="sixth">
+			<el-tab-pane label="已生成退货凭证" name="sixth">
+			</el-tab-pane>
+			<el-tab-pane label="未生成盘盈凭证" name="seventh"><!--工具条-->
+			</el-tab-pane>
+			<el-tab-pane label="已生成盘盈凭证" name="eighth">
 			</el-tab-pane>
 		</el-tabs>
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
@@ -67,6 +71,8 @@
 			</el-table-column>
 			<el-table-column prop="headerStatus" label="单头状态" width="200" :formatter="formatHeaderStatus">
 			</el-table-column>
+			<el-table-column prop="isCalculated" label="是否生成凭证" width="200" >
+			</el-table-column>
 			<el-table-column prop="supplierCode" label="客户编码" width="200" >
 			</el-table-column>
 			<el-table-column prop="supplierName" label="客户名称" width="200" >
@@ -98,7 +104,7 @@
 
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
-			<el-button type="primary"  @click="account" :loading="pageControl.btnAccountLoading" :disabled="this.sels.length===0||this.activeName === 'second'">生成凭证</el-button>
+			<el-button type="primary"  @click="account" :loading="pageControl.btnAccountLoading" :disabled="createVoucherStatus">生成凭证</el-button>
 		</el-col>
 
 
@@ -128,7 +134,8 @@
 					orderTimeFm:'',
 					orderTimeTo:'',
                     headerStatus:'',
-					inboundType:''
+					inboundType:'',
+					isCalculated:''
 				},
                 orders: [],
                 orderGroup:[],
@@ -219,21 +226,35 @@
                 if(this.activeName === 'first'){
                     this.filters.inboundType = 'CI';
                     this.filters.headerStatus = '99';
+                    this.filters.isCalculated = 'N'
 				}else if(this.activeName === 'second'){
                     this.filters.inboundType = 'CI';
-                    this.filters.headerStatus = '30';
-				}else if(this.activeName === 'third'){
-                    this.filters.inboundType = 'RI';
                     this.filters.headerStatus = '99';
+                    this.filters.isCalculated = 'Y'
+                }else if(this.activeName === 'third'){
+                    this.filters.inboundType = 'XG';
+                    this.filters.headerStatus = '99';
+                    this.filters.isCalculated = 'N'
                 }else if(this.activeName === 'fouth'){
+                    this.filters.inboundType = 'XG';
+                    this.filters.headerStatus = '99';
+                    this.filters.isCalculated = 'Y'
+				}else if(this.activeName === 'fifth'){
                     this.filters.inboundType = 'RI';
-                    this.filters.headerStatus = '30';
-                }else if(this.activeName === 'fifth'){
+                    this.filters.headerStatus = '99';
+                    this.filters.isCalculated = 'N'
+                }else if(this.activeName === 'sixth'){
+                    this.filters.inboundType = 'RI';
+                    this.filters.headerStatus = '99';
+                    this.filters.isCalculated = 'Y'
+                }else if(this.activeName === 'seventh'){
                     this.filters.inboundType = 'PI';
                     this.filters.headerStatus = '99';
-                }else if(this.activeName === 'sixth'){
+                    this.filters.isCalculated = 'N'
+                }else if(this.activeName === 'eighth'){
                     this.filters.inboundType = 'PI';
-                    this.filters.headerStatus = '30';
+                    this.filters.headerStatus = '99';
+                    this.filters.isCalculated = 'Y'
                 }
 				let para = {
                     conditions:JSON.stringify(this.filters)
@@ -270,7 +291,7 @@
                         orderNos.push(this.sels[i].orderNo);
 					}
 				}
-                let para = { orderNos:orderNos.join(',')};
+                let para = { orderNos:orderNos.join(','),inboundType:this.filters.inboundType};
                 accountByOrderNos(para).then((res) => {
                     this.pageControl.btnAccountLoading = false;
                     if(res.data.code == 200){
@@ -278,6 +299,7 @@
                             message: res.data.msg,
                             type: 'success'
                         });
+                        this.getOrders();
                     }else{
                         this.$message.error(res.data.msgs);
                     }
@@ -288,6 +310,13 @@
             }
 		},
 		computed:{
+		    createVoucherStatus(){
+		        if(this.sels.length===0||this.activeName === 'second'||this.activeName === 'fouth'||this.activeName === 'sixth'||this.activeName === 'eighth'){
+		            return true;
+				}else{
+		            return false;
+				}
+			}
 		},
 		mounted() {
 			this.getOrders();

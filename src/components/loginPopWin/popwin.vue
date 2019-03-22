@@ -66,7 +66,7 @@
                                     type: 'error'
                                 });
                             } else {
-                                sessionStorage.setItem('user', JSON.stringify(data.data));
+                                localStorage.setItem('user', JSON.stringify(data.data));
                                 this.dialogFormVisible = false;
                             }
                         });
@@ -78,7 +78,7 @@
             }
         },
         created(){
-            let userDetails = JSON.parse(sessionStorage.user);
+            let userDetails = JSON.parse(localStorage.user);
             if(userDetails!==null){
                 this.ruleForm2.userName = userDetails.userName;
             }

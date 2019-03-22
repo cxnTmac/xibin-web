@@ -3,9 +3,12 @@ import Vuex from 'vuex'
 import * as actions from './actions'
 import * as getters from './getters'
 import inboundDetail from './modules/inboundDetail/inboundDetail'
+import inbound from './modules/inbound/inbound'
 import outboundDetail from './modules/outboundDetail/outboundDetail'
+import outbound from './modules/outbound/outbound'
 import voucherDetail from './modules/voucherDetail/voucherDetail'
 import assembleDetail from './modules/assembleDetail/assembleDetail'
+import roleFunctions from './modules/roleFunctions/roleFunctions'
 
 Vue.use(Vuex)
 
@@ -15,8 +18,11 @@ export default new Vuex.Store({
     getters,
     modules: {
         'inboundDetail': inboundDetail,
+        'inbound': inbound,
         'outboundDetail': outboundDetail,
+        'outbound': outbound,
         'voucherDetail': voucherDetail,
-        'assembleDetail': assembleDetail
+        'assembleDetail': assembleDetail,
+        'roleFunctions':roleFunctions
     }
 })

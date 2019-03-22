@@ -18,6 +18,8 @@
 
 <script>
   import { requestLogin } from '../api/api';
+  import {getAllRoleFunctions} from '../api/sysApi'
+  import {remoteRoutes} from '../routes'
 //import codemaster from '../static/codemaster.json'
   //import NProgress from 'nprogress'
   export default {
@@ -25,8 +27,8 @@
       return {
         logining: false,
         ruleForm2: {
-          userName: 'admin',
-          password: '123456'
+          userName: '',
+          password: ''
         },
         rules2: {
           userName: [
@@ -41,11 +43,13 @@
         checked: true
       };
     },
+    
     methods: {
       handleReset2() {
         this.$refs.ruleForm2.resetFields();
       },
       handleSubmit2(ev) {
+        debugger
         var _this = this;
         this.$refs.ruleForm2.validate((valid) => {
           if (valid) {
@@ -63,8 +67,37 @@
                   type: 'error'
                 });
               } else {
-                sessionStorage.setItem('user', JSON.stringify(data.data));
-                this.$router.push({ path: '/table' });
+                  //localStorage.setItem('mobileUrl','http://192.168.1.8:8080/%23/')
+                localStorage.setItem('user', JSON.stringify(data.data))
+                //记住密码
+                if(this.checked){
+                  localStorage.setItem('inputUserName', this.ruleForm2.userName)
+                  localStorage.setItem('inputPassword', this.ruleForm2.password)
+                }else{
+                  localStorage.removeItem('inputUserName')
+                  localStorage.removeItem('inputPassword')
+                }
+                // sessionStorage.setItem('user', JSON.stringify(data.data));
+                let overTime = new Date().getTime() + 100000000000
+                localStorage.setItem('overTime', overTime)
+                getAllRoleFunctions().then((res) => {
+                      let roles = res.data.data;
+                      roles = remoteRoutes;//暂时用静态数据代替
+                      //NProgress.done();
+                      if(res.data.code == 200){
+                          this.$store.dispatch('GenerateRoutes',roles).then(()=>{
+                              console.log(this.$store.state.roleFunctions.addRouters);
+                              //sessionStorage.setItem('roles',JSON.stringify(store.state.roleFunctions.addRouters))
+                              router.addRoutes(this.$store.state.roleFunctions.addRouters);
+                              next({ ...to, replace: true })
+                          });
+                      }else{
+                          alert(res.data.msg);
+                      }
+                }).catch((data) => {
+                      alert(data);
+                });
+                this.$router.push({ path: '/echarts' });
               }
             });
           } else {
@@ -73,6 +106,10 @@
           }
         });
       }
+    },
+    mounted(){
+      this.ruleForm2.userName = localStorage.getItem('inputUserName')
+      this.ruleForm2.password = localStorage.getItem('inputPassword')
     }
   }
 

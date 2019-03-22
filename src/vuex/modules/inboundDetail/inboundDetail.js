@@ -1,6 +1,7 @@
 const state = {
     orderNo: '',
-    status:''
+    status:'',
+    fromPath:''
 }
 const mutations = {
     changeInboundOrderNo (state, newOrderNo) {
@@ -8,6 +9,9 @@ const mutations = {
     },
     changeInboundStatus (state, newStatus) {
         state.status = newStatus
+    },
+    changeInboundDetailFromPath (state, fromPath) {
+        state.fromPath = fromPath
     }
 }
 export default {

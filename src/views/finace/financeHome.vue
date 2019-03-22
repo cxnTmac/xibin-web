@@ -137,6 +137,7 @@
                                     message: res.data.msg,
                                     type: 'success'
                                 });
+
                             }else{
                                 this.$message.error(res.data.msgs);
                             }
@@ -155,8 +156,9 @@
                             message: res.data.msg,
                             type: 'success'
                         });
+                        util.reLogin();
                         //更新session信息，主要是为了更新当前期间
-                        sessionStorage.setItem('user', JSON.stringify(res.data.data));
+                        //sessionStorage.setItem('user', JSON.stringify(res.data.data));
                     }else{
                         this.$message.error(res.data.msg);
                     }

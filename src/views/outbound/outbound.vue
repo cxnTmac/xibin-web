@@ -67,27 +67,31 @@
 		<el-table :data="orders" border highlight-current-row v-loading="listLoading" @selection-change="selsChange" stripe style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
-			<el-table-column prop="id" label="id" width="80" sortable>
-			</el-table-column>
+			<!-- <el-table-column prop="id" label="id" width="80" sortable>
+			</el-table-column> -->
 			<el-table-column prop="orderNo" label="出库单号" width="200" sortable>
 			</el-table-column>
-			<el-table-column prop="buyerCode" label="客户编码" width="200" sortable>
+			<el-table-column prop="buyerCode" label="客户编码" width="80">
 			</el-table-column>
-			<el-table-column prop="supplierName" label="客户名称" width="200" sortable>
+			<el-table-column prop="buyerName" label="客户名称" width="150">
 			</el-table-column>
-			<el-table-column prop="status" label="状态" width="200" sortable :formatter="formatStatus">
+			<el-table-column prop="status" label="状态" width="80" :formatter="formatStatus">
 			</el-table-column>
-			<el-table-column prop="auditStatus" label="审核状态" width="200" sortable :formatter="formatAuditStatus">
+			<el-table-column prop="auditStatus" label="审核状态" width="80"  :formatter="formatAuditStatus">
 			</el-table-column>
-			<el-table-column prop="outboundType" label="出库单类型" width="200" sortable :formatter="formatOutboundType">
+			<el-table-column prop="outboundType" label="出库单类型" width="80"  :formatter="formatOutboundType">
 			</el-table-column>
-			<el-table-column prop="auditTime" label="审核时间" width="200" sortable :formatter="formatAuditTime">
+			<el-table-column prop="auditTime" label="审核时间" width="155"  :formatter="formatAuditTime">
 			</el-table-column>
-			<el-table-column prop="orderTime" label="订单时间" width="200" sortable :formatter="formatOrderTime">
+			<el-table-column prop="orderTime" label="订单时间" width="155" sortable :formatter="formatOrderTime">
 			</el-table-column>
-			<el-table-column prop="isCalculated" label="是否核算" width="200" >
+			<el-table-column prop="voucherId" label="凭证ID" width="80" >
 			</el-table-column>
-			<el-table-column prop="calculate_time" label="核算时间" width="200">
+			<el-table-column prop="costVoucherId" label="成本凭证ID" width="80" >
+			</el-table-column>
+			<el-table-column prop="isCalculated" label="是否核算" width="80" >
+			</el-table-column>
+			<el-table-column prop="calculate_time" label="核算时间" width="155">
 			</el-table-column>
 			<el-table-column prop="remark" label="备注" >
 			</el-table-column>
@@ -95,7 +99,7 @@
 			<!--</el-table-column>-->
 
 			<el-table-column label="操作" fixed="right" min-width="150">
-				<template scope="scope">
+				<template slot-scope="scope">
 					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
 				</template>
@@ -106,10 +110,38 @@
 		<el-col :span="24" class="toolbar">
 			<el-button type="primary" @click="handleAdd">新增</el-button>
 			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
-			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="size" :total="total" style="float:right;">
+			<el-button type="primary" @click="aiForOrders" :disabled="true">AI文字识别</el-button>
+			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :current-page="page" :page-size="size" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
+		<el-dialog title="AI文字订单识别" :visible.sync="dialogAIVisible">
+			<el-tabs v-model="activeName" @tab-click="handleClick">
+				<el-tab-pane label="图片上传" name="picUpload">
+					<el-upload ref="upload"
+							   class="upload-demo"
+							   drag
+							   :data= "currentRow"
+							   :on-success="uploadConnectSuccess"
+							   :on-error="uploadConnectFail"
+							   action="/xibin/outbound/uploadOrderPic.shtml"
+							   :file-list="fileList"
+							   multiple
+							   list-type="picture"
+							   :auto-upload="true">
+						<i class="el-icon-upload"></i>
+						<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+						<div class="el-upload__tip" slot="tip">只能上传jpg/png文件</div>
+					</el-upload>
+					<!--<el-button type="primary" size="large" @click="startUpload">开始上传</el-button>-->
+				</el-tab-pane>
+				<el-tab-pane label="识别结果" name="picManage">
+					<el-row>
 
+					</el-row>
+
+				</el-tab-pane>
+			</el-tabs>
+		</el-dialog>
 
 	</section>
 </template>
@@ -118,7 +150,8 @@
     import Vue from 'vue'
 	import util from '../../common/js/util'
 	//import NProgress from 'nprogress'
-	import { getOutboundOrderListPage,remove} from '../../api/outboundApi';
+	import { getOutboundOrderListPage,remove,aiForOrders} from '../../api/outboundApi';
+    import axios from 'axios';
     var codemaster = require('../../../static/codemaster.json');
 	export default {
 		data() {
@@ -141,7 +174,11 @@
 				listLoading: false,
                 loading:true,
 				sels: [],//列表选中列
-
+				//AI图片识别
+                dialogAIVisible:false,
+                activeName:'picUpload',
+                currentRow:{},
+                fileList:[]
 
 			}
 		},
@@ -181,11 +218,17 @@
             handleAdd: function () {
                 this.$store.commit('changeOutboundOrderNo', '')
                 this.$store.commit('changeOutboundStatus', 'ADD')
+                this.$store.commit('changeOutboundFilters',this.filters)
+                this.$store.commit('changeOutboundDetailFromPath', '/outboundOrder')
+                this.$store.commit('changePage',this.page)
                 this.$router.push({ path: '/outboundDetail' });
             },
             handleEdit:function(index,row){
                 this.$store.commit('changeOutboundOrderNo', row.orderNo)
                 this.$store.commit('changeOutboundStatus', 'EDIT')
+                this.$store.commit('changeOutboundFilters',this.filters)
+                this.$store.commit('changeOutboundDetailFromPath', '/outboundOrder')
+                this.$store.commit('changePage',this.page)
                 this.$router.push({ path: '/outboundDetail' });
 			},
 			//获取用户列表
@@ -241,6 +284,51 @@
 			selsChange: function (sels) {
 				this.sels = sels;
 			},
+            handleClick : function(tab, event) {
+                console.log(tab, event);
+            },
+            uploadConnectSuccess : function(response, file, fileList){
+                if(response.code == 0){
+                    this.$message.error(response.msg);
+
+                }else if(response.code == 200){
+					let data = {
+						appid:"1253892890",
+						bucket:"",
+						url:'http://www.xbjg.org/xibin-web/pic/fittingSku/A004-1/1551083711895.jpg'
+                	}
+					axios.post('https://recognition.image.myqcloud.com/ocr/handwriting',
+						data,
+						{
+							headers: {
+								'Host': 'recognition.image.myqcloud.com',
+								'Content-Type':'application/json',
+								'Authorization': 'YU4aoXybsh6jIbnMAv1rA1UUY0FhPTEyNTM4OTI4OTAmYj0maz1BS0lETTBnN1JjN0pLNzJ6SFNjeHZqSmk1QzVvbTZuSkVMSDMmdD0xNTUxMDc4NTQ2JmU9MTU1MTE2NDk0NiZyPTE3NTQxMjYxMjImZj1pbWc='
+							}
+						}
+					).then(res=>{
+						let result = res.data.data.items;
+						let recodes = [];
+						for(let i = 0;i<result.length;i++){
+							if(i%3 == 0){
+								recodes.push({skuCode:'',num:'',price:''})
+								recodes[i/3].skuCode = result[i].itemstring;
+							}
+							if(i%3 == 1){
+								recodes[i/3].num = result[i].itemstring;
+							}
+							if(i%3 == 2){
+								recodes[i/3].price = result[i].itemstring;
+							}
+						}
+						console.log('res=>',res);
+					})
+					}
+            },
+
+            uploadConnectFail : function(err, file, fileList){
+                this.$message.error("网络连接错误，上传失败！");
+            },
 			//批量删除
 			batchRemove: function () {
 //				var ids = this.sels.map(item => item.id).join(",");
@@ -267,9 +355,59 @@
 //				}).catch(() => {
 //
 //				});
-			}
+			},
+            aiForOrders:function () {
+//                aiForOrders({}).then((res) => {
+//                    //NProgress.done();
+//                    if(res.data.code == 200){
+//                        this.$message({
+//                            message: res.data.msg,
+//                            type: 'success'
+//                        });
+//                    }else{
+//                        this.$message.error(res.data.msg);
+//                    }
+//                }).catch((data) => {
+//                    this.listLoading = false;
+//                    util.errorCallBack(data,this.$router,this.$message);
+//                });
+                this.dialogAIVisible = true;
+//				let data = {
+//				    appid:"1253892890",
+//                    bucket:"",
+//					url:'http://www.xbjg.org/xibin-web/pic/fittingSku/A004-1/1551083711895.jpg'
+//                }
+//                axios.post('https://recognition.image.myqcloud.com/ocr/handwriting',
+//                    data,
+//                    {
+//                        headers: {
+//                            'Host': 'recognition.image.myqcloud.com',
+//							'Content-Type':'application/json',
+//                            'Authorization': 'YU4aoXybsh6jIbnMAv1rA1UUY0FhPTEyNTM4OTI4OTAmYj0maz1BS0lETTBnN1JjN0pLNzJ6SFNjeHZqSmk1QzVvbTZuSkVMSDMmdD0xNTUxMDc4NTQ2JmU9MTU1MTE2NDk0NiZyPTE3NTQxMjYxMjImZj1pbWc='
+//                        }
+//                    }
+//                ).then(res=>{
+//                    let result = res.data.data.items;
+//                    let recodes = [];
+//                    for(let i = 0;i<result.length;i++){
+//                        if(i%3 == 0){
+//                            recodes.push({skuCode:'',num:'',price:''})
+//                            recodes[i/3].skuCode = result[i].itemstring;
+//						}
+//                        if(i%3 == 1){
+//                            recodes[i/3].num = result[i].itemstring;
+//                        }
+//                        if(i%3 == 2){
+//                            recodes[i/3].price = result[i].itemstring;
+//                        }
+//					}
+//                    console.log('res=>',res);
+//                })
+            }
 		},
 		mounted() {
+            this.filters = this.$store.state.outbound.filters;
+            this.page = this.$store.state.outbound.page;
 			this.getOrders();
 		}
 	}

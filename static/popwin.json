@@ -49,12 +49,14 @@
     "title": "产品",
     "value":"fittingSkuCode",
     "name":"fittingSkuName",
-    "quickCondition":"fittingSkuCode",
+    "quickCondition":"fuzzyCondition",
     "conditions":[
       {"title":"产品编码",
         "name":"fittingSkuCode"},
       {"title":"产品名称",
-        "name":"fittingSkuName"}
+        "name":"fittingSkuName"},
+      {"title":"快速编码",
+        "name":"quickCode"}
     ],
     "columns":[
       {
@@ -62,6 +64,36 @@
         "name":"fittingSkuCode"
       },
       {"title":"产品名称",
+        "name":"fittingSkuName"},
+      {"title":"车型",
+        "name":"modelCode"},
+      {"title":"快速编码",
+        "name":"quickCode"}
+    ]
+  },
+  "POP_SKU_GROUP":{
+    "sys":"wms",
+    "query": "BdFittingSkuGroupMapper.selectAllByPage",
+    "title": "通用组",
+    "value":"groupCode",
+    "name":"groupName",
+    "quickCondition":"groupCode",
+    "conditions":[
+      {"title":"编码",
+        "name":"groupCode"},
+      {"title":"名称",
+        "name":"groupName"},
+      {"title":"通用产品编码",
+        "name":"fittingSkuCode"}
+    ],
+    "columns":[
+      {"title":"编码",
+        "name":"groupCode"},
+      {"title":"名称",
+        "name":"groupName"},
+      {"title":"通用产品编码",
+        "name":"fittingSkuCode"},
+      {"title":"通用产品名称",
         "name":"fittingSkuName"}
     ]
   },

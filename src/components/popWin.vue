@@ -8,7 +8,7 @@
     import { query } from '../api/popWinApi';
     var popConfig = require('../../static/popwin.json');
     Vue.component('popwin-button', {
-        model: {    // 使用model， 这儿2个属性，prop属性说，我要将msg作为该组件被使用时（此处为aa组件被父组件调用）v-model能取到的值，event说，我emit ‘cc’ 的时候，参数的值就是父组件v-model收到的值。
+        model: {    // 使用model， 这儿2个属性，prop属性说，我要将selectValue作为该组件被使用时（此处为aa组件被父组件调用）v-model能取到的值，event说，我emit ‘eventFor’ 的时候，参数的值就是父组件v-model收到的值。
             prop: 'selectValue',
             event: 'eventFor'
         },
@@ -21,14 +21,13 @@
             showName:{
                 type: Boolean,
                 default: false
+            },
+            displayName:{
+                type:String,
+                default:''
             }
         },
-//        template:'<el-input v-model="getColumns" placeholder="请输入内容"></el-input>',
-//		  template:'<el-table :data="data2">'+
-//		  				'<el-table-column v-for="item in getColumns2" :prop="item.name" :label="item.title"></el-table-column>'+
-//		            '</el-table>',
-         template:'<div><el-popover ref="popBtn" placement="top-start" width="510" trigger="click">'+
-//         				'<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">'+
+        template:'<div><el-popover ref="popBtn" placement="top-start" width="510" trigger="click">'+
          '<el-form :inline="true" :model="filters">'+
         	 '<el-form-item>'+
          		'<el-select v-model="filters.queryValue" size="small"  placeholder="查询条件">'+
@@ -53,7 +52,7 @@
 		 '</el-popover>'+
          '<el-row :gutter="0">'+
          '<el-col :span="18">'+
-         '<el-autocomplete v-if="!showName" popper-class="my-autocomplete" :disabled="disabled" v-model="inputValue" :fetch-suggestions="querySearch"  placeholder="请输入内容" @select="handleSelect" :trigger-on-focus=false>'+
+         '<el-autocomplete v-if="!showName" popper-class="my-autocomplete" :disabled="disabled" v-model="inputValue" :fetch-suggestions="querySearch"  style="width:100%" placeholder="请输入内容" @select="handleSelect" :trigger-on-focus=false>'+
          '<i class="el-icon-circle-close el-input__icon" slot="suffix" @click="handleIconClick">'+
          '</i>'+
          '<template slot-scope="props">'+
@@ -62,7 +61,7 @@
          '<div class="name" style="display: none">{{ props.item.row }}</div>'+
          '</template>'+
          '</el-autocomplete>' +
-         '<el-autocomplete v-if="showName" popper-class="my-autocomplete" :disabled="disabled" v-model="name" :fetch-suggestions="querySearch"  placeholder="请输入内容" @select="handleSelect" :trigger-on-focus=false>'+
+         '<el-autocomplete v-if="showName" popper-class="my-autocomplete" :disabled="disabled" v-model="name" :fetch-suggestions="querySearch" style="width:100%"  placeholder="请输入内容" @select="handleSelect" :trigger-on-focus=false>'+
             '<i class="el-icon-circle-close el-input__icon" slot="suffix" @click="handleIconClick">'+
             '</i>'+
             '<template slot-scope="props">'+
@@ -110,13 +109,6 @@
                 name:'',
                 restaurants: [],
                 filters:{condtion:"",queryValue:""},
-//				data2:[{
-//					roleCode:"A1",
-//					roleName:"角色1"
-//				},{
-//                    roleCode:"A2",
-//                    roleName:"角色2"
-//				}]
 				data2:[],
                 page: 1,
                 size:5,
@@ -126,11 +118,15 @@
         },
         watch: {
             selectValue: function (val) {
-                this.inputValue = val;
+                this.inputValue = val
+            },
+            displayName:function(val){
+                this.name = val
             }
         },
         mounted(){
-            this.inputValue = this.selectValue;
+            this.inputValue = this.selectValue
+            this.name = this.displayName
         },
         methods: {
             handleCurrentChange:function(currentRow,oldCurrentRow){
@@ -178,8 +174,6 @@
                 }
                 var restaurants = this.restaurants;
                 var results = {};
-                // 调用 callback 返回建议列表的数据
-                //cb(results);
                 let para = {};
                 para['page'] = 1;
                 para['size'] = 10;
@@ -191,7 +185,6 @@
                 query(para).then((res) => {
                     results = this.converte(res.data.list);
                     cb(results);
-                    //NProgress.done();
                 });
             },
             handleSelect(item) {

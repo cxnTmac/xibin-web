@@ -63,52 +63,56 @@
 						</el-col>
 					</el-row>
 				</div>
-				<el-table :data="detailGrid.voucherDetail" :row-click="rowClick" border show-summary  :summary-method="getSummaries" highlight-current-row v-loading="detailGrid.listLoading" @current-change="handleCurrentChange"  stripe style="width: 100%;">
-					<el-table-column type="selection" width="55">
+				<el-table :data="detailGrid.voucherDetail" :row-click="rowClick" border show-summary  :summary-method="getSummaries" highlight-current-row v-loading="detailGrid.listLoading" @current-change="handleCurrentChange"  stripe >
+					<el-table-column type="selection" width="40">
 					</el-table-column>
-					<el-table-column prop="lineNo" label="行号" width="100" >
+					<el-table-column prop="lineNo" label="行号" width="40" >
 					</el-table-column>
-					<el-table-column prop="courseNo" label="科目编码" width="250" >
-						<template scope="scope">
+					<el-table-column prop="add" label="插入" width="60" >
+						<template slot-scope="scope">
+							<!--<el-button size="small"  @click="handleDetailEdit(scope.$index, scope.row)">编辑</el-button>-->
+							<el-button   size="small" @click="handleDetailInsert(scope.$index, scope.row)">+</el-button>
+						</template>
+					</el-table-column>
+					<el-table-column prop="summary" label="摘要" width="150" >
+						<template slot-scope="scope">
 							<div slot="reference" class="name-wrapper">
-								<popwin-button popKey="POP_COURSE" :selectValue="scope.row.courseNo" v-model="scope.row.courseNo" @changeValue="changePopValueForCourseNo"></popwin-button>
+								<el-input v-model="scope.row.summary"  auto-complete="off"></el-input>
 							</div>
 						</template>
 					</el-table-column>
-					<el-table-column prop="auxiliary" label="辅助核算" width="250" >
-						<template scope="scope">
+					<el-table-column prop="courseNo" label="科目编码" width="140" >
+						<template slot-scope="scope">
 							<div slot="reference" class="name-wrapper">
-								<popwin-button popKey="POP_AUXILIARY" @changeValue="changePopValueForAuxiliary" :disabled="auxiliaryDisabled" :selectValue="scope.row.auxiId" v-model="scope.row.auxiId" :staticCondition="auxiliaryQueryCondition"></popwin-button>
+								<popwin-button popKey="POP_COURSE" :disabled="editable(scope.row)" :selectValue="scope.row.courseNo" v-model="scope.row.courseNo" @changeValue="changePopValueForCourseNo" :staticCondition="courseQueryCondition"></popwin-button>
+							</div>
+						</template>
+					</el-table-column>
+					<el-table-column prop="auxiliary" label="辅助核算" width="120" >
+						<template slot-scope="scope">
+							<div slot="reference" class="name-wrapper">
+								<popwin-button popKey="POP_AUXILIARY" @changeValue="changePopValueForAuxiliary" :disabled="auxiliaryDisabled&&editable(scope.row)" :selectValue="scope.row.auxiId" v-model="scope.row.auxiId" :staticCondition="auxiliaryQueryCondition"></popwin-button>
 							</div>
 						</template>
 					</el-table-column>
 					<el-table-column prop="fullCourseName" label="科目名称" width="200"  :formatter="formatFullCourseName">
 					</el-table-column>
 					<el-table-column prop="debit" label="借" width="200">
-						<template scope="scope">
+						<template slot-scope="scope">
 							<div slot="reference" class="name-wrapper">
-								<el-input-number    v-model="scope.row.debit"   auto-complete="off"></el-input-number>
+								<el-input-number  :disabled="editable(scope.row)" @keyup.enter.native="toGoEqual(scope)" v-model="scope.row.debit"   auto-complete="off"></el-input-number>
 							</div>
 						</template>
 					</el-table-column>
 					<el-table-column prop="credit" label="贷" width="200">
-						<template scope="scope">
+						<template slot-scope="scope">
 							<div slot="reference" class="name-wrapper">
-								<el-input-number    v-model="scope.row.credit"   auto-complete="off"></el-input-number>
+								<el-input-number :disabled="editable(scope.row)"   v-model="scope.row.credit"   auto-complete="off"></el-input-number>
 							</div>
 						</template>
 					</el-table-column>
-					<el-table-column prop="summary" label="摘要" width="400" >
-						<template scope="scope">
-							<div slot="reference" class="name-wrapper">
-								<el-input v-model="scope.row.summary"  auto-complete="off"></el-input>
-							</div>
-						</template>
-					</el-table-column>
-
-
 					<el-table-column label="操作" fixed="right" min-width="150">
-						<template scope="scope">
+						<template slot-scope="scope">
 							<!--<el-button size="small"  @click="handleDetailEdit(scope.$index, scope.row)">编辑</el-button>-->
 							<el-button type="danger"  size="small" @click="handleDetailDel(scope.$index, scope.row)">删除</el-button>
 						</template>
@@ -160,6 +164,7 @@
                         toGo:'',
                         debit:0,
                         credit:0,
+						editable:'Y',
                         summary:'',
                         auxiId:'',
                         amount:0,
@@ -196,7 +201,9 @@
 				],
 				currentPeriod:'',
                 auxiliaryQueryCondition:'',
+                courseQueryCondition:{isChild:'Y'},
                 auxiliaryDisabled:true
+
 			}
 		},
         computed: {
@@ -239,6 +246,34 @@
             }
         },
 		methods: {
+            toGoEqual:function (scope) {
+				let debitSum = 0;
+                let creditSum = 0;
+				if(scope.column.property === 'debit'){
+                    for(let i = 0;i<this.detailGrid.voucherDetail.length;i++){
+                        creditSum += this.detailGrid.voucherDetail[i].credit;
+                        if(i !== scope.$index){
+                            debitSum+= this.detailGrid.voucherDetail[i].debit;
+						}
+                    }
+                    this.detailGrid.voucherDetail[scope.$index].debit = creditSum-debitSum;
+				}else if(scope.column.property === 'crebit'){
+                    for(let i = 0;i<this.detailGrid.voucherDetail.length;i++){
+                        debitSum+= this.detailGrid.voucherDetail[i].debit;
+                        if(i !== scope.$index){
+                            creditSum += this.detailGrid.voucherDetail[i].credit;
+                        }
+                    }
+                    this.detailGrid.voucherDetail[scope.$index].credit = debitSum-creditSum;
+				}
+            },
+            editable:function(row){
+                if(row.editable === 'Y'){
+                    return false;
+				}else if(row.editable === 'N'){
+                    return true;
+				}
+			},
             formatFullCourseName:function (row, column) {
                 if(!util.isNullOrUndefined(row.auxiliaryName)){
                     return row.courseName+'-'+row.auxiliaryName;
@@ -253,7 +288,7 @@
                         sums[index] = '合计';
                         return;
                     }
-                    if(index !== 5 && index!==6){
+                    if(index !== 7 && index!==8){
                         sums[index] = '';
                         return
 					}
@@ -271,14 +306,14 @@
                         sums[index] = 'N/A';
                     }
                 });
-				this.detailGrid.sumForDebit = sums[5];
-				this.detailGrid.sumForCredit = sums[6];
+				this.detailGrid.sumForDebit = sums[7];
+				this.detailGrid.sumForCredit = sums[8];
                 return sums;
             },
             handleCurrentChange:function (currentRow,oldCurrentRow) {
 				if(oldCurrentRow !==null){
                     //必填校验
-                    if(this.auxiliaryDisabled == false && (util.isNullOrUndefined(oldCurrentRow.auxiId)||oldCurrentRow.auxiId === '')){
+                    if(this.auxiliaryDisabled == false && (!util.isNullOrUndefined(oldCurrentRow.auxiId)||!oldCurrentRow.auxiId === '')){
                         this.$message.error('必须填写辅助核算项目');
                     }
 				}
@@ -304,6 +339,7 @@
                         this.$message.error('行号'+this.detailGrid.voucherDetail[i].lineNo+'借贷金额均为空');
                         return false;
 					}
+					debugger
 					//如果该行的辅助核算项目是必填的
 					if(this.detailGrid.voucherDetail[i]['auxirequired'] == true
 							&&(this.detailGrid.voucherDetail[i].auxiId === null||this.detailGrid.voucherDetail[i].auxiId === '')){
@@ -358,7 +394,8 @@
                     this.pageControl.saveAndAddBtnLoading = true;
                     let para = {
                         voucher:JSON.stringify(this.voucher),
-                    	details:JSON.stringify(this.detailGrid.voucherDetail)
+                    	details:JSON.stringify(this.detailGrid.voucherDetail),
+                        removeDetails:JSON.stringify(this.detailGrid.removeDetail)
                 	}
                     saveVoucherAndDetail(para).then((res) => {
                         this.pageControl.saveAndAddBtnLoading = false;
@@ -426,10 +463,8 @@
                 this.$router.push({ path: '/voucher' });
             },
             addDetailHandler:function () {
-			    var lastLineNo = 1;
-			    if(this.detailGrid.voucherDetail.length>0){
-			        lastLineNo = this.detailGrid.voucherDetail[this.detailGrid.voucherDetail.length-1].lineNo+1;
-				}
+                var lastLineNo =  this.getLastLineNo()+1;
+                alert(lastLineNo);
                 this.detailGrid.voucherDetail.push({
                     id:'',
                     voucherId:'',
@@ -438,6 +473,7 @@
                     toGo:'',
                     debit:0,
                     credit:0,
+                    editable:'Y',
                     summary:'',
                     auxiId:'',
                     amount:0,
@@ -451,6 +487,38 @@
                     companyId:'',
                 });
                 this.auxiliaryDisabled = true
+            },
+			getLastLineNo:function () {
+				var lineNos = []
+				for(let i = 0;i<this.detailGrid.voucherDetail.length;i++){
+				    lineNos.push(this.detailGrid.voucherDetail[i].lineNo)
+				}
+				return Math.max.apply(null, lineNos);
+            },
+            handleDetailInsert:function (index,row) {
+                var lastLineNo =  this.getLastLineNo()+1;
+                alert(lastLineNo);
+                this.detailGrid.voucherDetail.splice(index,0,{
+                    id:'',
+                    voucherId:'',
+                    courseNo:'',
+                    lineNo:lastLineNo,
+                    toGo:'',
+                    debit:0,
+                    credit:0,
+                    editable:'Y',
+                    summary:'',
+                    auxiId:'',
+                    amount:0,
+                    price:0,
+                    remark:'',
+                    creator:'',
+                    createTime:'',
+                    modifier:'',
+                    modifyTime:'',
+                    rec_ver:'',
+                    companyId:'',
+                });
             },
             handleDetailDel:function (index,row) {
 			    if(row.id!==null){
@@ -483,8 +551,9 @@
             changePopValueForCourseNo:function (row) {
                 this.detailGrid.currentRow.courseName = row.courseName;
                 this.detailGrid.currentRow.auxiId = null;
+				debugger
                 //如果 辅助核算ID不为空
-			    if(!util.isNullOrUndefined(row.auxiliary)){
+			    if(!util.isNullOrUndefined(row.auxiliary)&&row.auxiliary!== ''){
                     this.auxiliaryQueryCondition = {fid:row.auxiliary}
                     this.auxiliaryDisabled = false
                     this.detailGrid.currentRow['auxirequired'] = true
@@ -521,6 +590,7 @@
                     rec_ver:0,
                     companyId:''
                 }
+                this.detailGrid.voucherDetail = [];
                 this.detailGrid.voucherDetail.push({
                     id:'',
                     voucherId:'',
@@ -529,6 +599,7 @@
                     toGo:'',
                     debit:0,
                     credit:0,
+                    editable:'Y',
                     summary:'',
                     auxiId:'',
                     amount:0,
@@ -549,6 +620,7 @@
                     toGo:'',
                     debit:0,
                     credit:0,
+                    editable:'Y',
                     summary:'',
                     auxiId:'',
                     amount:0,
@@ -564,7 +636,7 @@
             }
 		},
 		mounted() {
-            var user = sessionStorage.getItem('user');
+            var user = localStorage.getItem('user');
             user = JSON.parse(user);
             this.currentPeriod = user.currentPeriod;
 		    if(this.status === 'EDIT'){

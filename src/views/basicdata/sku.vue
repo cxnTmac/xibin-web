@@ -5,7 +5,7 @@
 			<el-form :inline="true" :model="filters" ref="queryForm">
 				<el-row :gutter="0">
 					<el-form-item label="配件类型" prop="fittingTypeCode">
-						<popwin-button popKey="POP_FITTINGTYPE" :showName="true" :selectValue="filters.fittingTypeCode" v-model="filters.fittingTypeCode" ></popwin-button>
+						<popwin-button popKey="POP_FITTINGTYPE" :showName="true" :displayName="filters.fittingTypeName" v-model="filters.fittingTypeCode" ></popwin-button>
 					</el-form-item>
 					<el-form-item label="产品名称" prop="fittingSkuName">
 						<el-input v-model="filters.fittingSkuName" placeholder="产品名称"></el-input>
@@ -14,7 +14,15 @@
 						<el-input v-model="filters.fittingSkuCode" placeholder="产品编码"></el-input>
 					</el-form-item>
 					<el-form-item label="车型" prop="modelCode">
-						<el-input v-model="filters.modelCode" placeholder="车型"></el-input>
+						<el-autocomplete
+								class="inline-input"
+								v-model="filters.modelCode"
+								:fetch-suggestions="querySearch"
+								placeholder="请输入内容"
+								:trigger-on-focus="false"
+								@select="handleSelect"
+						></el-autocomplete>
+						<!--<el-input v-model="filters.modelCode" placeholder="车型"></el-input>-->
 					</el-form-item>
 					<el-button type="primary" class="el-icon-caret-bottom" v-on:click="showMoreConditionHandler"></el-button>
 					<el-button type="danger" style="float: right"  @click="reset">重置</el-button>
@@ -22,6 +30,9 @@
 				</el-row>
 				<transition name="el-zoom-in-top">
 				<el-row :gutter="0" v-if="showMoreQueryCondition">
+					<el-form-item label="快速编码" prop="quickCode">
+						<el-input v-model="filters.quickCode" placeholder="快速编码"></el-input>
+					</el-form-item>
 				</el-row>
 				</transition>
 			</el-form>
@@ -33,51 +44,49 @@
 			</el-table-column>
 			<el-table-column prop="id" label="id" width="80" sortable>
 			</el-table-column>
-			<el-table-column prop="fittingSkuCode" label="产品编码" width="120" sortable>
+			<el-table-column prop="fittingSkuCode" label="产品编码" width="80">
 			</el-table-column>
-			<el-table-column prop="fittingSkuName" label="产品名称" width="120" sortable>
+			<el-table-column prop="fittingSkuName" label="产品名称" width="120">
 			</el-table-column>
 			<el-table-column prop="modelCode" label="车型" width="120" >
 			</el-table-column>
 			<el-table-column prop="fittingSkuStatus" label="状态"  width="80" >
-				<template scope="scope">
+				<template slot-scope="scope">
 					<div slot="reference" class="name-wrapper">
 						<el-tag :type="getStatusTagType(scope.row)">{{ formateType(scope.row) }}</el-tag>
 					</div>
 				</template>
 			</el-table-column>
-			<el-table-column prop="fittingTypeCode" label="配件类别编码" width="120" >
-			</el-table-column>
 			<el-table-column prop="fittingTypeName" label="配件类别名称" width="120" >
+			</el-table-column>
+			<el-table-column prop="packageCode" label="包装编码" width="80" >
+			</el-table-column>
+			<el-table-column prop="uomDesc" label="单位" width="80" >
+			</el-table-column>
+			<el-table-column prop="type" label="包装类别" width="80"  :formatter="formatISPACKED">
 			</el-table-column>
 			<el-table-column prop="fittingSkuRemark" label="产品备注" width="120" >
 			</el-table-column>
-			<el-table-column prop="manufacturer" label="生产厂家" width="120" >
+			<el-table-column prop="manufacturer" label="生产厂家" width="80" >
 			</el-table-column>
-			<el-table-column prop="materialquality" label="材质" width="120" >
+			<el-table-column prop="materialquality" label="材质" width="80" >
 			</el-table-column>
-			<!--<el-table-column prop="packageCode" label="包装编码" width="120" sortable>-->
-			<!--</el-table-column>-->
-			<el-table-column prop="uomDesc" label="单位" width="120" >
+			<el-table-column prop="price" label="参考价格" width="80">
 			</el-table-column>
-			<el-table-column prop="price" label="参考价格" width="120" sortable>
-			</el-table-column>
-
-			<el-table-column prop="type" label="包装类别" width="120"  :formatter="formatISPACKED">
+			<el-table-column prop="fittingTypeCode" label="配件类别编码" width="120" >
 			</el-table-column>
 			<el-table-column prop="def1" label="详细尺寸" width="120" >
 			</el-table-column>
-			<el-table-column prop="def2" label="自定义2" width="120" >
+			<!-- <el-table-column prop="def2" label="自定义2" width="80" >
 			</el-table-column>
-			<el-table-column prop="def3" label="自定义3" width="120" >
+			<el-table-column prop="def3" label="自定义3" width="80" >
 			</el-table-column>
-			<el-table-column prop="def4" label="自定义4" width="120" >
+			<el-table-column prop="def4" label="自定义4" width="80" >
 			</el-table-column>
-			<el-table-column prop="def5" label="自定义5" width="120" >
-			</el-table-column>
-
+			<el-table-column prop="def5" label="自定义5" width="80" >
+			</el-table-column> -->
 			<el-table-column label="操作" fixed="right" min-width="430">
-				<template scope="scope">
+				<template slot-scope="scope">
 					<el-button type="success" size="small" @click="handleSetNew(scope.$index, scope.row)">设置为新品</el-button>
 					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)"><i class="el-icon-delete2 el-icon--left"></i>删除</el-button>
@@ -90,7 +99,7 @@
 		<el-col :span="24" class="toolbar">
 
 			<el-button type="primary" @click="handleAdd"><i class="el-icon-plus el-icon--left"></i>新增</el-button>
-			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0"><i class="el-icon-delete2 el-icon--left"></i>批量删除</el-button>
+			<el-button type="primary" @click="openExcelImportPopWin">excel导入金蝶编码查询产品编码</el-button>
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="size" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
@@ -144,38 +153,57 @@
 				<el-tab-pane label="产品信息" name="first">
 					<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
 						<el-row :gutter="0">
-							<el-col :span="12">
+							<el-col :span="8">
 								<el-form-item label="产品编码" prop="fittingSkuCode">
 									<el-input v-model="editForm.fittingSkuCode" :disabled="true" auto-complete="off"></el-input>
 								</el-form-item>
 							</el-col>
-							<el-col :span="12">
+							<el-col :span="8">
+								<el-form-item label="快速编码" prop="quickCode">
+									<el-input v-model="editForm.quickCode" :disabled="true" auto-complete="off"></el-input>
+								</el-form-item>
+							</el-col>
+							<el-col :span="8">
 								<el-form-item label="产品名称" prop="fittingSkuName">
 									<el-input v-model="editForm.fittingSkuName" auto-complete="off"></el-input>
 								</el-form-item>
 							</el-col>
 						</el-row>
 						<el-row :gutter="0">
-							<el-col :span="12">
-								<el-form-item label="产品备注" prop="fittingSkuRemark">
-									<el-input v-model="editForm.fittingSkuRemark" auto-complete="off"></el-input>
+							<el-col :span="8">
+								<el-form-item label="车型" prop="modelCode">
+									<el-input v-model="editForm.modelCode" auto-complete="off"></el-input>
 								</el-form-item>
 							</el-col>
-							<el-col :span="12">
-								<el-form-item label="参考价格" prop="price">
-									<el-input-number v-model="editForm.price" auto-complete="off"></el-input-number>
+							<el-col :span="8">
+								<el-form-item label="配件类别" prop="fittingTypeCode">
+									<popwin-button popKey="POP_FITTINGTYPE" :showName="true" :displayName="editForm.fittingTypeName" v-model="editForm.fittingTypeCode" ></popwin-button>
+								</el-form-item>
+							</el-col>
+							<el-col :span="4">
+								<el-form-item label="是否显示" prop="isShow">
+									<el-switch
+											v-model="editForm.isShow"
+											active-color="#13ce66"
+											inactive-color="#ff4949"
+											active-value="Y"
+											inactive-value="N">
+									</el-switch>
 								</el-form-item>
 							</el-col>
 						</el-row>
 						<el-row :gutter="0">
+							
+						</el-row>
+						
+						
+						
+						<el-row :gutter="0">
+							
+							
 							<el-col :span="8">
-								<el-form-item label="生产厂家" prop="manufacturer">
-									<el-input v-model="editForm.manufacturer" auto-complete="off"></el-input>
-								</el-form-item>
-							</el-col>
-							<el-col :span="8">
-								<el-form-item label="材质" prop="materialquality">
-									<el-input v-model="editForm.materialquality" auto-complete="off"></el-input>
+								<el-form-item label="包装规格" prop="packageCode">
+									<el-input v-model="editForm.packageCode" auto-complete="off"></el-input>
 								</el-form-item>
 							</el-col>
 							<el-col :span="8">
@@ -183,22 +211,7 @@
 									<el-input v-model="editForm.uomDesc" auto-complete="off"></el-input>
 								</el-form-item>
 							</el-col>
-
-						</el-row>
-						<el-row :gutter="0">
-							<el-col :span="12">
-								<el-form-item label="车型" prop="modelCode">
-									<el-input v-model="editForm.modelCode" auto-complete="off"></el-input>
-								</el-form-item>
-							</el-col>
-							<el-col :span="12">
-								<el-form-item label="配件类别" prop="fittingTypeCode">
-									<popwin-button popKey="POP_FITTINGTYPE" :selectValue="editForm.fittingTypeCode" v-model="editForm.fittingTypeCode" ></popwin-button>
-								</el-form-item>
-							</el-col>
-						</el-row>
-						<el-row :gutter="0">
-							<el-col :span="12">
+							<el-col :span="8">
 								<el-form-item label="包装类别" prop="type">
 									<el-select v-model="editForm.type" placeholder="请选择">
 										<el-option
@@ -212,15 +225,26 @@
 									</el-select>
 								</el-form-item>
 							</el-col>
-							<el-col :span="12">
-								<el-form-item label="详细尺寸" prop="def1">
-									<el-input v-model="editForm.def1" auto-complete="off"></el-input>
+							
+						</el-row>
+
+						<el-row :gutter="0">
+							<el-col :span="8">
+								<el-form-item label="状态" prop="fittingSkuStatus">
+									<el-select v-model="editForm.fittingSkuStatus" placeholder="请选择">
+										<el-option
+												v-for="item in stautus"
+												:key="item.code"
+												:label="item.name"
+												:value="item.code">
+											<span style="float: left">{{ item.name }}</span>
+											<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
+										</el-option>
+									</el-select>
 								</el-form-item>
 							</el-col>
-						</el-row>
-						<el-row :gutter="0">
-							<el-col :span="12">
-								<el-form-item label="是否组合件" prop="needToAssemble">
+							<el-col :span="8">
+								<el-form-item label="是否组装" prop="needToAssemble">
 									<el-select v-model="editForm.needToAssemble"  placeholder="请选择">
 										<el-option
 												v-for="item in yesOrNo"
@@ -234,7 +258,7 @@
 									<!--<el-input v-model="orderHeader.status" auto-complete="off"></el-input>-->
 								</el-form-item>
 							</el-col>
-							<el-col :span="12">
+							<el-col :span="8">
 								<el-form-item label="组装类型" prop="assembleType">
 									<el-select v-model="editForm.assembleType" :disabled="editFormAssembleTypeStatus" placeholder="请选择">
 										<el-option
@@ -249,7 +273,49 @@
 									<!--<el-input v-model="orderHeader.status" auto-complete="off"></el-input>-->
 								</el-form-item>
 							</el-col>
+							
 						</el-row>
+						<el-row :gutter="0">
+							
+							<el-col :span="12">
+								<el-form-item label="通用组" prop="groupCode">
+									<popwin-button popKey="POP_SKU_GROUP" :selectValue="editForm.groupCode" v-model="editForm.groupCode" ></popwin-button>
+								</el-form-item>
+							</el-col>
+							<el-col :span="4">
+							</el-col>
+						</el-row>
+						<el-row :gutter="0">
+							<el-col :span="8">
+								<el-form-item label="参考价格" prop="price">
+									<el-input-number v-model="editForm.price" auto-complete="off"></el-input-number>
+								</el-form-item>
+							</el-col>
+							<el-col :span="8">
+								<el-form-item label="生产厂家" prop="manufacturer">
+									<el-input v-model="editForm.manufacturer" auto-complete="off"></el-input>
+								</el-form-item>
+							</el-col>
+							<el-col :span="8">
+								<el-form-item label="材质" prop="materialquality">
+									<el-input v-model="editForm.materialquality" auto-complete="off"></el-input>
+								</el-form-item>
+							</el-col>
+						</el-row>
+						<el-row :gutter="0">
+							<el-col :span="12">
+								<el-form-item label="产品备注" prop="fittingSkuRemark">
+									<el-input v-model="editForm.fittingSkuRemark" auto-complete="off"></el-input>
+								</el-form-item>
+							</el-col>
+							<el-col :span="12">
+								<el-form-item label="详细尺寸" prop="def1">
+									<el-input v-model="editForm.def1" auto-complete="off"></el-input>
+								</el-form-item>
+							</el-col>
+							
+						</el-row>
+						
 					</el-form>
 					<div style="float:right;">
 						<el-button @click.native="editFormVisible = false">取消</el-button>
@@ -263,7 +329,7 @@
 						<el-table-column prop="id" width="55">
 						</el-table-column>
 						<el-table-column prop="sSkuCode" label="子件编码" width="200" >
-							<template scope="scope">
+							<template slot-scope="scope">
 								<div slot="reference" class="name-wrapper">
 									<popwin-button popKey="POP_SKU" :selectValue="scope.row.sSkuCode" v-model="scope.row.sSkuCode" @changeValue="changePopValueForSkuCode"></popwin-button>
 								</div>
@@ -272,14 +338,14 @@
 						<el-table-column prop="sSkuName" label="子件名称" width="250" >
 						</el-table-column>
 						<el-table-column prop="num" label="数量" width="200">
-							<template scope="scope">
+							<template slot-scope="scope">
 								<div slot="reference" class="name-wrapper">
-									<el-input-number  :min="1"  v-model="scope.row.num"   auto-complete="off"></el-input-number>
+									<el-input-number   v-model="scope.row.num"   auto-complete="off"></el-input-number>
 								</div>
 							</template>
 						</el-table-column>
 						<el-table-column label="操作" fixed="right" min-width="150">
-							<template scope="scope">
+							<template slot-scope="scope">
 								<!--<el-button size="small"  @click="handleDetailEdit(scope.$index, scope.row)">编辑</el-button>-->
 								<el-button type="danger"  size="small" @click="handleAssembleSkuDel(scope.$index, scope.row)">删除</el-button>
 							</template>
@@ -291,6 +357,20 @@
 						<el-button type="primary" style="float: right" :disabled="btnAssembleSkuGridAddStatus" @click.native="saveSkuAssemble">保存</el-button>
 					</el-col>
 				</el-tab-pane>
+				<el-tab-pane label="通用产品" name="third" :disabled="editFormSkuGroupTabStatus">
+					<el-table :data="skuGroupSkus"  border highlight-current-row v-loading="skuGroupListLoading"  style="width: 100%;">
+						<el-table-column prop="groupCode" label="通用组编码" width="150" >
+						</el-table-column>
+						<el-table-column prop="groupCode" label="通用组名称" width="150" >
+						</el-table-column>
+						<el-table-column prop="fittingSkuCode" label="产品编码" width="200" >
+						</el-table-column>
+						<el-table-column prop="fittingSkuName" label="产品名称" width="300" >
+						</el-table-column>
+						<el-table-column prop="modelCode" label="车型">
+						</el-table-column>
+					</el-table>
+				</el-tab-pane>
 			</el-tabs>
 
 		</el-dialog>
@@ -299,38 +379,49 @@
 		<el-dialog title="新增" :visible.sync="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
 				<el-row :gutter="0">
-					<el-col :span="12">
+					<el-col :span="8">
 						<el-form-item label="产品编码" prop="fittingSkuCode">
 							<el-input v-model="addForm.fittingSkuCode" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
-					<el-col :span="12">
+					<el-col :span="8">
+						<el-form-item label="快速编码" prop="quickCode">
+							<el-input v-model="addForm.quickCode"  auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="8">
 						<el-form-item label="产品名称" prop="fittingSkuName">
 							<el-input v-model="addForm.fittingSkuName" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
 				</el-row>
 				<el-row :gutter="0">
-					<el-col :span="12">
-						<el-form-item label="产品备注" prop="fittingSkuRemark">
-							<el-input v-model="addForm.fittingSkuRemark" auto-complete="off"></el-input>
+					<el-col :span="8">
+						<el-form-item label="车型" prop="modelCode">
+							<el-input v-model="addForm.modelCode" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
-					<el-col :span="12">
-						<el-form-item label="参考价格" prop="price">
-							<el-input-number v-model="addForm.price" auto-complete="off"></el-input-number>
+					<el-col :span="8">
+						<el-form-item label="配件类别" prop="fittingTypeCode">
+							<popwin-button popKey="POP_FITTINGTYPE" :showName="true" :displayName="addForm.fittingTypeName" v-model="addForm.fittingTypeCode" ></popwin-button>
+						</el-form-item>
+					</el-col>
+					<el-col :span="8">
+						<el-form-item label="是否显示" prop="isShow">
+							<el-switch
+									v-model="addForm.isShow"
+									active-color="#13ce66"
+									inactive-color="#ff4949"
+									active-value="Y"
+									inactive-value="N">
+							</el-switch>
 						</el-form-item>
 					</el-col>
 				</el-row>
 				<el-row :gutter="0">
 					<el-col :span="8">
-						<el-form-item label="生产厂家" prop="manufacturer">
-							<el-input v-model="addForm.manufacturer" auto-complete="off"></el-input>
-						</el-form-item>
-					</el-col>
-					<el-col :span="8">
-						<el-form-item label="材质" prop="materialquality">
-							<el-input v-model="addForm.materialquality" auto-complete="off"></el-input>
+						<el-form-item label="包装规格" prop="packageCode">
+							<el-input v-model="addForm.packageCode" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
 					<el-col :span="8">
@@ -338,22 +429,7 @@
 							<el-input v-model="addForm.uomDesc" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
-
-				</el-row>
-				<el-row :gutter="0">
-					<el-col :span="12">
-						<el-form-item label="车型" prop="modelCode">
-							<el-input v-model="addForm.modelCode" auto-complete="off"></el-input>
-						</el-form-item>
-					</el-col>
-					<el-col :span="12">
-						<el-form-item label="配件类别" prop="fittingTypeCode">
-							<popwin-button popKey="POP_FITTINGTYPE" :selectValue="addForm.fittingTypeCode" v-model="addForm.fittingTypeCode" ></popwin-button>
-						</el-form-item>
-					</el-col>
-				</el-row>
-				<el-row :gutter="0">
-					<el-col :span="12">
+					<el-col :span="8">
 						<el-form-item label="包装类别" prop="type">
 							<el-select v-model="addForm.type" placeholder="请选择">
 								<el-option
@@ -367,15 +443,24 @@
 							</el-select>
 						</el-form-item>
 					</el-col>
-					<el-col :span="12">
-						<el-form-item label="详细尺寸" prop="def1">
-							<el-input v-model="addForm.def1" auto-complete="off"></el-input>
-						</el-form-item>
-					</el-col>
 				</el-row>
 				<el-row :gutter="0">
-					<el-col :span="12">
-						<el-form-item label="是否组合件" prop="needToAssemble">
+					<el-col :span="8">
+						<el-form-item label="状态" prop="fittingSkuStatus">
+							<el-select v-model="addForm.fittingSkuStatus" placeholder="请选择">
+								<el-option
+										v-for="item in stautus"
+										:key="item.code"
+										:label="item.name"
+										:value="item.code">
+									<span style="float: left">{{ item.name }}</span>
+									<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
+								</el-option>
+							</el-select>
+						</el-form-item>
+					</el-col>
+					<el-col :span="8">
+						<el-form-item label="是否组装" prop="needToAssemble">
 							<el-select v-model="addForm.needToAssemble"  placeholder="请选择">
 								<el-option
 										v-for="item in yesOrNo"
@@ -389,7 +474,7 @@
 							<!--<el-input v-model="orderHeader.status" auto-complete="off"></el-input>-->
 						</el-form-item>
 					</el-col>
-					<el-col :span="12">
+					<el-col :span="8">
 						<el-form-item label="组装类型" prop="assembleType">
 							<el-select v-model="addForm.assembleType" :disabled="addFormAssembleTypeStatus" placeholder="请选择">
 								<el-option
@@ -405,6 +490,42 @@
 						</el-form-item>
 					</el-col>
 				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="通用组" prop="groupCode">
+							<popwin-button popKey="POP_SKU_GROUP" :selectValue="addForm.groupCode" v-model="addForm.groupCode" ></popwin-button>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="8">
+						<el-form-item label="参考价格" prop="price">
+							<el-input-number v-model="addForm.price" auto-complete="off"></el-input-number>
+						</el-form-item>
+					</el-col>
+					<el-col :span="8">
+						<el-form-item label="生产厂家" prop="manufacturer">
+							<el-input v-model="addForm.manufacturer" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="8">
+						<el-form-item label="材质" prop="materialquality">
+							<el-input v-model="addForm.materialquality" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="产品备注" prop="fittingSkuRemark">
+							<el-input v-model="addForm.fittingSkuRemark" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="详细尺寸" prop="def1">
+							<el-input v-model="addForm.def1" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="addFormVisible = false">取消</el-button>
@@ -417,7 +538,42 @@
 			<img style="z-index: 9999" v-show="imagePreview.show" :src="imagePreview.src" :width="imagePreview.width" :height="imagePreview.height" @click="imagePreview.show = false">
 			</transition>
 		</div>
-
+		<el-dialog title="excel导入金蝶编码查询产品编码" :visible.sync="excelImportPopWinVisible" :close-on-click-modal="false">
+			<el-form :model="excelImportPopWinForm" label-width="80px" ref="excelImportPopWinForm">
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="金蝶编码列名" prop="skuCodeColumnName">
+							<el-input   v-model="excelImportPopWinForm.skuCodeColumnName" ></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="结果" prop="result">
+							<el-input  type="textarea"   v-model="excelImportPopWinForm.result" ></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row :gutter="0">
+					<el-upload ref="upload"
+							   class="upload-demo"
+							   drag
+							   :data= "excelImportPopWinForm"
+							   :on-success="uploadExcelConnectSuccess"
+							   :on-error="uploadExcelConnectFail"
+							   :before-upload="beforeExcelUplaod"
+							   action="/xibin/fittingSku/importSkuCodesByExcel.shtml"
+							   :file-list="excelFileList"
+							   multiple
+							   list-type="text"
+							   :auto-upload="true">
+						<i class="el-icon-upload"></i>
+						<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+						<div class="el-upload__tip" slot="tip">只能上传xls/xlsx文件</div>
+					</el-upload>
+				</el-row>
+			</el-form>
+		</el-dialog>
 	</section>
 </template>
 
@@ -425,11 +581,14 @@
 	import util from '../../common/js/util'
 	import Vue from 'vue'
 	import NProgress from 'nprogress'
+    import {getSkuGroupQueryItemByGroupCode} from '../../api/skuGroupApi'
+    import {getAllModel} from '../../api/modelApi'
 	import { saveFittingSkuAssemble,getFittingSkuAssemble,getFittingSkuListPage, removeFittingSku, batchRemoveFittingSku, saveFittingSku,getFittingSkuPic,removeFittingSkuPic, getFittingSkuListForInput} from '../../api/fittingSkuApi';
     var codemaster = require('../../../static/codemaster.json');
 	export default {
 		data() {
 			return {
+			    models:[],
 			    imagePreview:{
                     show:false,
 			        width:300,
@@ -439,14 +598,18 @@
                 showMoreQueryCondition:false,
                 imgs: [],
 				is_packed:codemaster.WM_IS_PACKED,
+				stautus:codemaster.BD_SKU_STATUS,
 				filters: {
 				    fittingSkuCode:'',
 					fittingSkuName: '',
                     modelCode:'',
-                    fittingTypeCode:''
+					fittingTypeCode:'',
+					fittingTypeName:'',
+                    quickCode:''
 				},
 				skus: [],
 				assembleSkus:[],
+                skuGroupSkus:[],//通用产品
 				removeAssembleSkus:[],
 				total: 0,
 				page: 1,
@@ -454,6 +617,7 @@
 				listLoading: false,
                 loading:true,
 				assembleListLoading:false,
+                skuGroupListLoading:false,
 				assembleSels:[],
                 currentAssembleSkuRow:{},
 				sels: [],//列表选中列
@@ -481,6 +645,7 @@
                     fittingSkuName: '',
                     fittingSkuStatus: '',
                     fittingSkuRemark:'',
+                    quickCode:'',
                     manufacturer:'',
                     materialquality:'',
                     packageCode:'',
@@ -489,6 +654,8 @@
                     modelCode:'',
                     fittingTypeCode:'',
                     type:'',
+                    isShow:'',
+                    groupCode:'',
                     def1:'',
                     def2:'',
                     def3:'',
@@ -521,6 +688,7 @@
                     fittingSkuName: '',
                     fittingSkuStatus: '',
                     fittingSkuRemark:'',
+                    quickCode:'',
                     manufacturer:'',
                     materialquality:'',
                     packageCode:'',
@@ -529,6 +697,8 @@
                     modelCode:'',
                     fittingTypeCode:'',
                     type:'',
+                    isShow:'',
+                    groupCode:'',
                     def1:'',
                     def2:'',
                     def3:'',
@@ -539,11 +709,18 @@
 				},
                 assembleType:codemaster.WM_ASSEMBLE_TYPE,
 				yesOrNo:codemaster.SYS_YES_NO,
-				//UI控制数据
+				//图片上传
                 dialogPicManagerVisible : false,
                 activeName:'picUpload',
 				editFormActiveName:'first',
-                fileList:[]
+				fileList:[],
+				//Excel上传
+				excelImportPopWinVisible:false,
+                excelImportPopWinForm:{
+                    skuCodeColumnName:'',
+                    result:''
+				},
+                excelFileList:[]
 			}
 		},
         computed: {
@@ -570,9 +747,42 @@
                 }else if(this.editForm.needToAssemble === 'N'){
                     return true;
                 }
+            },
+            editFormSkuGroupTabStatus:function () {
+                if(this.editForm.groupCode === null ||this.editForm.groupCode === ''){
+                    return true;
+                }else if(this.editForm.needToAssemble === 'N'){
+                    return false;
+                }
             }
         },
 		methods: {
+            handleSelect(item){
+                console.log(item);
+			},
+            querySearch(queryString, cb) {
+                var models = this.models;
+                var results = queryString ? models.filter(this.createFilter(queryString)) : models;
+                // 调用 callback 返回建议列表的数据
+                cb(results);
+            },
+            createFilter(queryString) {
+                return (model) => {
+                    return (model.value.toLowerCase().indexOf(queryString.toLowerCase()) >= 0);
+                };
+            },
+			queryAllModels(){
+				let para = { conditions: JSON.stringify({}) }
+                getAllModel(para).then((res) => {
+                    for(let i = 0;i<res.data.length;i++){
+                        this.models.push({value:res.data[i].modelName})
+                    }
+                    console.log(this.models)
+                    //NProgress.done();
+                }).catch((data) => {
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+			},
             handleCurrentAssembleSkuChange:function (currentRow,oldCurrentRow) {
                 this.currentAssembleRow = currentRow;
 
@@ -653,6 +863,8 @@
             assembleTabClick(tab) {
 				if(tab.name === 'second'){
                     this.getSkuAssemble()
+				}else if(tab.name === 'third'){
+					this.getSkuGroupSkus();
 				}
             },
             getSkuAssemble(){
@@ -660,16 +872,32 @@
                     conditions:JSON.stringify({fSkuCode:this.currentRow.fittingSkuCode})
                 };
                 this.assembleListLoading = true;
-                //NProgress.start();
                 getFittingSkuAssemble(para).then((res) => {
                     this.assembleSkus = res.data.list;
                     this.assembleListLoading = false;
-                    //NProgress.done();
                 }).catch((data) => {
                     this.assembleListLoading = false;
                     util.errorCallBack(data,this.$router,this.$message);
                 });
 			},
+            getSkuGroupSkus(){
+                if(this.currentRow.groupCode === ''||this.currentRow.groupCode === null){
+                    return;
+				}
+                let para = {
+                   groupCode:this.currentRow.groupCode
+                };
+                this.skuGroupListLoading = true;
+                getSkuGroupQueryItemByGroupCode(para).then((res) => {
+                    this.skuGroupSkus = res.data;
+                    this.skuGroupListLoading = false;
+                    //NProgress.done();
+                }).catch((data) => {
+                    this.skuGroupListLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+			},
+
             beforeSaveAssemble:function () {
                 for(let i = 0;i<this.assembleSkus.length;i++){
                     if(this.assembleSkus[i].sSkuCode === null||this.assembleSkus[i].sSkuCode === ''){
@@ -761,6 +989,8 @@
                     modelCode:'',
                     fittingTypeCode:'',
                     type:'',
+					isShow:'Y',
+                    groupCode:'',
                     def1:'',
                     def2:'',
                     def3:'',
@@ -928,6 +1158,38 @@
 //			startUpload : function() {
 //				this.$refs.upload.submit();
 //			},
+			openExcelImportPopWin(){
+                this.excelImportPopWinVisible = true;
+                this.excelImportPopWinForm = {
+                    skuCodeColumnName:'',
+                    result:''
+				}
+            },
+			beforeExcelUplaod:function (file) {
+                if(this.excelImportPopWinForm.cutomerCode === ''||this.excelImportPopWinForm.skuCodeColumnName === ''){
+                    this.$message.error("请填写完整数据！");
+                    return false;
+                }
+                return true;
+            },
+			uploadExcelConnectSuccess : function(res, file, fileList){
+                if(res.code == 0){
+                    this.$message.error(res.data.msg);
+                }else if(res.code == 200){
+                    let result = '';
+                    for(let i =0;i<res.data.length;i++){
+                        result = result+res.data[i]+'\n';
+					}
+					this.excelImportPopWinForm.result = result;
+                    this.$message({
+                        message: "操作成功",
+                        type: 'success'
+                    });
+                }
+            },
+            uploadExcelConnectFail : function(err, file, fileList){
+                this.$message.error("网络连接错误，上传失败！");
+            },
             uploadConnectSuccess : function(response, file, fileList){
                 if(response.code == 0){
                     this.$message.error(response.msg);
@@ -943,6 +1205,7 @@
 
 		},
 		mounted() {
+            this.queryAllModels();
 			this.getSkus();
 		}
 	}

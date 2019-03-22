@@ -37,11 +37,9 @@
 			</el-table-column>
 			<el-table-column prop="invAvailableNum" label="库存可用数" width="250">
 			</el-table-column>
-			<el-table-column prop="totalPrice" label="总价值" width="250">
+			<el-table-column prop="preAssembleNum" label="预组装数" width="250">
 			</el-table-column>
-			<el-table-column label="操作" fixed="right" min-width="150">
-				<template scope="scope">
-				</template>
+			<el-table-column prop="totalPrice" label="总价值" width="250">
 			</el-table-column>
 		</el-table>
 

@@ -111,11 +111,6 @@
 			</el-table-column>
 			<el-table-column prop="toQtyAfter" label="目标作后库存" width="250" >
 			</el-table-column>
-
-			<el-table-column label="操作" fixed="right" min-width="150">
-				<template scope="scope">
-				</template>
-			</el-table-column>
 		</el-table>
 
 		<!--工具条-->

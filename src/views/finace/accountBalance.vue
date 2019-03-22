@@ -26,26 +26,28 @@
 
 		<!--列表-->
 		<el-table :data="records" border show-summary  :summary-method="getSummaries" highlight-current-row v-loading="listLoading"  stripe style="width: 100%;">
-			<el-table-column prop="courseNo" label="科目编码" width="200" >
+			<el-table-column prop="courseNo" label="科目编码" width="100" >
 			</el-table-column>
 			<el-table-column prop="courseName" label="科目名称" width="200" >
 			</el-table-column>
+			<el-table-column prop="period" label="会计期间" width="100" >
+			</el-table-column>
 			<el-table-column label="期初余额">
-				<el-table-column prop="startBalance" label="借" width="200" :formatter="formatStartBalanceDebit">
+				<el-table-column prop="startBalance" label="借" width="100" :formatter="formatStartBalanceDebit">
 				</el-table-column>
-				<el-table-column prop="startBalance" label="贷" width="200"  :formatter="formatStartBalanceCredit">
+				<el-table-column prop="startBalance" label="贷" width="100"  :formatter="formatStartBalanceCredit">
 				</el-table-column>
 			</el-table-column>
 			<el-table-column label="本期发生额">
-				<el-table-column prop="sumDebit" label="借" width="200"  >
+				<el-table-column prop="sumDebit" label="借" width="100"  >
 				</el-table-column>
-				<el-table-column prop="sumCredit" label="贷" width="200"  >
+				<el-table-column prop="sumCredit" label="贷" width="100"  >
 				</el-table-column>
 			</el-table-column>
 			<el-table-column label="期末余额">
-				<el-table-column prop="endBalance" label="借" width="200"  :formatter="formatEndBalanceDebit">
+				<el-table-column prop="endBalance" label="借" width="100"  :formatter="formatEndBalanceDebit">
 				</el-table-column>
-				<el-table-column prop="endBalance" label="贷" width="200"   :formatter="formatEndBalanceCredit">
+				<el-table-column prop="endBalance" label="贷" width="100"   :formatter="formatEndBalanceCredit">
 				</el-table-column>
 			</el-table-column>
 		</el-table>
@@ -141,30 +143,62 @@
 			},
             formatStartBalanceDebit: function (row, column) {
                 if(row.toGo === '借'){
-                    return row.startBalance;
+                    if(row.startBalance>=0){
+                        return row.startBalance;
+                    }else{
+                        return null;
+                    }
                 }else if(row.toGo === '贷'){
-                    return null;
+                    if(row.startBalance<0){
+                        return -row.startBalance;
+                    }else{
+                        return null;
+                    }
                 }
             },
             formatStartBalanceCredit: function (row, column) {
                 if(row.toGo === '借'){
-                    return null;
+                    if(row.startBalance<0){
+                        return -row.startBalance;
+                    }else{
+                        return null;
+                    }
                 }else if(row.toGo === '贷'){
-                    return row.startBalance;
+                    if(row.startBalance>=0){
+                        return row.startBalance;
+                    }else{
+                        return null;
+                    }
                 }
             },
             formatEndBalanceDebit: function (row, column) {
                 if(row.toGo === '借'){
-                    return row.endBalance;
+                    if(row.endBalance>=0){
+                        return row.endBalance;
+					}else{
+                        return null;
+					}
                 }else if(row.toGo === '贷'){
-                    return null;
-                }
+                    if(row.endBalance<0){
+                        return -row.endBalance;
+                    }else{
+                        return null;
+                    }
+				}
             },
             formatEndBalanceCredit: function (row, column) {
                 if(row.toGo === '借'){
-                    return null;
+                    if(row.endBalance<0){
+                        return -row.endBalance;
+                    }else{
+                        return null;
+                    }
                 }else if(row.toGo === '贷'){
-                    return row.endBalance;
+                    if(row.endBalance>=0){
+                        return row.endBalance;
+                    }else{
+                        return null;
+                    }
                 }
             },
 		},

@@ -13,6 +13,7 @@
 				<el-button type="primary" :disabled="btnCancelAuditStatus" @click="cancelAudit" :loading="pageControl.cancelAuditBtnLoading">取消审核</el-button>
 				<el-button type="danger" :disabled="btnCloseStatus" @click="close" :loading="pageControl.closeBtnLoading">关闭订单</el-button>
 				<el-button type="success" :disabled="btnAccountStatus" @click="account" :loading="pageControl.accountBtnLoading">核算订单</el-button>
+				<el-button type="success" :disabled="btnAccountCostStatus" @click="accountCost" :loading="pageControl.accountCostBtnLoading">成本核算</el-button>
 			<el-button  @click="back" style="float: right">返回</el-button>
 		</el-col>
 
@@ -31,9 +32,9 @@
 							<el-input v-model="orderHeader.orderNo" disabled auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
-					<el-col :span="6">
+                    <el-col :span="6">
 						<el-form-item label="货主" prop="supplierCode">
-							<popwin-button popKey="POP_CUSTOMER" :selectValue="orderHeader.supplierCode" v-model="orderHeader.supplierCode"></popwin-button>
+							<popwin-button popKey="POP_CUSTOMER" :showName="true" :displayName="orderHeader.supplierName" @changeValue="headerSupplierChangeValue" v-model="orderHeader.supplierCode"></popwin-button>
 							<!--<el-input v-model="orderHeader.supplierCode" auto-complete="off"></el-input>-->
 						</el-form-item>
 					</el-col>
@@ -126,23 +127,34 @@
 				<el-table :data="detailGrid.orderDetail" border highlight-current-row v-loading="detailGrid.listLoading" @selection-change="selsChange" stripe style="width: 100%;">
 					<el-table-column type="selection" width="55">
 					</el-table-column>
-					<el-table-column prop="lineNo" label="行号" width="100" sortable>
+					<el-table-column prop="lineNo" label="行号" width="80" sortable>
 					</el-table-column>
-					<el-table-column prop="orderNo" label="入库单号" width="200" sortable>
+                    <el-table-column prop="status" label="状态" width="80" :formatter="formatStatus">
 					</el-table-column>
-					<el-table-column prop="supplierCode" label="客户编码" width="200" sortable>
+                    <el-table-column prop="skuCode" label="产品编码" width="100" >
 					</el-table-column>
-					<el-table-column prop="supplierName" label="客户名称" width="200" sortable>
+					<el-table-column prop="quickCode" label="快速编码" width="100" >
 					</el-table-column>
-					<el-table-column prop="skuCode" label="产品编码" width="200" sortable>
+					<el-table-column prop="fittingSkuName" label="产品名称" width="200" >
 					</el-table-column>
-					<el-table-column prop="status" label="状态" width="200" :formatter="formatStatus">
+                    <el-table-column prop="modelCode" label="车型" width="200" >
 					</el-table-column>
-					<el-table-column prop="inboundPreNum" label="预收数" width="200">
+                    <el-table-column prop="inboundPreNum" label="预收数" width="80">
 					</el-table-column>
-					<el-table-column prop="inboundNum" label="实收数" width="200">
+					<el-table-column prop="inboundNum" label="实收数" width="80">
 					</el-table-column>
-					<el-table-column prop="inboundPrice" label="收货价格" width="200">
+					<el-table-column prop="inboundPrice" label="收货价格" width="80">
+					</el-table-column>
+					<el-table-column prop="orderNo" label="入库单号" width="200" >
+					</el-table-column>
+					<el-table-column prop="supplierCode" label="客户编码" width="200" >
+					</el-table-column>
+					<el-table-column prop="supplierName" label="客户名称" width="200" >
+					</el-table-column>
+					
+					
+					
+					<el-table-column prop="cost" label="成本" width="200">
 					</el-table-column>
 					<el-table-column prop="planLoc" label="计划库位" width="200">
 					</el-table-column>
@@ -156,7 +168,7 @@
 					<!--</el-table-column>-->
 
 					<el-table-column label="操作" fixed="right" min-width="150">
-						<template scope="scope">
+						<template slot-scope="scope">
 							<el-button size="small"  @click="handleDetailEdit(scope.$index, scope.row)">编辑</el-button>
 							<el-button type="danger" :disabled="btnDetailGridDelStatus" size="small" @click="handleDetailDel(scope.$index, scope.row)">删除</el-button>
 						</template>
@@ -179,31 +191,35 @@
 				<el-table :data="detailReceiveGrid.orderDetailReceive" border highlight-current-row v-loading="detailReceiveGrid.listLoading" @selection-change="recSelsChange" stripe style="width: 100%;">
 					<el-table-column type="selection" width="55">
 					</el-table-column>
-					<el-table-column prop="lineNo" label="行号" width="100" sortable>
+					<el-table-column prop="lineNo" label="行号" width="80" sortable>
 					</el-table-column>
-					<el-table-column prop="recLineNo" label="收货明细行号" width="150" sortable>
+                    <el-table-column prop="recLineNo" label="收货明细行号" width="80" sortable>
 					</el-table-column>
-					<el-table-column prop="orderNo" label="入库单号" width="200" sortable>
+                    <el-table-column prop="status" label="状态" width="80" :formatter="formatStatus">
 					</el-table-column>
-					<el-table-column prop="supplierCode" label="客户编码" width="200" sortable>
+                    <el-table-column prop="skuCode" label="产品编码" width="80" >
 					</el-table-column>
-					<el-table-column prop="supplierName" label="客户名称" width="200" sortable>
+					<el-table-column prop="fittingSkuName" label="产品名称" width="200" >
 					</el-table-column>
-					<el-table-column prop="skuCode" label="产品编码" width="200" sortable>
+                    <el-table-column prop="modelCode" label="车型" width="200" >
 					</el-table-column>
-					<el-table-column prop="status" label="状态" width="200" :formatter="formatStatus">
+                    <el-table-column prop="inboundPreNum" label="预收数" width="80">
 					</el-table-column>
-					<el-table-column prop="inboundLocCode" label="收货库位" width="200">
+					<el-table-column prop="inboundNum" label="实收数" width="80">
 					</el-table-column>
-					<el-table-column prop="recTime" label="收货时间" width="200" :formatter="formatTime" >
+					<el-table-column prop="inboundPrice" label="收货价格" width="80">
 					</el-table-column>
-					<el-table-column prop="inboundPreNum" label="预收数" width="200">
+                    <el-table-column prop="recTime" label="收货时间" width="155" :formatter="formatTime" >
 					</el-table-column>
-					<el-table-column prop="inboundNum" label="实收数" width="200">
+                    <el-table-column prop="inboundLocCode" label="收货库位" width="80">
 					</el-table-column>
-					<el-table-column prop="inboundPrice" label="收货价格" width="200">
+					<el-table-column prop="orderNo" label="入库单号" width="200" >
 					</el-table-column>
-					<el-table-column prop="planLoc" label="计划库位" width="200">
+					<el-table-column prop="supplierCode" label="客户编码" width="80" >
+					</el-table-column>
+					<el-table-column prop="supplierName" label="客户名称" width="200" >
+					</el-table-column>
+					<el-table-column prop="cost" label="成本" width="80">
 					</el-table-column>
 					<el-table-column prop="remark" label="备注" >
 					</el-table-column>
@@ -211,16 +227,17 @@
 					<!--</el-table-column>-->
 
 					<el-table-column label="操作" fixed="right" min-width="80">
-						<template scope="scope">
+						<template slot-scope="scope">
 							<el-button size="small" @click="handleRecDetailEdit(scope.$index, scope.row)">查看</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
 				<!--工具条-->
 				<el-col :span="24" class="toolbar">
+					<el-button type="primary" @click="batchRecEditSubmit" :loading="pageControl.batchRecEditSubmitLoading" :disabled="this.detailReceiveGrid.sels.length===0">批量收货</el-button>
 					<!--<el-button type="primary" @click="recDetailConfirm">收货确认</el-button>-->
 					<!--<el-button type="danger" @click="recDetailCancel" :disabled="this.detailGrid.sels.length===0">取消收货</el-button>-->
-					<el-pagination layout="prev, pager, next" @current-change="handleCurrentDetailChange" :page-size="detailReceiveGrid.size" :total="detailReceiveGrid.total" style="float:right;">
+					<el-pagination layout="prev, pager, next" @current-change="handleCurrentReceivesDetailChange" :page-size="detailReceiveGrid.size" :total="detailReceiveGrid.total" style="float:right;">
 					</el-pagination>
 				</el-col>
 			</el-card>
@@ -235,15 +252,27 @@
 				<el-row :gutter="0">
 					<el-col :span="12">
 						<el-form-item label="货主" prop="supplierCode">
-							<popwin-button popKey="POP_CUSTOMER" :disabled="true" :selectValue="detailGrid.editForm.supplierCode" v-model="detailGrid.editForm.supplierCode"></popwin-button>
+							<popwin-button popKey="POP_CUSTOMER" :disabled="true" :showName="true" :displayName="detailGrid.editForm.supplierName"  v-model="detailGrid.editForm.supplierCode"></popwin-button>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="产品" prop="skuCode">
-							<popwin-button popKey="POP_SKU" :selectValue="detailGrid.editForm.skuCode" v-model="detailGrid.editForm.skuCode"></popwin-button>
+							<popwin-button popKey="POP_SKU" @changeValue="editFormSkuChangeValue" v-model="detailGrid.editForm.skuCode"></popwin-button>
 						</el-form-item>
 					</el-col>
 				</el-row>
+                <el-row :gutter="0">
+                    <el-col :span="12">
+						<el-form-item label="产品名称" prop="fittingSkuName">
+                            <el-input v-model="detailGrid.editForm.fittingSkuName" :disabled="true" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+                     <el-col :span="12">
+						<el-form-item label="车型" prop="modelCode">
+                            <el-input v-model="detailGrid.editForm.modelCode" :disabled="true" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+                </el-row>
 				<el-row :gutter="0">
 					<el-col :span="12">
 						<el-form-item label="状态" prop="status">
@@ -285,6 +314,11 @@
 							<!--<el-input v-model="detailGrid.editForm.planLoc" auto-complete="off"></el-input>-->
 						</el-form-item>
 					</el-col>
+					<el-col :span="12">
+						<el-form-item label="成本" prop="cost">
+							<el-input-number v-model="detailGrid.editForm.cost"  auto-complete="off"></el-input-number>
+						</el-form-item>
+					</el-col>
 				</el-row>
 				<el-row :gutter="0">
 					<el-col :span="24">
@@ -317,6 +351,18 @@
 						</el-form-item>
 					</el-col>
 				</el-row>
+                <el-row :gutter="0">
+                    <el-col :span="12">
+						<el-form-item label="产品名称" prop="fittingSkuName">
+                            <el-input v-model="detailReceiveGrid.editForm.fittingSkuName" :disabled="true" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+                     <el-col :span="12">
+						<el-form-item label="车型" prop="modelCode">
+                            <el-input v-model="detailReceiveGrid.editForm.modelCode" :disabled="true" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+                </el-row>
 				<el-row :gutter="0">
 					<el-col :span="12">
 						<el-form-item label="状态" prop="status">
@@ -358,6 +404,13 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
+						<el-form-item label="成本" prop="cost">
+							<el-input-number v-model="detailReceiveGrid.editForm.cost" auto-complete="off"></el-input-number>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="12">
 						<el-form-item label="实际库位" prop="inboundLocCode">
 							<popwin-button popKey="POP_LOC" :selectValue="detailReceiveGrid.editForm.inboundLocCode" v-model="detailReceiveGrid.editForm.inboundLocCode" ></popwin-button>
 							<!--<el-input v-model="detailGrid.editForm.planLoc" auto-complete="off"></el-input>-->
@@ -384,7 +437,7 @@
 <script>
 	import util from '../../common/js/util'
 	import NProgress from 'nprogress'
-	import { getInboundOrderListPage, saveInboundOrder, getInboundOrderHeader,getInboundDetailListPage,saveInboundDetail,removeInboundDetail,getInboundRecListPage,receive,cancelReceive,audit,cancelAudit,close,accountByOrderNo} from '../../api/inboundApi';
+	import { getInboundOrderListPage, saveInboundOrder, getInboundOrderHeader,getInboundDetailListPage,saveInboundDetail,removeInboundDetail,getInboundRecListPage,receive,batchReceive,cancelReceive,audit,cancelAudit,close,accountByOrderNo,accountCostByOrderNo} from '../../api/inboundApi';
     var codemaster = require('../../../static/codemaster.json');
 	export default {
 		data() {
@@ -394,12 +447,15 @@
 					orderNo:'',
 					supplierCode:'',
 					status:'',
+					isCalculated:'',
+                    isCostCalculated:'',
+					voucherId:0,
+					costVoucherId:0,
 					orderTime:'',
 					auditOp:'',
 					auditStatus:'',
                     auditTime:'',
                     inboundType:'',
-                    isCalculated:'N',
                     remark:'',
                     creator:'',
                     createTime:'',
@@ -420,6 +476,7 @@
                         inboundPreNum:0,
                         inboundNum:0,
                         inboundPrice:0,
+						cost:0,
                         planLoc:'',
 						isCreatedVoucher:'N',
 						voucherNo:'',
@@ -436,6 +493,9 @@
                         supplierCode:[
                             { required: true, message: '请选择货主', trigger: 'blur' }
                         ],
+						skuCode:[
+                            { required: true, message: '请选择产品', trigger: 'blur' }
+						],
                         inboundPreNum:[
                             { type: 'number',required: true, message: '请输入预收数', trigger: 'blur' }
                         ],
@@ -463,7 +523,9 @@
                     recEditLoading:false,
                     cancelRecEditLoading:false,
                     closeBtnLoading:false,
-                    accountBtnLoading:false
+                    accountBtnLoading:false,
+                    batchRecEditSubmitLoading:false,
+                    accountCostBtnLoading:false
 				},
 				detailReceiveGrid:{
                     editForm:{
@@ -477,6 +539,7 @@
                         inboundPreNum:0,
                         inboundNum:0,
                         inboundPrice:0,
+                        cost:0,
                         planLoc:'',
 						inboundLocCode:'',
 						recTime:'',
@@ -530,13 +593,13 @@
                 }
 				if(this.orderHeader.status === '00'&&this.orderHeader.auditStatus=== '00'){
 				    return 1;
-				}else if((this.orderHeader.status == '00'||this.orderHeader.status == '10')&&this.orderHeader.auditStatus!== '00'){
+				}else if((this.orderHeader.status === '00'||this.orderHeader.status === '10')&&this.orderHeader.auditStatus!== '00'){
                     return 2;
-				}else if(this.orderHeader.status == '20'){
+				}else if(this.orderHeader.status === '20'){
                     return 3;
-				}else if(this.orderHeader.status == '99'){
+				}else if(this.orderHeader.status === '99'&&this.orderHeader.isCalculated === 'N'){
                     return 4;
-                }else if(this.orderHeader.status == '30'){
+                }else if(this.orderHeader.status === '99'){
                     return 5;
                 }
             },
@@ -610,7 +673,14 @@
                 }
 			},
             btnAccountStatus:function () {
-                if(this.orderHeader.status === '99'){
+                if(this.orderHeader.isCalculated === 'N'){
+                    return false;
+                }else{
+                    return true;
+                }
+            },
+            btnAccountCostStatus:function () {
+                if(this.orderHeader.inboundType == 'RI'&&this.orderHeader.isCostCalculated === 'N'&&this.orderHeader.status === '99'){
                     return false;
                 }else{
                     return true;
@@ -634,11 +704,17 @@
 			}
         },
 		methods: {
-
-
-
-
-
+            headerSupplierChangeValue(row){
+                this.orderHeader.supplierName = row.customerName
+            },
+            editFormSkuChangeValue(row){
+                this.detailGrid.editForm.fittingSkuName = row.fittingSkuName
+                this.detailGrid.editForm.modelCode = row.modelCode
+            },
+            recEditFormSkuChangeValue(row){
+                this.detailReceiveGrid.editForm.fittingSkuName = row.fittingSkuName
+                this.detailReceiveGrid.editForm.modelCode = row.modelCode
+            },
             formatTime: function(row, column){
                 if(row[column.property]!==null) {
                     let unixTimestamp = new Date(row[column.property])
@@ -654,9 +730,12 @@
             recSelsChange: function (sels) {
                 this.detailReceiveGrid.sels = sels;
             },
-//            batchRemove(){
-//
-//			},
+			updateOrderHeader(data){
+                this.orderHeader = Object.assign({}, data);
+                //处理时间
+                this.orderHeader.orderTime = new Date(data.orderTime);
+                this.orderHeader.auditTime = new Date(data.auditTime);
+			},
             save(){
                 this.$refs.orderHeader.validate((valid) => {
                     if (valid) {
@@ -672,8 +751,7 @@
                             } else {
                                 this.$message.error(res.data.msg);
                             }
-                            this.orderHeader = Object.assign({}, res.data.data);
-                            debugger
+                            this.updateOrderHeader(res.data.data);
                             this.$store.commit('changeInboundOrderNo',this.orderHeader.orderNo);
                             this.$store.commit('changeInboundStatus','EDIT');
                             this.getDetails();
@@ -723,7 +801,8 @@
                             message: res.data.msg,
                             type: 'success'
                         });
-                        this.orderHeader = Object.assign({}, res.data.data);
+
+                        this.updateOrderHeader(res.data.data);
                     }else{
                         this.$message.error(res.data.msg);
                     }
@@ -740,7 +819,7 @@
                             message: res.data.msg,
                             type: 'success'
                         });
-                        this.orderHeader = Object.assign({}, res.data.data);
+                        this.updateOrderHeader(res.data.data);
                     }else{
                         this.$message.error(res.data.msg);
                     }
@@ -789,11 +868,28 @@
                     util.errorCallBack(data,this.$router,this.$message);
                 });
 			},
+            accountCost(){
+                this.pageControl.accountCostBtnLoading= true;
+                let para = { orderNo:this.orderHeader.orderNo};
+                accountCostByOrderNo(para).then((res) => {
+                    this.pageControl.accountCostBtnLoading= false;
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: res.data.msg,
+                            type: 'success'
+                        });
+                        this.getOrder();
+                    }else{
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch((data) => {
+                    this.pageControl.accountCostBtnLoading= false;
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+            },
 			getOrder(){
-                NProgress.start();
                 getInboundOrderHeader({orderNo:this.orderNo}).then((res) => {
-                    NProgress.done();
-                    this.orderHeader = Object.assign({}, res.data);
+                    this.updateOrderHeader(res.data);
                     this.getDetails();
                     this.getDetailReceives();
                 }).catch((data) => {
@@ -844,7 +940,7 @@
 			},
 
             back(){
-                this.$router.push({ path: '/inboundOrder' });
+                this.$router.push({ path: this.$store.state.inboundDetail.fromPath });
 			},
             addDetailHandler(){
                 this.detailGrid.editForm = {
@@ -937,11 +1033,39 @@
                     }
                 });
 			},
+            batchRecEditSubmit:function () {
+                this.pageControl.batchRecEditSubmitLoading = true;
+                let lineNos = [];
+                let recLineNos = [];
+                for(let i = 0;i<this.detailReceiveGrid.sels.length;i++){
+                    lineNos.push(this.detailReceiveGrid.sels[i].lineNo);
+                    recLineNos.push(this.detailReceiveGrid.sels[i].recLineNo);
+                }
+                let para = { orderNo:this.orderHeader.orderNo,lineNos:lineNos.join(','),recLineNos:recLineNos.join(',')};
+                batchReceive(para).then((res) => {
+                    this.pageControl.batchRecEditSubmitLoading = false;
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: res.data.msg,
+                            type: 'success'
+                        });
+                        this.getOrder();
+                    }else{
+                        this.$alert(res.data.msg, '执行结果', {
+                            confirmButtonText: '确定'
+                        });
+                        //this.$message.error(res.data.msgs);
+                    }
+                }).catch((data) => {
+                    this.pageControl.batchRecEditSubmitLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+            },
             cancleRecEditSubmit(){
                 this.$refs.recEditForm.validate((valid) => {
 					if (valid) {
 						this.$confirm('取消收货吗？', '提示', {}).then(() => {
-						    debugger
+
 							this.pageControl.cancelRecEditLoading = true;
 							//NProgress.start();
 							let para = Object.assign({}, this.detailReceiveGrid.editForm);
@@ -984,12 +1108,15 @@
 					orderNo:'',
 					supplierCode:'',
 					status:'00',
-					orderTime:'',
+					orderTime:new Date(),
 					auditOp:'',
                     auditStatus:'00',
 					auditTime:'',
 					inboundType:'',
                     isCalculated:'N',
+                    isCostCalculated:'N',
+                    voucherId:0,
+                    costVoucherId:0,
 					remark:'',
 					creator:'',
 					createTime:'',

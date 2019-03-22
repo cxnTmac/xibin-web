@@ -7,19 +7,23 @@
 			<el-step title="完成拣货（可取消）"></el-step>
 			<el-step title="完成发货（可取消）"></el-step>
 			<el-step title="关闭订单"></el-step>
-			<el-step title="完成销售核算"></el-step>
-			<el-step title="完成成本核算"></el-step>
+			<el-step title="完成核算"></el-step>
 		</el-steps>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
 				<el-button type="primary" :disabled="btnAuditStatus" @click="audit" :loading="pageControl.auditBtnLoading">审核</el-button>
 				<el-button type="danger" :disabled="btnCancelAuditStatus" @click="cancelAudit" :loading="pageControl.cancelAuditBtnLoading">取消审核</el-button>
+				<el-button type="primary" :disabled="btnAllocByHeaderStatus" @click="allocByHeaderHandler" :loading="pageControl.allocByHeaderBtnLoading">自动分配</el-button>
+				<el-button type="danger" :disabled="btnCancelAllocByHeaderStatus" @click="cancelAllocByHeaderHandler" :loading="pageControl.cancelAllocByHeaderBtnLoading">取消分配</el-button>
+				<el-button type="primary" :disabled="btnPickByHeaderStatus" @click="pickByHeaderHandler" :loading="pageControl.pickByHeaderBtnLoading">拣货</el-button>
                 <el-button type="primary" :disabled="btnShipByHeaderStatus" @click="shipByHeaderHandler" :loading="pageControl.shipByHeaderBtnLoading">发货</el-button>
                 <el-button type="danger" :disabled="btnCancelShipByHeaderStatus" @click="cancelShipByHeaderHandler" :loading="pageControl.cancelShipByHeaderBtnLoading">取消发货</el-button>
 				<el-button type="danger" :disabled="btnCloseStatus" @click="close" :loading="pageControl.closeBtnLoading">关闭订单</el-button>
 				<el-button type="success" :disabled="btnAccountStatus" @click="account" :loading="pageControl.accountBtnLoading">销售核算</el-button>
 				<el-button type="success" :disabled="btnAccountCostStatus" @click="accountCost" :loading="pageControl.accountCostBtnLoading">成本核算</el-button>
-			    <el-button  @click="back" style="float: right">返回</el-button>
+				<el-button  @click="back" style="float: right">返回</el-button>
+				<el-button type="primary" style="float: right" :disabled="btnPrintShipOrderStatus" @click="printShipOrder">打印发货单</el-button>
+				<el-button type="primary" style="float: right" :disabled="btnPrintPickUpOrderStatus" @click="printPickUpOrder">打印拣货单</el-button>
 		</el-col>
 		<el-form :model="orderHeader" label-width="80px" :rules="orderHeaderRules" ref="orderHeader">
 			<el-card class="box-card">
@@ -38,8 +42,7 @@
 					</el-col>
 					<el-col :span="6">
 						<el-form-item label="客户" prop="buyerCode">
-							<popwin-button popKey="POP_CUSTOMER" :selectValue="orderHeader.buyerCode" v-model="orderHeader.buyerCode" ></popwin-button>
-							<!--<el-input v-model="orderHeader.supplierCode" auto-complete="off"></el-input>-->
+							<popwin-button popKey="POP_CUSTOMER"  :showName="true" :displayName="orderHeader.buyerName" v-model="orderHeader.buyerCode" ></popwin-button>
 						</el-form-item>
 					</el-col>
 					<el-col :span="6">
@@ -128,59 +131,60 @@
 				<div slot="header" class="clearfix">
 					<span style="line-height: 15px;">出库单明细</span>
 				</div>
-				<el-table :data="detailGrid.orderDetail" border highlight-current-row v-loading="detailGrid.listLoading" @selection-change="selsChange" stripe style="width: 100%;">
+				<el-table :data="detailGrid.orderDetail" :row-class-name="tableRowClassName" height="500" show-summary :summary-method="getSummaries" border highlight-current-row v-loading="detailGrid.listLoading" @selection-change="selsChange" style="width: 100%;">
 					<el-table-column type="selection" width="55">
 					</el-table-column>
-					<el-table-column prop="lineNo" label="行号" width="100" sortable>
+					<!-- <el-table-column prop="id" label="id" width="100" sortable>
+					</el-table-column> -->
+					<el-table-column prop="lineNo" label="行号" width="80" sortable>
 					</el-table-column>
-					<el-table-column prop="orderNo" label="出库单号" width="200" sortable>
+                    <el-table-column prop="status" label="状态" width="80" :formatter="formatStatus">
 					</el-table-column>
-					<el-table-column prop="buyerName" label="客户名称" width="200" sortable>
+                     <el-table-column prop="skuCode" label="产品编码" width="80" >
 					</el-table-column>
-					<el-table-column prop="skuName" label="产品编码" width="200" sortable>
+                    <el-table-column prop="quickCode" label="快捷编码" width="80" >
 					</el-table-column>
-					<el-table-column
+                    <el-table-column prop="skuName" label="产品名称" width="200" >
+					</el-table-column>
+                    <el-table-column prop="modelCode" label="车型" width="200" >
+					</el-table-column>
+                    <el-table-column prop="outboundNum" label="订货数" width="80">
+					</el-table-column>
+                    <!-- <el-table-column
 							label="订货数"
-							width="200">
-						<template scope="scope">
+							width="80">
+						<template slot-scope="scope">
 							<div slot="reference" class="name-wrapper">
 								<el-input-number :disabled="rowEditStatus"  @keyup.enter.native="rowSaveDetail(scope.row)" v-model="scope.row.outboundNum"  auto-complete="off"></el-input-number>
 							</div>
 						</template>
+					</el-table-column> -->
+                    <el-table-column prop="outboundAllocNum" label="分配数" width="80">
 					</el-table-column>
-					<el-table-column prop="outboundPrice" label="发货价格" width="200">
+					<el-table-column prop="outboundPickNum" label="拣货数" width="80">
 					</el-table-column>
-					<el-table-column prop="cost" label="成本" width="200">
+					<el-table-column prop="outboundShipNum" label="发货数" width="80">
 					</el-table-column>
-					<el-table-column prop="status" label="状态" width="200" :formatter="formatStatus">
+                    <el-table-column prop="outboundPrice" label="发货价格" width="80">
 					</el-table-column>
-					<el-table-column prop="skuCode" label="产品编码" width="200" sortable>
+                    <el-table-column prop="cost" label="成本" width="80">
 					</el-table-column>
-					<el-table-column prop="buyerCode" label="客户编码" width="200" sortable>
+					<el-table-column prop="groupCode" label="通用组编码" width="80" >
 					</el-table-column>
-					<el-table-column prop="planShipLoc" label="计划发货库位" width="200">
+                    <el-table-column prop="needToAssemble" label="是否组装件" width="80" >
 					</el-table-column>
-					<el-table-column prop="outboundAllocNum" label="分配数" width="200">
+					<el-table-column prop="orderNo" label="出库单号" width="200" >
 					</el-table-column>
-					<el-table-column prop="outboundPickNum" label="拣货数" width="200">
+					<el-table-column prop="buyerName" label="客户名称" width="200" >
 					</el-table-column>
-					<el-table-column prop="outboundShipNum" label="发货数" width="200">
+					<el-table-column prop="buyerCode" label="客户编码" width="80" >
 					</el-table-column>
-					<el-table-column prop="isCreateVoucher" label="是否生成销售凭证" width="200">
-					</el-table-column>
-					<el-table-column prop="voucherNo" label="销售凭证号" width="200">
-					</el-table-column>
-					<el-table-column prop="isCreateCostVoucher" label="是否生成成本凭证" width="200">
-					</el-table-column>
-					<el-table-column prop="costVoucherNo" label="成本凭证号" width="200">
+					<el-table-column prop="planShipLoc" label="计划发货库位" width="100">
 					</el-table-column>
 					<el-table-column prop="remark" label="备注" >
 					</el-table-column>
-					<!--<el-table-column prop="password" label="密码" width="100" :formatter="formatSex" sortable>-->
-					<!--</el-table-column>-->
-
 					<el-table-column label="操作" fixed="right" min-width="150">
-						<template scope="scope">
+						<template slot-scope="scope">
 							<el-button size="small"  @click="handleDetailEdit(scope.$index, scope.row)">编辑</el-button>
 							<el-button type="danger" :disabled="btnDetailGridDelStatus" size="small" @click="handleDetailDel(scope.$index, scope.row)">删除</el-button>
 						</template>
@@ -189,7 +193,10 @@
 				<!--工具条-->
 				<el-col :span="24" class="toolbar">
 					<el-button type="primary" :disabled="btnDetailGridAdd" @click="addDetailHandler">新增</el-button>
-					<el-button type="primary" :disabled="btnDetailGridAdd" @click="openBatchAddPopWin">批量新增</el-button>
+                    <el-button type="danger" :disabled="btnDetailGridAdd" @click="handelBatchDel">批量删除</el-button>
+                    <el-button type="danger" :disabled="btnDetailGridAdd" @click="handelBatchDelAndCreateNew">批量删除并生成新的出库单</el-button>
+					<el-button type="primary" :disabled="btnDetailGridAdd" @click="openBatchAddPopWin">快速新增</el-button>
+					<el-button type="primary" :disabled="btnDetailGridAdd" @click="openExcelImportPopWin">EXCEL导入</el-button>
 					<!--<el-button type="danger"  @click="batchRemove" :disabled="this.detailGrid.sels.length===0">批量删除</el-button>-->
 					<el-pagination layout="prev, pager, next" @current-change="handleCurrentDetailChange" :page-size="detailGrid.size" :total="detailGrid.total" style="float:right;">
 					</el-pagination>
@@ -204,45 +211,54 @@
 				<el-table :data="detailAllocGrid.orderDetailAlloc" border highlight-current-row v-loading="detailAllocGrid.listLoading" @selection-change="allocSelsChange" stripe style="width: 100%;">
 					<el-table-column type="selection" width="55">
 					</el-table-column>
-					<el-table-column prop="lineNo" label="行号" width="100" sortable>
+
+					<el-table-column prop="lineNo" label="行号" width="80" sortable>
 					</el-table-column>
-					<el-table-column prop="allocId" label="分配ID" width="150" sortable>
+					<el-table-column prop="allocId" label="分配ID" width="100" sortable>
 					</el-table-column>
-					<el-table-column prop="orderNo" label="出库单号" width="200" sortable>
+                    <el-table-column prop="status" label="状态" width="80" :formatter="formatStatus">
 					</el-table-column>
-					<el-table-column prop="buyerCode" label="客户编码" width="200" sortable>
+                    <el-table-column prop="skuCode" label="产品编码" width="80" >
 					</el-table-column>
-					<el-table-column prop="buyerName" label="客户名称" width="200" sortable>
+                    <el-table-column prop="skuName" label="产品名称" width="200" >
 					</el-table-column>
-					<el-table-column prop="skuCode" label="产品编码" width="200" sortable>
+                    <el-table-column prop="modelCode" label="车型" width="200" >
 					</el-table-column>
-					<el-table-column prop="status" label="状态" width="200" :formatter="formatStatus">
+                    <el-table-column prop="outboundNum" label="订货数" width="80"  >
 					</el-table-column>
-					<el-table-column prop="allocLocCode" label="分配库位" width="200">
+					<el-table-column prop="pickNum" label="拣货数" width="80"  >
 					</el-table-column>
-					<el-table-column prop="toLocCode" label="发货库位" width="200">
-					</el-table-column>
-					<el-table-column prop="outboundNum" label="订货数" width="200"  >
-					</el-table-column>
-					<el-table-column prop="outboundPrice" label="价格" width="200"  >
+					<el-table-column prop="outboundPrice" label="价格" width="80"  >
 					</el-table-column>
 					<el-table-column prop="cost" label="成本" width="200"  >
+						<template slot-scope="scope">
+							<div slot="reference" class="name-wrapper">
+								<el-input-number :disabled="allocCostEditStatus"  @keyup.enter.native="rowSaveDetailAlloc(scope.row)" v-model="scope.row.cost"  auto-complete="off"></el-input-number>
+							</div>
+						</template>
 					</el-table-column>
-					<el-table-column prop="pickTime" label="拣货时间" width="200" :formatter="formatTime" >
+                    <el-table-column prop="allocLocCode" label="分配库位" width="80">
 					</el-table-column>
-					<el-table-column prop="pickOp" label="拣货人" width="200" >
+					<el-table-column prop="toLocCode" label="发货库位" width="80">
 					</el-table-column>
-					<el-table-column prop="shipTime" label="发货时间" width="200" :formatter="formatTime" >
+                    <el-table-column prop="pickTime" label="拣货时间" width="155" :formatter="formatTime" >
 					</el-table-column>
-					<el-table-column prop="shipOp" label="发货人" width="200">
+					<el-table-column prop="pickOp" label="拣货人" width="80" >
+					</el-table-column>
+					<el-table-column prop="shipTime" label="发货时间" width="155" :formatter="formatTime" >
+					</el-table-column>
+					<el-table-column prop="shipOp" label="发货人" width="80">
+					</el-table-column>
+					<el-table-column prop="orderNo" label="出库单号" width="200" >
+					</el-table-column>
+					<el-table-column prop="buyerCode" label="客户编码" width="80" >
+					</el-table-column>
+					<el-table-column prop="buyerName" label="客户名称" width="200" >
 					</el-table-column>
 					<el-table-column prop="remark" label="备注" >
 					</el-table-column>
-					<!--<el-table-column prop="password" label="密码" width="100" :formatter="formatSex" sortable>-->
-					<!--</el-table-column>-->
-
 					<el-table-column label="操作" fixed="right" min-width="80">
-						<template scope="scope">
+						<template slot-scope="scope">
 							<el-button size="small" @click="handleAllocDetailEdit(scope.$index, scope.row)">查看</el-button>
 						</template>
 					</el-table-column>
@@ -266,15 +282,27 @@
 				<el-row :gutter="0">
 					<el-col :span="12">
 						<el-form-item label="客户" prop="buyerCode">
-							<popwin-button popKey="POP_CUSTOMER" :disabled="true" :selectValue="detailGrid.editForm.buyerCode" v-model="detailGrid.editForm.buyerCode"></popwin-button>
+							<popwin-button popKey="POP_CUSTOMER" :disabled="true" :showName="true" :displayName="detailGrid.editForm.buyerName" v-model="detailGrid.editForm.buyerCode"></popwin-button>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="产品" prop="skuCode">
-							<popwin-button popKey="POP_SKU" :selectValue="detailGrid.editForm.skuCode" v-model="detailGrid.editForm.skuCode" ></popwin-button>
+							<popwin-button popKey="POP_SKU"  :disabled="editFormSkuCodeStatus" @changeValue="editFormSkuChangeValue" v-model="detailGrid.editForm.skuCode" ></popwin-button>
 						</el-form-item>
 					</el-col>
 				</el-row>
+                 <el-row :gutter="0">
+                    <el-col :span="12">
+						<el-form-item label="产品名称" prop="fittingSkuName">
+                            <el-input v-model="detailGrid.editForm.skuName" :disabled="true" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+                     <el-col :span="12">
+						<el-form-item label="车型" prop="modelCode">
+                            <el-input v-model="detailGrid.editForm.modelCode" :disabled="true" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+                </el-row>
 				<el-row :gutter="0">
 					<el-col :span="12">
 						<el-form-item label="状态" prop="status">
@@ -299,15 +327,15 @@
 				<el-row :gutter="0">
 					<el-col :span="12">
 						<el-form-item label="发货价格" prop="outboundPrice">
-							<el-autocomplete popper-class="my-autocomplete" custom-item="my-priceitem-zh"  :fetch-suggestions="queryHistoryPrice" @select="handlePriceSelect" v-model="detailGrid.editForm.outboundPrice" auto-complete="off"></el-autocomplete>
-							<!--<el-input-number v-model="detailGrid.editForm.outboundPrice" auto-complete="off"></el-input-number>-->
+							<!--<el-autocomplete popper-class="my-autocomplete" custom-item="my-priceitem-zh"  :fetch-suggestions="queryHistoryPrice" @select="handlePriceSelect" v-model.number="detailGrid.editForm.outboundPrice" auto-complete="off"></el-autocomplete>-->
+							<el-input-number v-model.number="detailGrid.editForm.outboundPrice":disabled="editFormOutboundPriceStatus"  auto-complete="off"></el-input-number>
 						</el-form-item>
 					</el-col>
 				</el-row>
 				<el-row :gutter="0">
 					<el-col :span="12">
 						<el-form-item label="订货数" prop="outboundNum">
-							<el-input-number v-model="detailGrid.editForm.outboundNum"  auto-complete="off"></el-input-number>
+							<el-input-number v-model="detailGrid.editForm.outboundNum" :disabled="editFormOutboundNumStatus"  auto-complete="off"></el-input-number>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
@@ -340,6 +368,7 @@
 				<el-button @click.native="pageControl.editFormVisible = false">取消</el-button>
 				<el-button type="primary" :disabled="btnEditSubmitStatus" @click.native="editSubmit" :loading="pageControl.editLoading">提交</el-button>
 				<el-button type="primary" :disabled="btnAllocSubmitStatus" @click.native="allocSubmit" :loading="pageControl.allocSubmitLoading">自动分配</el-button>
+				<el-button type="primary" :disabled="btnPreAssembleAllocSubmitStatus" @click.native="preAssembleAllocSubmit" :loading="pageControl.preAssembleAllocSubmitLoading">组装预分配</el-button>
 				<el-button type="danger" :disabled="btnCancelAllocSubmitStatus" @click.native="cancelAllocSubmit" :loading="pageControl.cancelAllocSubmitLoading">取消分配</el-button>
 			</div>
 		</el-dialog>
@@ -352,15 +381,27 @@
 				<el-row :gutter="0">
 					<el-col :span="12">
 						<el-form-item label="客户" prop="supplierCode">
-							<popwin-button popKey="POP_CUSTOMER" :disabled="true" :selectValue="detailAllocGrid.editForm.buyerCode" v-model="detailAllocGrid.editForm.buyerCode"></popwin-button>
+							<popwin-button popKey="POP_CUSTOMER" :disabled="true" :showName="true" :displayName="detailAllocGrid.editForm.buyerName" v-model="detailAllocGrid.editForm.buyerCode"></popwin-button>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
 						<el-form-item label="产品" prop="skuCode">
-							<popwin-button popKey="POP_SKU" :selectValue="detailAllocGrid.editForm.skuCode" :disabled="true" v-model="detailAllocGrid.editForm.skuCode"></popwin-button>
+							<popwin-button popKey="POP_SKU"  :disabled="true"  @changeValue="allocEditFormSkuChangeValue" v-model="detailAllocGrid.editForm.skuCode"></popwin-button>
 						</el-form-item>
 					</el-col>
 				</el-row>
+                 <el-row :gutter="0">
+                    <el-col :span="12">
+						<el-form-item label="产品名称" prop="fittingSkuName">
+                            <el-input v-model="detailAllocGrid.editForm.skuName" :disabled="true" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+                     <el-col :span="12">
+						<el-form-item label="车型" prop="modelCode">
+                            <el-input v-model="detailAllocGrid.editForm.modelCode" :disabled="true" auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+                </el-row>
 				<el-row :gutter="0">
 					<el-col :span="12">
 						<el-form-item label="状态" prop="status">
@@ -378,7 +419,7 @@
 					</el-col>
 					<el-col :span="12">
 							<el-form-item label="发货价格" prop="outboundPrice">
-								<el-input-number v-model="detailAllocGrid.editForm.outboundPrice" auto-complete="off"></el-input-number>
+								<el-input-number v-model="detailAllocGrid.editForm.outboundPrice" disabled auto-complete="off"></el-input-number>
 							</el-form-item>
 					</el-col>
 				</el-row>
@@ -386,6 +427,11 @@
 					<el-col :span="12">
 						<el-form-item label="分配数" prop="outboundNum">
 							<el-input v-model="detailAllocGrid.editForm.outboundNum" disabled auto-complete="off"></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="拣货数" prop="pickNum">
+							<el-input-number v-model="detailAllocGrid.editForm.pickNum" auto-complete="off"></el-input-number>
 						</el-form-item>
 					</el-col>
 				</el-row>
@@ -420,7 +466,7 @@
 			</div>
 		</el-dialog>
 
-		<el-dialog title="批量添加" size="large"  :visible.sync="pageControl.batchAddPopWinVisiable">
+		<el-dialog title="快速新增" border   :visible.sync="pageControl.batchAddPopWinVisiable">
 			<el-form :inline="true" :model="batchAddPopWin.filters">
 				<el-form-item label="配件类型" prop="fittingTypeCode">
 					<popwin-button popKey="POP_FITTINGTYPE"  :selectValue="batchAddPopWin.filters.fittingTypeCode" v-model="batchAddPopWin.filters.fittingTypeCode"></popwin-button>
@@ -434,23 +480,99 @@
 				<el-form-item label="车型" prop="modelCode">
 					<el-input   v-model="batchAddPopWin.filters.modelCode" ></el-input>
 				</el-form-item>
+                <el-form-item label="客户" prop="buyerCode">
+                    <popwin-button popKey="POP_CUSTOMER" :selectValue="batchAddPopWin.filters.buyerCode"  v-model="batchAddPopWin.filters.buyerCode" ></popwin-button>
+                    <!--<el-input v-model="orderHeader.supplierCode" auto-complete="off"></el-input>-->
+                </el-form-item>
 				<el-form-item>
-					<el-button type="primary"  v-on:click="getSkuData">查询</el-button>
+					<el-button type="primary"  v-on:click="batchAddPopWinQuery">查询</el-button>
 				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" v-on:click="batchAdd">批量新增</el-button>
-				</el-form-item>
+
 			</el-form>
-			<el-table max-height="400" :data="batchAddPopWin.skuList" v-loading="batchAddPopWin.listLoading" @selection-change="batchAddSelsChange">
-				<el-table-column type="selection" width="55"></el-table-column>
-				<el-table-column property="fittingSkuCode" label="商品编码" width="150"></el-table-column>
-				<el-table-column property="fittingSkuName" label="商品名称" width="200"></el-table-column>
-				<el-table-column property="modelCode" label="车型"></el-table-column>
-			</el-table>
-			<el-col :span="24" class="toolbar">
-				<el-pagination layout="prev, pager, next" @current-change="handleBatchAddCurrentChange" :page-size="batchAddPopWin.size" :total="batchAddPopWin.total" style="float:right;">
-				</el-pagination>
-			</el-col>
+            <el-tabs v-model="batchAddPopWin.batchAddPopWinActiveName">
+                <el-tab-pane label="销售历史" name="sale">
+                    <el-table max-height="300" border :data="batchAddPopWin.saleList" @row-dblclick="addSale"  v-loading="batchAddPopWin.saleListLoading" @selection-change="batchAddSaleSelsChange">
+                        <!--<el-table-column type="selection" width="55"></el-table-column>-->
+                        <el-table-column property="skuCode" label="商品编码"  width="150"></el-table-column>
+                        <el-table-column property="fittingSkuName" label="商品名称" width="200"></el-table-column>
+                        <el-table-column property="customerName" label="客户名称" width="200"></el-table-column>
+                        <el-table-column property="modelCode" label="车型"></el-table-column>
+                        <el-table-column property="outboundPrice" label="发货价格"></el-table-column>
+                        <el-table-column property="modifyTime" label="发货时间" :formatter="formatTime"></el-table-column>
+                    </el-table>
+                    <el-col :span="24" class="toolbar">
+                        <el-pagination layout="prev, pager, next" @current-change="handleBatchSaleAddCurrentChange" :page-size="batchAddPopWin.saleSize" :total="batchAddPopWin.saleTotal" style="float:right;">
+                        </el-pagination>
+                    </el-col>
+                </el-tab-pane>
+                <el-tab-pane label="产品信息" name="sku">
+                    <el-table max-height="300" border :data="batchAddPopWin.skuList" v-loading="batchAddPopWin.listLoading" @selection-change="batchAddSelsChange">
+                        <el-table-column type="selection" width="55"></el-table-column>
+                        <el-table-column property="fittingSkuCode" label="商品编码" width="150"></el-table-column>
+                        <el-table-column property="fittingSkuName" label="商品名称" width="200"></el-table-column>
+                        <el-table-column property="modelCode" label="车型"></el-table-column>
+						<el-table-column property="price" label="参考价格" width="200"></el-table-column>
+                    </el-table>
+                    <el-col :span="24" class="toolbar">
+                        <el-button type="primary" v-on:click="batchAdd">批量新增</el-button>
+                        <el-pagination layout="prev, pager, next" @current-change="handleBatchAddCurrentChange" :page-size="batchAddPopWin.size" :total="batchAddPopWin.total" style="float:right;">
+                        </el-pagination>
+                    </el-col>
+                </el-tab-pane>
+            </el-tabs>
+		</el-dialog>
+
+		<el-dialog title="excel导入出库单明细" :visible.sync="pageControl.excelImportPopWinVisible" :close-on-click-modal="false">
+			<el-form :model="detailGrid.excelImportPopWinForm" label-width="80px" ref="excelImportPopWinForm">
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="订单号" prop="orderNo">
+							<el-input   v-model="detailGrid.excelImportPopWinForm.orderNo" disabled ></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="发货库位" prop="loc">
+							<popwin-button popKey="POP_LOC"  :selectValue="detailGrid.excelImportPopWinForm.loc" v-model="detailGrid.excelImportPopWinForm.loc"></popwin-button>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="产品编码列名" prop="skuCodeColumnName">
+							<el-input   v-model="detailGrid.excelImportPopWinForm.skuCodeColumnName" ></el-input>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="价格列名" prop="priceColumnName">
+							<el-input   v-model="detailGrid.excelImportPopWinForm.priceColumnName" ></el-input>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-row :gutter="0">
+					<el-col :span="12">
+						<el-form-item label="订货数列名" prop="numColumnName">
+							<el-input   v-model="detailGrid.excelImportPopWinForm.numColumnName" ></el-input>
+						</el-form-item>
+					</el-col>
+
+				</el-row>
+			</el-form>
+			<el-upload ref="upload"
+					   class="upload-demo"
+					   drag
+					   :data= "detailGrid.excelImportPopWinForm"
+					   :on-success="uploadConnectSuccess"
+					   :on-error="uploadConnectFail"
+					   :before-upload="beforeExcelUplaod"
+					   action="/xibin/outbound/importOutboundDetailByExcel.shtml"
+					   :file-list="detailGrid.excelFileList"
+					   multiple
+					   list-type="text"
+					   :auto-upload="true">
+				<i class="el-icon-upload"></i>
+				<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+				<div class="el-upload__tip" slot="tip">只能上传xls/xlsx文件</div>
+			</el-upload>
 		</el-dialog>
 	</section>
 </template>
@@ -473,12 +595,30 @@
     });
     import { getFittingSkuListPage} from '../../api/fittingSkuApi';
 	import NProgress from 'nprogress'
-	import {batchSaveOutboundDetail,queryHistoryPrice,shipByHeader, getOutboundOrderListPage, saveOutboundOrder, getOutboundOrderHeader,getOutboundDetailListPage,saveOutboundDetail,removeOutboundDetail,getOutboundAllocListPage,audit,cancelAudit,alloc,cancelAlloc,pick,cancelPick,ship,cancelShip,cancelShipByHeader,close,accountByOrderNo,accountCostByOrderNo} from '../../api/outboundApi';
+	import {removeOutboundDetailAndCreateNewOrder,importOutboundDetailByExcel,saveOutboundAllocDetail,allocByHeader,pickByHeader,cancelAllocByHeader,queryHistorySale,batchSaveOutboundDetail,queryHistoryPrice,shipByHeader, getOutboundOrderListPage, saveOutboundOrder, getOutboundOrderHeader,getOutboundDetailListPage,saveOutboundDetail,removeOutboundDetail,getOutboundAllocListPage,audit,cancelAudit,alloc,cancelAlloc,pick,cancelPick,ship,cancelShip,cancelShipByHeader,close,accountByOrderNo,accountCostByOrderNo} from '../../api/outboundApi';
     var codemaster = require('../../../static/codemaster.json');
+    var config = require('../../../static/config.json');
 	export default {
 		data() {
+            var validatePickNum = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请输入拣货数'));
+                } else {
+                    if (this.detailAllocGrid.editForm.outboundNum > value) {
+                        callback(new Error('拣货数不能小于分配数'));
+                    }
+                    callback();
+                }
+            };
 			return {
                 batchAddPopWin:{
+                    batchAddPopWinActiveName:'sale',
+                    saleList:[],
+                    salePage:1,
+                    saleSize:10,
+                    saleTotal:0,
+                    saleListLoading:false,
+                    saleSels:[],
                     skuList:[],
                     page:1,
                     size:10,
@@ -490,7 +630,8 @@
                         fittingSkuCode:'',
                         fittingSkuName:'',
                         modelCode:'',
-                        fittingTypeCode:''
+                        fittingTypeCode:'',
+                        buyerCode:''
                     }
                 },
 				orderHeader:{
@@ -504,6 +645,9 @@
                     auditTime:'',
                     outboundType:'',
                     isCalculated:'N',
+                    isCostCaculated:'N',
+                    voucherId:0,
+                    costVoucherId:0,
                     remark:'',
                     creator:'',
                     createTime:'',
@@ -528,6 +672,7 @@
                         outboundShipNum:0,
                         outboundPrice:0,
                         planShipLoc:'',
+						cost:0,
                         remark:'',
                         creator:'',
                         createTime:'',
@@ -548,7 +693,7 @@
                             { type:'number',required: true, message: '请输入订货数', trigger: 'blur' }
                         ],
                         outboundPrice:[
-                            {required: true, message: '请输入价格', trigger: 'blur' }
+                            {type:'number',required: true, message: '价格必须为数字', trigger: 'blur' }
                         ],
                         planShipLoc:[
                             { required: true, message: '请选择计划发货库位', trigger: 'blur' }
@@ -556,10 +701,18 @@
 					},
                     orderDetail:[],
                     page:1,
-                    size:10,
+                    size:200,
                     total:0,
                     listLoading:false,
-                    sels:[]
+                    sels:[],
+                    excelImportPopWinForm:{
+                        orderNo:'',
+                        skuCodeColumnName:'',
+                        priceColumnName:'',
+                        numColumnName:'',
+						loc:''
+					},
+                    excelFileList:[]
 				},
 				pageControl:{
 				    saveBtnLoading:false,
@@ -575,11 +728,16 @@
                     shipAllocLoading:false,
                     cancelShipAllocLoading:false,
                     shipByHeaderBtnLoading:false,
+                    pickByHeaderBtnLoading:false,
+                    allocByHeaderBtnLoading:false,
+                    cancelAllocByHeaderBtnLoading:false,
                     cancelShipByHeaderBtnLoading:false,
                     batchAddPopWinVisiable:false,
                     closeBtnLoading:false,
 					accountBtnLoading:false,
-                    accountCostBtnLoading:false
+                    accountCostBtnLoading:false,
+                    preAssembleAllocSubmitLoading:false,
+                    excelImportPopWinVisible:false
 				},
 				detailAllocGrid:{
                     editForm:{
@@ -591,6 +749,7 @@
 						allocId:'',
 						skuCode:'',
                         outboundNum:0,
+						pickNum:0,
                         outboundPrice:0,
                         allocLocCode:'',
 						toLocCode:'',
@@ -613,7 +772,10 @@
 						],
                         outboundPrice:[
                             { type:'number',required: true, message: '请输入价格', trigger: 'blur' }
-                        ]
+                        ],
+                        pickNum:[
+							{validator: validatePickNum, trigger: 'blur'}
+						]
 					},
                     orderDetailAlloc:[],
                     page:1,
@@ -639,6 +801,33 @@
 			}
 		},
         computed: {
+            editFormSkuCodeStatus:function () {
+                if(this.orderHeader.status === '99'){
+                    return true;
+                }
+                if(this.detailGrid.editForm.status === '00'){
+                    return false;
+				}else{
+                    return true;
+				}
+            },
+            editFormOutboundPriceStatus:function () {
+                if(this.orderHeader.status === '99'){
+                    return true;
+                }else{
+                    return false;
+				}
+            },
+            editFormOutboundNumStatus:function(){
+                if(this.orderHeader.status === '99'){
+                    return true;
+				}
+                if(this.detailGrid.editForm.status === '00'){
+                    return false;
+                }else{
+                    return true;
+                }
+			},
             active:function () {
                 if(this.orderHeader === undefined){
                     return 1;
@@ -653,12 +842,10 @@
                     return 4;
                 }else if(this.orderHeader.status == '80'){
                     return 5;
-                }else if(this.orderHeader.status == '99'){
+                }else if(this.orderHeader.status == '99'&&(this.orderHeader.isCalculated === 'N'||this.orderHeader.isCostCalculated === 'N')){
                     return 6;
-                }else if(this.orderHeader.status == '20'){
+                }else if(this.orderHeader.status == '99'){
                     return 7;
-                }else if(this.orderHeader.status == '25'){
-                    return 8;
                 }
             },
             btnCloseStatus:function(){
@@ -671,14 +858,17 @@
                 }
             },
             btnAccountStatus:function () {
-                if(this.orderHeader.status === '99'){
+                if(this.orderHeader.isCalculated === 'N'&& this.orderHeader.status === '99'){
                     return false;
                 }else{
                     return true;
                 }
             },
             btnAccountCostStatus:function () {
-                if(this.orderHeader.status === '20'){
+                if(this.orderHeader.outboundType !== 'PO'&&this.orderHeader.outboundType !== 'XX'){
+					return true;
+				}
+                if(this.orderHeader.isCostCalculated === 'N'&&this.orderHeader.status === '99'){
                     return false;
                 }else{
                     return true;
@@ -689,6 +879,43 @@
                     return false;
                 }else{
                     return true;
+                }
+            },
+            allocCostEditStatus:function(){
+                if(this.orderHeader.auditStatus === '99'){
+                    return true;
+                }else{
+                    return true;
+                }
+            },
+            btnAllocByHeaderStatus:function () {
+                if(this.orderHeader.auditStatus === '00') {
+                    return true;
+                }
+                if(this.orderHeader.status === '50'||this.orderHeader.status ==='30'||this.orderHeader.status ==='00'){
+                    return false;
+				}else{
+                    return true;
+                }
+            },
+            btnCancelAllocByHeaderStatus:function () {
+                if(this.orderHeader.auditStatus === '00') {
+                    return true;
+                }
+                if(this.orderHeader.status === '50'||this.orderHeader.status ==='30'||this.orderHeader.status ==='40'){
+                    return false;
+                }else{
+                    return true;
+                }
+            },
+            btnPickByHeaderStatus:function () {
+                if(this.orderHeader.auditStatus === '00') {
+                    return true;
+                }
+                if(this.orderHeader.status === '00'||this.orderHeader.status ==='60'||this.orderHeader.status ==='80'||this.orderHeader.status ==='99'){
+                    return true;
+                }else{
+                    return false;
                 }
             },
             btnShipByHeaderStatus:function() {
@@ -725,7 +952,7 @@
                 if(this.orderHeader.auditStatus === '00') {
                     return true;
                 }
-                if(this.detailAllocGrid.editForm.status === '60'){
+                if(this.detailAllocGrid.editForm.status === '60'||this.detailAllocGrid.editForm.status === '65'){
                     return false;
                 }else{
                     return true;
@@ -735,7 +962,7 @@
                 if(this.orderHeader.auditStatus === '00') {
                     return true;
                 }
-                if(this.detailAllocGrid.editForm.status === '60'){
+                if(this.detailAllocGrid.editForm.status === '60'||this.detailAllocGrid.editForm.status === '65'){
                     return false;
                 }else{
                     return true;
@@ -756,12 +983,23 @@
                     return true;
                 }
                 
-                if(this.detailGrid.editForm.status === '00'&&this.detailGrid.editForm.id!==''){
+                if((this.detailGrid.editForm.status === '00'||this.detailGrid.editForm.status === '30')&&this.detailGrid.editForm.id!==''){
                     return false;
 				}else{
                     return true;
 				}
 			},
+            btnPreAssembleAllocSubmitStatus:function () {
+                if(this.orderHeader.auditStatus === '00') {
+                    return true;
+                }
+
+                if((this.detailGrid.editForm.status === '00'||this.detailGrid.editForm.status === '30')&&this.detailGrid.editForm.id!==''){
+                    return false;
+                }else{
+                    return true;
+                }
+            },
             btnCancelAllocSubmitStatus:function(){
                 if(this.orderHeader.auditStatus === '00') {
                     return true;
@@ -773,27 +1011,23 @@
                 }
 			},
             btnEditSubmitStatus:function(){
-                if(this.orderHeader.auditStatus === '00'){
-                    return false;
-                }else{
-                    return true;
-                }
+				return false;
 			},
             btnDetailGridAdd:function(){
                 if(this.orderHeader.id === ''){
                     return true;
 				}
-                if(this.orderHeader.auditStatus === '00'){
-                    return false;
-                }else{
+                if(this.orderHeader.status === '99'){
                     return true;
+                }else{
+                    return false;
                 }
 			},
             btnDetailGridDelStatus:function(){
-                if(this.orderHeader.auditStatus === '00'){
-                    return false;
-				}else{
+                if(this.orderHeader.status === '99'){
                     return true;
+				}else{
+                    return false;
 				}
 			},
             btnAllocEditStatus:function(){
@@ -836,6 +1070,20 @@
                     return true;
                 }
             },
+            btnPrintShipOrderStatus:function () {
+				if(this.orderHeader.status === '60'||this.orderHeader.status === '65'||this.orderHeader.status === '70'){
+				    return false;
+				}else{
+				    return true;
+				}
+            },
+            btnPrintPickUpOrderStatus:function () {
+                if(this.orderHeader.status === '40'||this.orderHeader.status === '30'||this.orderHeader.status === '50'){
+                    return false;
+                }else{
+                    return true;
+                }
+            },
             orderNo:function() {
                 return this.$store.state.outboundDetail.orderNo
             },
@@ -844,6 +1092,84 @@
 			}
         },
 		methods: {
+            getSummaries(param) {
+                const { columns, data } = param;
+                const sums = [];
+                columns.forEach((column, index) => {
+                    if (index === 0) {
+                        sums[index] = '合计';
+                        return;
+                    }
+                    if(index !== 7 && index!==8 && index!==9&& index!==10){
+                        sums[index] = '';
+                        return
+					}
+                    const values = data.map(item => Number(item[column.property]));
+                    if (!values.every(value => isNaN(value))) {
+                        sums[index] = values.reduce((prev, curr) => {
+                            const value = Number(curr);
+                            if (!isNaN(value)) {
+                                return prev + curr;
+                            } else {
+                                return prev;
+                            }
+                        }, 0);
+                    } else {
+                        sums[index] = 'N/A';
+                    }
+                });
+                return sums;
+            },
+            allocEditFormSkuChangeValue(row){
+                this.detailAllocGrid.editForm.skuName = row.fittingSkuName
+                this.detailAllocGrid.editForm.modelCode = row.modelCode
+            },
+            editFormSkuChangeValue(row){
+                this.detailGrid.editForm.skuName = row.fittingSkuName
+                this.detailGrid.editForm.modelCode = row.modelCode
+            },
+            tableRowClassName({row, rowIndex}) {
+                 if (row.status === '00'||row.status === '30')  {
+                    return 'un-alloc-row';
+                } 
+                return '';
+            },
+            beforeExcelUplaod:function (file) {
+                if(this.detailGrid.excelImportPopWinForm.loc === ''||this.detailGrid.excelImportPopWinForm.skuCodeColumnName === ''||this.detailGrid.excelImportPopWinForm.priceColumnName === ''||this.detailGrid.excelImportPopWinForm.numColumnName === ''){
+                    this.$message.error("请填写完整数据！");
+                    return false;
+				}
+				return true;
+            },
+            uploadConnectSuccess : function(response, file, fileList){
+                debugger
+                if(response.code == 0){
+                    this.$message.error(res.data.msg);
+                }else if(response.code == 200){
+                    this.getDetails();
+                    this.$message({
+                        message: response.msg,
+                        type: 'success'
+                    });
+                }
+            },
+            uploadConnectFail : function(err, file, fileList){
+                this.$message.error("网络连接错误，上传失败！");
+            },
+            updateOrderHeader(data){
+                this.orderHeader = Object.assign({}, data);
+                //处理时间
+                this.orderHeader.orderTime = new Date(data.orderTime);
+                this.orderHeader.auditTime = new Date(data.auditTime);
+            },
+            printPickUpOrder(){
+                let user = JSON.parse(localStorage.getItem('user'));
+                window.open(config.reportUrl+"?url=pickUp&orderNo="+this.orderHeader.orderNo+"&companyId="+user.companyId+"&warehouseId="+user.warehouseId+'&mobileUrl='+config.mobileUrl+'outboundPick?orderNo=');
+            },
+			printShipOrder(){
+                let user = JSON.parse(localStorage.getItem('user'));
+                window.open(config.reportUrl+"?url=shipOrder&orderNo="+this.orderHeader.orderNo+"&companyId="+user.companyId+"&warehouseId="+user.warehouseId);
+            },
             account:function () {
                 this.pageControl.accountBtnLoading= true;
                 let para = { orderNo:this.orderHeader.orderNo};
@@ -903,13 +1229,49 @@
             openBatchAddPopWin:function(){
                 this.pageControl.batchAddPopWinVisiable = true;
             },
-
+            handleBatchSaleAddCurrentChange(val) {
+                this.batchAddPopWin.salePage = val;
+                this.getSaleData();
+            },
             handleBatchAddCurrentChange(val) {
                 this.batchAddPopWin.page = val;
                 this.getSkuData();
             },
+            batchAddSaleSelsChange: function (sels) {
+                this.batchAddPopWin.saleSels = sels;
+            },
             batchAddSelsChange: function (sels) {
                 this.batchAddPopWin.sels = sels;
+            },
+            rowSaveDetailAlloc(row){
+                this.detailAllocGrid.listLoading = true;
+                let para = Object.assign({}, row);
+                let newRows = this.detailAllocGrid.orderDetailAlloc.concat([]);
+                saveOutboundAllocDetail({detailAlloc:JSON.stringify(para)}).then((res) => {
+                    this.detailAllocGrid.listLoading = false;
+                    //NProgress.done();
+                    if(res.data.code === 200){
+                        this.$message({
+                            message: res.data.msg,
+                            type: 'success'
+                        });
+//                            row = res.data.data;
+                        for(let i = 0;i<newRows.length;i++){
+                            if(newRows[i].id === res.data.data.id){
+                                console.log(res.data.data);
+                                newRows[i] = res.data.data;
+                                break;
+                            }
+                        }
+                        this.detailAllocGrid.orderDetailAlloc = newRows;
+                        console.log(this.detailAllocGrid.orderDetailAlloc);
+                    }else{
+                        this.$message.error(res.data.msg);
+                    }
+                }).catch((data) => {
+                    this.detailAllocGrid.listLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
             },
             rowSaveDetail(row){
                 this.detailGrid.listLoading = true;
@@ -942,6 +1304,33 @@
                     util.errorCallBack(data,this.$router,this.$message);
                 });
             },
+            batchAddPopWinQuery : function(){
+                if(this.batchAddPopWin.batchAddPopWinActiveName === 'sale'){
+                    this.getSaleData();
+                }else if(this.batchAddPopWin.batchAddPopWinActiveName === 'sku'){
+                    this.getSkuData();
+                }
+
+            },
+            getSaleData:function(){
+                let para = {
+                    page: this.batchAddPopWin.page,
+                    size: this.batchAddPopWin.size,
+                    conditions:JSON.stringify(this.batchAddPopWin.filters)
+                };
+                this.batchAddPopWin.saleListLoading = true;
+                //NProgress.start();
+                queryHistorySale(para).then((res) => {
+                    this.batchAddPopWin.saleTotal = res.data.size;
+                    this.batchAddPopWin.saleList = res.data.list;
+                    this.batchAddPopWin.saleListLoading = false;
+                    //NProgress.done();
+                }).catch((data) => {
+                    this.batchAddPopWin.saleListLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+            },
+
             getSkuData:function(){
                 let para = {
                     page: this.batchAddPopWin.page,
@@ -960,12 +1349,46 @@
                     util.errorCallBack(data,this.$router,this.$message);
                 });
             },
+            addSale:function(row, event){
+                let para = {};
+                para.buyerCode = this.orderHeader.buyerCode;
+                para.status = '00'
+                para.skuCode = row.skuCode;
+                para.orderNo = this.orderHeader.orderNo;
+                para.planShipLoc = 'SORTATION';
+                para.outboundNum = 0;
+                para.outboundPrice = row.outboundPrice;
+                saveOutboundDetail({detail:JSON.stringify(para)}).then((res) => {
+                    //NProgress.done();
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: res.data.msg,
+                            type: 'success'
+                        });
+                    }else{
+                        this.$message.error(res.data.msg);
+                    }
+                    this.getDetails();
+                    this.getDetailAllocs();
+                }).catch((data) => {
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+            },
+
             batchAdd:function(){
                 let skuCodeArray = [];
+                let priceArray = [];
                 for(let i = 0;i<this.batchAddPopWin.sels.length;i++){
                     skuCodeArray.push(this.batchAddPopWin.sels[i].fittingSkuCode);
+                    debugger
+                    if(this.batchAddPopWin.sels[i].price!== ''&&this.batchAddPopWin.sels[i].price!== null&&this.batchAddPopWin.sels[i].price!== undefined){
+                        priceArray.push(this.batchAddPopWin.sels[i].price);
+					}else{
+                        priceArray.push(0);
+					}
+
                 }
-                let para = {orderNo:this.orderHeader.orderNo,buyerCode:this.orderHeader.buyerCode,skuCodes:skuCodeArray.join(',')};
+                let para = {orderNo:this.orderHeader.orderNo,buyerCode:this.orderHeader.buyerCode,skuCodes:skuCodeArray.join(','),prices:priceArray.join(',')};
                 batchSaveOutboundDetail(para).then((res) => {
                     //NProgress.done();
                     if(res.data.code == 200){
@@ -1027,9 +1450,9 @@
                             } else {
                                 this.$message.error(res.data.msg);
                             }
-                            this.orderHeader = Object.assign({}, res.data.data);
-                            this.$store.commit('changeOrderNo',this.orderHeader.orderNo);
-                            this.$store.commit('changeStatus','EDIT');
+                            this.updateOrderHeader(res.data.data);
+                            this.$store.commit('changeOutboundOrderNo',this.orderHeader.orderNo);
+                            this.$store.commit('changeOutboundStatus','EDIT');
                             this.getDetails();
                             this.getDetailAllocs();
                         })
@@ -1069,7 +1492,7 @@
             allocSubmit(){
                 this.pageControl.allocSubmitLoading = true;
                 //NProgress.start();
-                let para = {orderNo:this.orderHeader.orderNo,lineNos:[this.detailGrid.editForm.lineNo].join(',')};
+                let para = {orderNo:this.orderHeader.orderNo,lineNos:[this.detailGrid.editForm.lineNo].join(','),type:'AUTO'};
                 alloc(para).then((res) => {
                     this.pageControl.allocSubmitLoading = false;
                     //NProgress.done();
@@ -1089,6 +1512,29 @@
                     util.errorCallBack(data,this.$router,this.$message);
                 });
 			},
+            preAssembleAllocSubmit(){
+                this.pageControl.preAssembleAllocSubmitLoading = true;
+                //NProgress.start();
+                let para = {orderNo:this.orderHeader.orderNo,lineNos:[this.detailGrid.editForm.lineNo].join(','),type:'ASS'};
+                alloc(para).then((res) => {
+                    this.pageControl.preAssembleAllocSubmitLoading = false;
+                    //NProgress.done();
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: res.data.msg,
+                            type: 'success'
+                        });
+                    }else{
+                        this.$message.error(res.data.msg);
+                    }
+                    this.$refs['editForm'].resetFields();
+                    this.pageControl.editFormVisible = false;
+                    this.getOrder();
+                }).catch((data) => {
+                    this.pageControl.preAssembleAllocSubmitLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+            },
 			cancelAllocSubmit(){
                 this.pageControl.allocSubmitLoading = true;
                 //NProgress.start();
@@ -1119,7 +1565,7 @@
                             this.pageControl.pickAllocLoading = true;
                             //NProgress.start();
                             let para = Object.assign({}, this.detailAllocGrid.editForm);
-                            pick({alloc:JSON.stringify(para)}).then((res) => {
+                            pick({alloc:JSON.stringify(para),pickNum:this.detailAllocGrid.editForm.pickNum}).then((res) => {
                                 this.pageControl.pickAllocLoading = false;
                                 //NProgress.done();
                                 if(res.data.code == 200){
@@ -1228,6 +1674,86 @@
                     }
                 });
             },
+			allocByHeaderHandler(){
+				this.pageControl.allocByHeaderBtnLoading = true;
+				//NProgress.start();
+				allocByHeader({orderNo:this.orderHeader.orderNo}).then((res) => {
+					this.pageControl.allocByHeaderBtnLoading = false;
+                        //NProgress.done();
+					if(res.data.code == 200){
+						this.$message({
+							message: res.data.msg,
+							type: 'success'
+						});
+					}else if(res.data.code == 100){
+                        let str = '';
+                        for(let i = 0;i<res.data.msgs.length;i++){
+                            str=str+res.data.msgs[i]+'</br>';
+                        }
+                        this.$alert(str, '操作结果', {
+                            dangerouslyUseHTMLString: true,
+                            confirmButtonText: '确定'
+                        });
+					}else{
+                        this.$message.error(res.data.msg);
+					}
+					this.getOrder();
+				}).catch((data) => {
+					this.pageControl.allocByHeaderBtnLoading = false;
+					util.errorCallBack(data,this.$router,this.$message);
+				});
+			},
+            cancelAllocByHeaderHandler(){
+                this.pageControl.cancelAllocByHeaderBtnLoading = true;
+                //NProgress.start();
+                cancelAllocByHeader({orderNo:this.orderHeader.orderNo}).then((res) => {
+                    this.pageControl.cancelAllocByHeaderBtnLoading = false;
+                    //NProgress.done();
+                    if(res.data.code == 200){
+                        this.$message({
+                            message: res.data.msg,
+                            type: 'success'
+                        });
+                    }else if(res.data.code == 100){
+                        let str = '';
+                        for(let i = 0;i<res.data.msgs.length;i++){
+							str=str+res.data.msgs[i]+'</br>';
+						}
+                        this.$alert(str, '操作结果', {
+                            dangerouslyUseHTMLString: true,
+                            confirmButtonText: '确定'
+                        });
+                    }else{
+                        this.$message.error(res.data.msg);
+					}
+                    this.getOrder();
+                }).catch((data) => {
+                    this.pageControl.cancelAllocByHeaderBtnLoading = false;
+                    util.errorCallBack(data,this.$router,this.$message);
+                });
+            },
+            pickByHeaderHandler(){
+                this.$confirm('确定拣货吗？', '提示', {}).then(() => {
+                    this.pageControl.pickByHeaderBtnLoading = true;
+                    //NProgress.start();
+                    pickByHeader({orderNo:this.orderHeader.orderNo}).then((res) => {
+                        this.pageControl.pickByHeaderBtnLoading = false;
+                        //NProgress.done();
+                        if(res.data.code == 200){
+                            this.$message({
+                                message: res.data.msg,
+                                type: 'success'
+                            });
+                        }else{
+                            this.$message.error(res.data.msg);
+                        }
+                        this.getOrder();
+                    }).catch((data) => {
+                        this.pageControl.pickByHeaderBtnLoading = false;
+                        util.errorCallBack(data,this.$router,this.$message);
+                    });
+                });
+			},
             shipByHeaderHandler(){
                 this.$confirm('确定发货吗？', '提示', {}).then(() => {
                     this.pageControl.shipByHeaderBtnLoading = true;
@@ -1282,7 +1808,7 @@
                             message: res.data.msg,
                             type: 'success'
                         });
-                        this.orderHeader = Object.assign({}, res.data.data);
+                        this.updateOrderHeader(res.data.data);
                     }else{
                         this.$message.error(res.data.msg);
                     }
@@ -1299,7 +1825,7 @@
                             message: res.data.msg,
                             type: 'success'
                         });
-                        this.orderHeader = Object.assign({}, res.data.data);
+                        this.updateOrderHeader(res.data.data);
                     }else{
                         this.$message.error(res.data.msg);
                     }
@@ -1327,8 +1853,7 @@
             },
 			getOrder(){
                 getOutboundOrderHeader({orderNo:this.orderNo}).then((res) => {
-                    NProgress.done();
-                    this.orderHeader = Object.assign({}, res.data);
+                    this.updateOrderHeader(res.data);
                     this.getDetails();
                     this.getDetailAllocs();
                 }).catch((data) => {
@@ -1379,7 +1904,7 @@
 			},
 
             back(){
-                this.$router.push({ path: '/outboundOrder' });
+                this.$router.push({ path: this.$store.state.outboundDetail.fromPath });
 			},
             addDetailHandler(){
                 this.detailGrid.editForm = {
@@ -1394,6 +1919,7 @@
                     outboundPickNum:0,
                     outboundShipNum:0,
                     outboundPrice:0,
+                    cost:0,
                     remark:'',
                     creator:'',
                     createTime:'',
@@ -1404,6 +1930,17 @@
                     warehouseId:''
                 }
 				this.pageControl.editFormVisible = true;
+			},
+            openExcelImportPopWin(){
+                this.pageControl.excelImportPopWinVisible = true;
+                this.detailGrid.excelImportPopWinForm={
+                    orderNo:'',
+                    skuCodeColumnName:'',
+                    priceColumnName:'',
+                    numColumnName:'',
+                    loc:''
+                };
+                this.detailGrid.excelImportPopWinForm.orderNo = this.orderHeader.orderNo;
 			},
             handleDetailEdit(index, row){
                 this.detailGrid.editForm = {};
@@ -1428,6 +1965,101 @@
                             });
                         }else{
                             this.$message.error(res.data.msg);
+                        }
+						this.getDetails();
+					}).catch((data) => {
+                        this.detailGrid.listLoading = false;
+                        util.errorCallBack(data,this.$router,this.$message);
+                    });
+				});
+            },
+            handelBatchDelAndCreateNew(){
+                let idArray =[];
+                let errorMsg = "";
+                debugger
+                for(let i = 0;i<this.detailGrid.sels.length;i++){
+                    if(this.detailGrid.sels[i].status === '00'){
+                        idArray.push(this.detailGrid.sels[i].id);
+                    }else{
+                        errorMsg+="行号["+this.detailGrid.sels[i].lineNo+"]的明细不是创建状态，不能删除</br>";
+                    }
+                }
+                if(idArray.length === 0){
+                    this.$alert(errorMsg, '操作结果', {
+                                dangerouslyUseHTMLString: true,
+                                confirmButtonText: '确定'
+                            });
+                    return;
+                }
+                let ids = idArray.join(",");
+                let orderNo = this.orderHeader.orderNo;
+                this.$confirm('确认删除记录吗？', '提示', {
+					type: 'warning'
+				}).then(() => {
+					this.detailGrid.listLoading = true;
+					//NProgress.start();
+					let para = { ids: ids ,orderNo:orderNo};
+                    removeOutboundDetailAndCreateNewOrder(para).then((res) => {
+                        this.detailGrid.listLoading = false;
+                        if(res.data.code == 200){
+                            this.$message({
+                                message: res.data.msg,
+                                type: 'success'
+                            });
+                        }else{
+                            this.$alert(errorMsg+res.data.msg, '操作结果', {
+                                dangerouslyUseHTMLString: true,
+                                confirmButtonText: '确定'
+                            });
+                            //this.$message.error();
+                        }
+						this.getDetails();
+					}).catch((data) => {
+                        this.detailGrid.listLoading = false;
+                        util.errorCallBack(data,this.$router,this.$message);
+                    });
+				});
+            },
+            handelBatchDel(){
+                let idArray =[];
+                let errorMsg = "";
+                debugger
+                for(let i = 0;i<this.detailGrid.sels.length;i++){
+                    if(this.detailGrid.sels[i].status === '00'){
+                        idArray.push(this.detailGrid.sels[i].id);
+                    }else{
+                        errorMsg+="行号["+this.detailGrid.sels[i].lineNo+"]的明细不是创建状态，不能删除</br>";
+                    }
+                }
+                if(idArray.length === 0){
+                    this.$alert(errorMsg, '操作结果', {
+                                dangerouslyUseHTMLString: true,
+                                confirmButtonText: '确定'
+                            });
+                    return;
+                }
+                let ids = idArray.join(",");
+                let orderNo = this.orderHeader.orderNo;
+                this.$confirm('确认删除记录吗？', '提示', {
+					type: 'warning'
+				}).then(() => {
+					this.detailGrid.listLoading = true;
+					//NProgress.start();
+					let para = { ids: ids ,orderNo:orderNo};
+                    removeOutboundDetail(para).then((res) => {
+                        debugger
+                        this.detailGrid.listLoading = false;
+                        if(res.data.code == 200){
+                            this.$message({
+                                message: res.data.msg,
+                                type: 'success'
+                            });
+                        }else{
+                            this.$alert(errorMsg+res.data.msg, '操作结果', {
+                                dangerouslyUseHTMLString: true,
+                                confirmButtonText: '确定'
+                            });
+                            //this.$message.error();
                         }
 						this.getDetails();
 					}).catch((data) => {
@@ -1511,12 +2143,15 @@
                     orderNo:'',
                     buyerCode:'',
                     status:'00',
-                    orderTime:null,
+                    orderTime:new Date(),
                     auditOp:'',
                     auditStatus:'00',
                     auditTime:null,
                     outboundType:'',
                     isCalculated:'N',
+                    isCostCalculated:'N',
+                    voucherId:0,
+                    costVoucherId:0,
                     remark:'',
                     creator:'',
                     createTime:'',
@@ -1532,6 +2167,12 @@
 
 </script>
 
-<style scoped>
+<style>
+.el-table .un-alloc-row {
+    background: #f6ab00;
+  }
 
+.el-table .picksuccess-row {
+    background: #4eb319;
+}
 </style>

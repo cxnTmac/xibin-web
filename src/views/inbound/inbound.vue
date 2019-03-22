@@ -67,27 +67,29 @@
 		<el-table :data="orders" border highlight-current-row v-loading="listLoading" @selection-change="selsChange" stripe style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
-			<el-table-column prop="id" label="id" width="80" sortable>
-			</el-table-column>
+			<!-- <el-table-column prop="id" label="id" width="80" sortable>
+			</el-table-column> -->
 			<el-table-column prop="orderNo" label="入库单号" width="200" sortable>
 			</el-table-column>
-			<el-table-column prop="supplierCode" label="客户编码" width="200" sortable>
+			<el-table-column prop="supplierCode" label="客户编码" width="80" >
 			</el-table-column>
-			<el-table-column prop="supplierName" label="客户名称" width="200" sortable>
+			<el-table-column prop="supplierName" label="客户名称" width="150" >
 			</el-table-column>
-			<el-table-column prop="status" label="状态" width="200" sortable :formatter="formatStatus">
+			<el-table-column prop="status" label="状态" width="80"  :formatter="formatStatus">
 			</el-table-column>
-			<el-table-column prop="auditStatus" label="审核状态" width="200" sortable :formatter="formatAuditStatus">
+			<el-table-column prop="auditStatus" label="审核状态" width="80"  :formatter="formatAuditStatus">
 			</el-table-column>
-			<el-table-column prop="inboundType" label="入库单类型" width="200" sortable :formatter="formatInboundType">
+			<el-table-column prop="inboundType" label="入库单类型" width="80"  :formatter="formatInboundType">
 			</el-table-column>
-			<el-table-column prop="auditTime" label="审核时间" width="200" sortable :formatter="formatAuditTime">
+			<el-table-column prop="auditTime" label="审核时间" width="155"  :formatter="formatAuditTime">
 			</el-table-column>
-			<el-table-column prop="orderTime" label="订单时间" width="200" sortable :formatter="formatOrderTime">
+			<el-table-column prop="orderTime" label="订单时间" width="155"  :formatter="formatOrderTime">
 			</el-table-column>
-			<el-table-column prop="isCalculated" label="是否核算" width="200" >
+			<el-table-column prop="voucherId" label="凭证ID" width="80" >
 			</el-table-column>
-			<el-table-column prop="calculate_time" label="核算时间" width="200">
+			<el-table-column prop="isCalculated" label="是否核算" width="80" >
+			</el-table-column>
+			<el-table-column prop="calculate_time" label="核算时间" width="155">
 			</el-table-column>
 			<el-table-column prop="remark" label="备注" >
 			</el-table-column>
@@ -95,7 +97,7 @@
 			<!--</el-table-column>-->
 
 			<el-table-column label="操作" fixed="right" min-width="150">
-				<template scope="scope">
+				<template slot-scope="scope">
 					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
 				</template>
@@ -109,8 +111,6 @@
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="size" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
-
-
 	</section>
 </template>
 
@@ -129,10 +129,10 @@
                     orderNo: '',
                     status:'',
                     supplierCode:'',
-					orderTimeFm:'',
-					orderTimeTo:'',
-					inboundType:''
-				},
+                    orderTimeFm:'',
+                    orderTimeTo:'',
+                    inboundType:''
+                },
                 orders: [],
 				total: 0,
 				page: 1,
@@ -181,11 +181,15 @@
             handleAdd: function () {
                 this.$store.commit('changeInboundOrderNo', '')
                 this.$store.commit('changeInboundStatus', 'ADD')
+                this.$store.commit('changeInboundFilters',this.filters)
+                this.$store.commit('changeInboundDetailFromPath', '/inboundOrder')
                 this.$router.push({ path: '/inboundDetail' })
             },
             handleEdit:function(index,row){
                 this.$store.commit('changeInboundOrderNo', row.orderNo)
                 this.$store.commit('changeInboundStatus', 'EDIT')
+                this.$store.commit('changeInboundFilters',this.filters)
+                this.$store.commit('changeInboundDetailFromPath', '/inboundOrder')
                 this.$router.push({ path: '/inboundDetail' })
 			},
 			//获取用户列表
@@ -270,6 +274,7 @@
 			}
 		},
 		mounted() {
+            this.filters = this.$store.state.inbound.filters;
 			this.getOrders();
 		}
 	}
