@@ -5,65 +5,65 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cd96a77a-5f96-4818-a94f-64a7e8643b27" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/api/anotherNameApi.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/api/caseApi.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/sys/user.vue" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/config.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/sys/company.vue" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/finace/createCostVoucherByInbound.vue" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/crm/cases.vue" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/api/skuGroupApi.js" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/api/sysApi.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/basicdata/anotherName.vue" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/basicdata/skuGroup.vue" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/crm/cases.vue" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/finace/createCostVoucherByInbound.vue" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/finace/createCostVoucherByOutbound.vue" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/finace/report.vue" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/inbound/inboundSkuQuery.vue" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/inventory/move.vue" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/outbound/outboundSkuQuery.vue" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/sys/company.vue" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/sys/functions.vue" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/sys/role.vue" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/sys/user.vue" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/vuex/modules/inbound/inbound.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/vuex/modules/outbound/outbound.js" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/vuex/modules/roleFunctions/roleFunctions.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/config.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/inventory/move.vue" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/basicdata/anotherName.vue" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/api/caseApi.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/inbound/inboundSkuQuery.vue" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/basicdata/skuGroup.vue" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/api/anotherNameApi.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/sys/role.vue" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/finace/createCostVoucherByOutbound.vue" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/country.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config/index.js" afterPath="$PROJECT_DIR$/config/index.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/api/api.js" afterPath="$PROJECT_DIR$/src/api/api.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/api/assembleApi.js" afterPath="$PROJECT_DIR$/src/api/assembleApi.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/api/courseApi.js" afterPath="$PROJECT_DIR$/src/api/courseApi.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/api/customerApi.js" afterPath="$PROJECT_DIR$/src/api/customerApi.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/api/inboundApi.js" afterPath="$PROJECT_DIR$/src/api/inboundApi.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/api/inventoryApi.js" afterPath="$PROJECT_DIR$/src/api/inventoryApi.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/api/modelApi.js" afterPath="$PROJECT_DIR$/src/api/modelApi.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/api/outboundApi.js" afterPath="$PROJECT_DIR$/src/api/outboundApi.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/api/voucherApi.js" afterPath="$PROJECT_DIR$/src/api/voucherApi.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/common/js/util.js" afterPath="$PROJECT_DIR$/src/common/js/util.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/components/loginPopWin/popwin.vue" afterPath="$PROJECT_DIR$/src/components/loginPopWin/popwin.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main.js" afterPath="$PROJECT_DIR$/src/main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/routes.js" afterPath="$PROJECT_DIR$/src/routes.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/Home.vue" afterPath="$PROJECT_DIR$/src/views/Home.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/Login.vue" afterPath="$PROJECT_DIR$/src/views/Login.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/assemble/assembleDetail.vue" afterPath="$PROJECT_DIR$/src/views/assemble/assembleDetail.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/basicdata/customer.vue" afterPath="$PROJECT_DIR$/src/views/basicdata/customer.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/basicdata/sku.vue" afterPath="$PROJECT_DIR$/src/views/basicdata/sku.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/finace/accountBalance.vue" afterPath="$PROJECT_DIR$/src/views/finace/accountBalance.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/finace/course.vue" afterPath="$PROJECT_DIR$/src/views/finace/course.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/finace/createVoucherByInbound.vue" afterPath="$PROJECT_DIR$/src/views/finace/createVoucherByInbound.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/finace/createVoucherByOutbound.vue" afterPath="$PROJECT_DIR$/src/views/finace/createVoucherByOutbound.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/finace/financeHome.vue" afterPath="$PROJECT_DIR$/src/views/finace/financeHome.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/finace/voucher.vue" afterPath="$PROJECT_DIR$/src/views/finace/voucher.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/finace/voucherDetail.vue" afterPath="$PROJECT_DIR$/src/views/finace/voucherDetail.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/inbound/inbound.vue" afterPath="$PROJECT_DIR$/src/views/inbound/inbound.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/inbound/inboundDetail.vue" afterPath="$PROJECT_DIR$/src/views/inbound/inboundDetail.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/inventory/inventory.vue" afterPath="$PROJECT_DIR$/src/views/inventory/inventory.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/outbound/outbound.vue" afterPath="$PROJECT_DIR$/src/views/outbound/outbound.vue" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/sys/functions.vue" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/vuex/modules/outbound/outbound.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/views/outbound/outboundSkuQuery.vue" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/outbound/outboundDetail.vue" afterPath="$PROJECT_DIR$/src/views/outbound/outboundDetail.vue" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/vuex/index.js" afterPath="$PROJECT_DIR$/src/vuex/index.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/vuex/modules/inboundDetail/inboundDetail.js" afterPath="$PROJECT_DIR$/src/vuex/modules/inboundDetail/inboundDetail.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/vuex/modules/outboundDetail/outboundDetail.js" afterPath="$PROJECT_DIR$/src/vuex/modules/outboundDetail/outboundDetail.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/codemaster.json" afterPath="$PROJECT_DIR$/static/codemaster.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/finace/voucherDetail.vue" afterPath="$PROJECT_DIR$/src/views/finace/voucherDetail.vue" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/finace/accountBalance.vue" afterPath="$PROJECT_DIR$/src/views/finace/accountBalance.vue" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/basicdata/sku.vue" afterPath="$PROJECT_DIR$/src/views/basicdata/sku.vue" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/inbound/inbound.vue" afterPath="$PROJECT_DIR$/src/views/inbound/inbound.vue" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/Login.vue" afterPath="$PROJECT_DIR$/src/views/Login.vue" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/common/js/util.js" afterPath="$PROJECT_DIR$/src/common/js/util.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/api/inboundApi.js" afterPath="$PROJECT_DIR$/src/api/inboundApi.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config/index.js" afterPath="$PROJECT_DIR$/config/index.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/finace/createVoucherByOutbound.vue" afterPath="$PROJECT_DIR$/src/views/finace/createVoucherByOutbound.vue" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/outbound/outbound.vue" afterPath="$PROJECT_DIR$/src/views/outbound/outbound.vue" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/inventory/inventory.vue" afterPath="$PROJECT_DIR$/src/views/inventory/inventory.vue" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/popwin.json" afterPath="$PROJECT_DIR$/static/popwin.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main.js" afterPath="$PROJECT_DIR$/src/main.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/assemble/assembleDetail.vue" afterPath="$PROJECT_DIR$/src/views/assemble/assembleDetail.vue" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/inbound/inboundDetail.vue" afterPath="$PROJECT_DIR$/src/views/inbound/inboundDetail.vue" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/vuex/modules/inboundDetail/inboundDetail.js" afterPath="$PROJECT_DIR$/src/vuex/modules/inboundDetail/inboundDetail.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/finace/createVoucherByInbound.vue" afterPath="$PROJECT_DIR$/src/views/finace/createVoucherByInbound.vue" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/routes.js" afterPath="$PROJECT_DIR$/src/routes.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/api/customerApi.js" afterPath="$PROJECT_DIR$/src/api/customerApi.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/api/courseApi.js" afterPath="$PROJECT_DIR$/src/api/courseApi.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/vuex/index.js" afterPath="$PROJECT_DIR$/src/vuex/index.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/api/voucherApi.js" afterPath="$PROJECT_DIR$/src/api/voucherApi.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/api/assembleApi.js" afterPath="$PROJECT_DIR$/src/api/assembleApi.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/api/modelApi.js" afterPath="$PROJECT_DIR$/src/api/modelApi.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/finace/financeHome.vue" afterPath="$PROJECT_DIR$/src/views/finace/financeHome.vue" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/vuex/modules/outboundDetail/outboundDetail.js" afterPath="$PROJECT_DIR$/src/vuex/modules/outboundDetail/outboundDetail.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/Home.vue" afterPath="$PROJECT_DIR$/src/views/Home.vue" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/static/codemaster.json" afterPath="$PROJECT_DIR$/static/codemaster.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/finace/course.vue" afterPath="$PROJECT_DIR$/src/views/finace/course.vue" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/finace/voucher.vue" afterPath="$PROJECT_DIR$/src/views/finace/voucher.vue" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/components/loginPopWin/popwin.vue" afterPath="$PROJECT_DIR$/src/components/loginPopWin/popwin.vue" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/api/api.js" afterPath="$PROJECT_DIR$/src/api/api.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/api/inventoryApi.js" afterPath="$PROJECT_DIR$/src/api/inventoryApi.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/api/outboundApi.js" afterPath="$PROJECT_DIR$/src/api/outboundApi.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/views/basicdata/customer.vue" afterPath="$PROJECT_DIR$/src/views/basicdata/customer.vue" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -323,8 +323,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -701,6 +701,7 @@
       <workItem from="1552272270553" duration="2000" />
       <workItem from="1552272579111" duration="630000" />
       <workItem from="1552438996992" duration="13000" />
+      <workItem from="1573876636724" duration="2000" />
     </task>
     <task id="LOCAL-00001" summary="test commit">
       <created>1500372594823</created>
@@ -727,7 +728,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="834529000" />
+    <option name="totallyTimeSpent" value="834531000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -745,21 +746,21 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32910052" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32938188" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="TypeScript" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1431694" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">

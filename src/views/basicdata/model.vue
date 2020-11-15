@@ -1,5 +1,6 @@
 <template>
 	<section>
+		<div v-title data-title="车型"></div>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters">
@@ -20,7 +21,7 @@
 			</el-table-column>
 			<el-table-column prop="modelCode" label="车型编码" width="200" sortable>
 			</el-table-column>
-			<el-table-column prop="modelName" label="车型名称" width="300"  >
+			<el-table-column prop="modelName" label="车型名称" width="300" v-if="hasAuthority('1002003111')" >
 			</el-table-column>
 			<el-table-column prop="modelRemark" label="备注" min-width="400">
 			</el-table-column>
@@ -88,6 +89,7 @@
 	export default {
 		data() {
 			return {
+				authority:null,
 				filters: {
 					modelName: ''
 				},
@@ -140,7 +142,25 @@
 			}
 		},
 		methods: {
-
+			getAuthority(){
+				let currentRoute = this.$route
+				let btnsAndColumns = this.$store.state.roleFunctions.btnsAndColumns
+				for(let i = 0;i<btnsAndColumns.length;i++){
+					if(btnsAndColumns[i].path === currentRoute.path){
+						this.authority = btnsAndColumns[i]
+						return; 
+					}
+				}
+			},
+			hasAuthority(authorityCode){
+				var x = this.authority.btnsAndColumns
+				for(var j = 0;j<x.length;j++){
+					if(x[j].functionCode === authorityCode){
+						return true
+					}
+				}
+				return false
+			},
 			handleCurrentChange(val) {
 				this.page = val;
 				this.getModels();
@@ -211,6 +231,7 @@
 			},
 			//编辑
 			editSubmit: function () {
+				let _this = this;
 				this.$refs.editForm.validate((valid) => {
 					if (valid) {
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
@@ -228,7 +249,7 @@
                                 }else{
                                     this.$message.error(res.data.msg);
                                 }
-								this.$refs['editForm'].resetFields();
+								_this.$refs['editForm'].resetFields();
 								this.editFormVisible = false;
 								this.getModels();
 							}).catch((data) => {
@@ -241,6 +262,7 @@
 			},
 			//新增
 			addSubmit: function () {
+				let _this = this;
 				this.$refs.addForm.validate((valid) => {
 					if (valid) {
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
@@ -258,7 +280,7 @@
                                 }else{
                                     this.$message.error(res.data.msg);
                                 }
-								this.$refs['addForm'].resetFields();
+								_this.$refs['addForm'].resetFields();
 								this.addFormVisible = false;
 								this.getModels();
 							}).catch((data) => {
@@ -303,7 +325,12 @@
 				});
 			}
 		},
+		created(){
+			//获取该页面的权限
+			this.getAuthority();
+		},
 		mounted() {
+			
 			this.getModels();
 		}
 	}

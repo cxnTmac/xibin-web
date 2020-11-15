@@ -30,6 +30,7 @@ module.exports = {
     proxyTable: {
         '/xibin': {
             target: 'http://127.0.0.1:8081/xibin',
+            // target: 'http://118.89.37.186:8081/xibin',
             pathRewrite: {
                 '^/xibin': ''
             }
@@ -43,7 +44,8 @@ module.exports = {
         //     }
         // },
         '/pic': {
-            target: 'http://127.0.0.1:83/pic',
+            // target: 'http://127.0.0.1:83/pic',
+            target: 'http://118.89.37.186/pic',
             pathRewrite: {
                 '^/pic': ''
             }

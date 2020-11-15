@@ -25,13 +25,21 @@ export const cancelCreateByOrderNo = params => { return axios.get(`/xibin/assemb
 
 export const allocByOrderNoAndLineNo = params => { return axios.get(`/xibin/assemble/allocByOrderNoAndLineNo.shtml`, { params: params }); };
 
+export const allocByOrderNoAndLineNos = params => { return axios.get(`/xibin/assemble/allocByOrderNoAndLineNos.shtml`, { params: params }); };
+
 export const cancelAllocByOrderNoAndLineNo = params => { return axios.get(`/xibin/assemble/cancelAllocByOrderNoAndLineNo.shtml`, { params: params }); };
 
 export const pickByAlloc = params => { return axios.get(`/xibin/assemble/pickByAlloc.shtml`, { params: params }); };
 
+export const pickByAllocIds = params => { return axios.get(`/xibin/assemble/pickByAllocIds.shtml`, { params: params }); };
+
 export const cancelPickByAlloc = params => { return axios.get(`/xibin/assemble/cancelPickByAlloc.shtml`, { params: params }); };
 
 export const assemble = params => { return axios.get(`/xibin/assemble/assemble.shtml`, { params: params }); };
+
+export const remove = params => { return axios.post(`/xibin/assemble/remove.shtml`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
 
 export const removeAssembleFDetail = params => { return axios.post(`/xibin/assemble/removeAssembleFDetail.shtml`,qs.stringify(params),{headers: {
     'Content-Type': 'application/x-www-form-urlencoded',

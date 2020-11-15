@@ -1,12 +1,17 @@
-import {pages,routes } from '../../../routes';
+import {routes } from '../../../routes';
 const state = {
+    //按钮和数据列权限
+    btnsAndColumns:[],
+    // 菜单权限
     routers: routes,
+    // 新增进来的菜单权限
     addRouters: []
 }
 const mutations = {
-    SET_ROUTERS: (state, routers) => {
-        state.addRouters = routers;
-        state.routers = routes.concat(routers);
+    SET_ROUTERS: (state, data) => {
+        state.btnsAndColumns = data.btnsAndColumns;
+        state.addRouters = data.routers;
+        state.routers = routes.concat(data.routers);
     }
 }
 const actions = {

@@ -1,5 +1,6 @@
 <template>
 	<section>
+		<div v-title data-title="出库单"></div>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters" ref="queryForm">
@@ -46,6 +47,7 @@
 						<el-date-picker
 								v-model="filters.orderTimeFm"
 								type="datetime"
+								value-format="yyyy-MM-dd HH:mm:ss"
 								placeholder="选择日期时间">
 						</el-date-picker>
 						<!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
@@ -54,6 +56,7 @@
 						<el-date-picker
 								v-model="filters.orderTimeTo"
 								type="datetime"
+								value-format="yyyy-MM-dd HH:mm:ss"
 								placeholder="选择日期时间">
 						</el-date-picker>
 						<!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
@@ -216,19 +219,19 @@
 			},
             //显示新增界面
             handleAdd: function () {
-                this.$store.commit('changeOutboundOrderNo', '')
-                this.$store.commit('changeOutboundStatus', 'ADD')
-                this.$store.commit('changeOutboundFilters',this.filters)
-                this.$store.commit('changeOutboundDetailFromPath', '/outboundOrder')
-                this.$store.commit('changePage',this.page)
+                this.$store.commit('changeOutboundOrderNo', '');
+                this.$store.commit('changeOutboundStatus', 'ADD');
+                this.$store.commit('changeOutboundFilters',this.filters);
+                this.$store.commit('changeOutboundDetailFromPath', '/outbound');
+                this.$store.commit('changePage',this.page);
                 this.$router.push({ path: '/outboundDetail' });
             },
             handleEdit:function(index,row){
-                this.$store.commit('changeOutboundOrderNo', row.orderNo)
-                this.$store.commit('changeOutboundStatus', 'EDIT')
-                this.$store.commit('changeOutboundFilters',this.filters)
-                this.$store.commit('changeOutboundDetailFromPath', '/outboundOrder')
-                this.$store.commit('changePage',this.page)
+                this.$store.commit('changeOutboundOrderNo', row.orderNo);
+                this.$store.commit('changeOutboundStatus', 'EDIT');
+                this.$store.commit('changeOutboundFilters',this.filters);
+                this.$store.commit('changeOutboundDetailFromPath', '/outbound');
+                this.$store.commit('changePage',this.page);
                 this.$router.push({ path: '/outboundDetail' });
 			},
 			//获取用户列表
@@ -263,7 +266,6 @@
                     let para = {orderNos:[row.orderNo].join(',')};
                     remove(para).then((res) => {
                         this.listLoading = false;
-                        debugger
                         //NProgress.done();
                         if(res.data.code == 200){
                             this.$message({

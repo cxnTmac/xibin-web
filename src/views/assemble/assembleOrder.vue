@@ -1,5 +1,6 @@
 <template>
 	<section>
+		<div v-title data-title="组装单"></div>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters" ref="queryForm">
@@ -44,6 +45,7 @@
 						<el-date-picker
 								v-model="filters.orderTimeFm"
 								type="datetime"
+								value-format="yyyy-MM-dd HH:mm:ss"
 								placeholder="选择日期时间">
 						</el-date-picker>
 						<!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
@@ -52,6 +54,7 @@
 						<el-date-picker
 								v-model="filters.orderTimeTo"
 								type="datetime"
+								value-format="yyyy-MM-dd HH:mm:ss"
 								placeholder="选择日期时间">
 						</el-date-picker>
 						<!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
@@ -107,8 +110,7 @@
 <script>
 	import util from '../../common/js/util'
 	//import NProgress from 'nprogress'
-	import { getInboundOrderListPage,remove} from '../../api/inboundApi';
-    import { getAssembleOrderListPage} from '../../api/assembleApi';
+    import { getAssembleOrderListPage, remove} from '../../api/assembleApi';
     var codemaster = require('../../../static/codemaster.json');
 	export default {
 		data() {
@@ -208,7 +210,6 @@
 					let para = {orderNos:[row.orderNo].join(',')};
                     remove(para).then((res) => {
 						this.listLoading = false;
-						debugger
 						//NProgress.done();
                         if(res.data.code == 200){
                             this.$message({

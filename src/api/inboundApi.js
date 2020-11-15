@@ -68,5 +68,12 @@ export const accountCostByOrderNos = params => { return axios.post(`/xibin/inbou
 
 export const queryWmInboundDetailByPage = params => { return axios.get(`/xibin/inbound/queryWmInboundDetailByPage.shtml`, { params: params }); };
 
+
+export const batchSaveInboundDetail = params => { return axios.post(`/xibin/inbound/batchSaveInboundDetail.shtml`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
+
+
+export const queryHistorySale = params => { return axios.get(`/xibin/inbound/queryHistorySale.shtml`, { params: params }); };
 // export const removeFittingSkuPic = params => { return axios.get(`/xibin/fittingSku/removeFittingSkuPic.shtml`, { params: params }); };
 

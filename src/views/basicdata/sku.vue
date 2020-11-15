@@ -1,5 +1,6 @@
 <template>
 	<section>
+		<div v-title data-title="产品"></div>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters" ref="queryForm">
@@ -65,8 +66,8 @@
 			</el-table-column>
 			<el-table-column prop="type" label="包装类别" width="80"  :formatter="formatISPACKED">
 			</el-table-column>
-			<el-table-column prop="fittingSkuRemark" label="产品备注" width="120" >
-			</el-table-column>
+			<!-- <el-table-column prop="fittingSkuRemark" label="产品备注" width="120" >
+			</el-table-column> -->
 			<el-table-column prop="manufacturer" label="生产厂家" width="80" >
 			</el-table-column>
 			<el-table-column prop="materialquality" label="材质" width="80" >
@@ -87,7 +88,8 @@
 			</el-table-column> -->
 			<el-table-column label="操作" fixed="right" min-width="430">
 				<template slot-scope="scope">
-					<el-button type="success" size="small" @click="handleSetNew(scope.$index, scope.row)">设置为新品</el-button>
+					<!-- <el-button type="success" size="small" @click="handleSetNew(scope.$index, scope.row)">设置为新品</el-button> -->
+					<el-button type="success" size="small" @click="copy(scope.$index, scope.row)">复制</el-button>
 					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)"><i class="el-icon-delete2 el-icon--left"></i>删除</el-button>
 					<el-button type="primary" size="small" @click="handlePicManager(scope.$index, scope.row)"><i class="el-icon-picture el-icon--left"></i>图片管理</el-button>
@@ -142,6 +144,14 @@
 								</div>
 							</el-card>
 						</el-col>
+					</el-row>
+
+				</el-tab-pane>
+				<el-tab-pane label="产品二维码" name="qrCodeManage">
+					<el-button @click.native="printQrCode">打印二维码（带产品信息）</el-button>
+					<el-button @click.native="printQrCodeSingle">打印二维码</el-button>
+					<el-row>
+						<img :src="qrCodeUrl"/>
 					</el-row>
 
 				</el-tab-pane>
@@ -303,17 +313,20 @@
 							</el-col>
 						</el-row>
 						<el-row :gutter="0">
-							<el-col :span="12">
-								<el-form-item label="产品备注" prop="fittingSkuRemark">
-									<el-input v-model="editForm.fittingSkuRemark" auto-complete="off"></el-input>
-								</el-form-item>
-							</el-col>
+							
 							<el-col :span="12">
 								<el-form-item label="详细尺寸" prop="def1">
 									<el-input v-model="editForm.def1" auto-complete="off"></el-input>
 								</el-form-item>
 							</el-col>
 							
+						</el-row>
+						<el-row :gutter="0">
+							<el-col :span="24">
+								<el-form-item label="产品备注" prop="fittingSkuRemark">
+									<el-input type="textarea" :rows="4" v-model="editForm.fittingSkuRemark" auto-complete="off"></el-input>
+								</el-form-item>
+							</el-col>
 						</el-row>
 						
 					</el-form>
@@ -516,16 +529,18 @@
 				</el-row>
 				<el-row :gutter="0">
 					<el-col :span="12">
-						<el-form-item label="产品备注" prop="fittingSkuRemark">
-							<el-input v-model="addForm.fittingSkuRemark" auto-complete="off"></el-input>
-						</el-form-item>
-					</el-col>
-					<el-col :span="12">
 						<el-form-item label="详细尺寸" prop="def1">
 							<el-input v-model="addForm.def1" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
 				</el-row>
+				<el-row :gutter="0">
+							<el-col :span="24">
+								<el-form-item label="产品备注" prop="fittingSkuRemark">
+									<el-input type="textarea" :rows="4" v-model="addForm.fittingSkuRemark" auto-complete="off"></el-input>
+								</el-form-item>
+							</el-col>
+						</el-row>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="addFormVisible = false">取消</el-button>
@@ -579,6 +594,7 @@
 
 <script>
 	import util from '../../common/js/util'
+	import jrQrcode from 'jr-qrcode'
 	import Vue from 'vue'
 	import NProgress from 'nprogress'
     import {getSkuGroupQueryItemByGroupCode} from '../../api/skuGroupApi'
@@ -720,7 +736,9 @@
                     skuCodeColumnName:'',
                     result:''
 				},
-                excelFileList:[]
+				excelFileList:[],
+				//二维码
+				qrCodeUrl:''
 			}
 		},
         computed: {
@@ -757,6 +775,16 @@
             }
         },
 		methods: {
+			printQrCode(){ 
+				let user = JSON.parse(localStorage.getItem('user'));
+				// window.open(config.reportUrl+"?fittingSkuCode="+this.currentRow.fittingSkuCode+"&companyId="+user.companyId+"&URL="+"http://www.xbjg.org/productDetails.html?skucode=");
+                window.open("http://localhost:8081/xibin/report/report.shtml?url=qrCode"+"&fittingSkuCode="+this.currentRow.fittingSkuCode+"&companyId="+user.companyId+"&URL="+"http://www.xbjg.org/productDetails.html?skucode=");
+			},
+			printQrCodeSingle(){ 
+				let user = JSON.parse(localStorage.getItem('user'));
+				// window.open(config.reportUrl+"?fittingSkuCode="+this.currentRow.fittingSkuCode+"&companyId="+user.companyId+"&URL="+"http://www.xbjg.org/productDetails.html?skucode=");
+                window.open("http://localhost:8081/xibin/report/report.shtml?url=qrCodeSingle"+"&fittingSkuCode="+this.currentRow.fittingSkuCode+"&companyId="+user.companyId+"&URL="+"http://www.xbjg.org/productDetails.html?skucode=");
+            },
             handleSelect(item){
                 console.log(item);
 			},
@@ -791,7 +819,6 @@
                 this.currentAssembleRow['sSkuName'] = row.fittingSkuName;
             },
             handleAssembleSkuDel:function (index,row) {
-                debugger
                 if(row.id!==null){
                     this.removeAssembleSkus.push(row);
                 }
@@ -928,7 +955,13 @@
                         util.errorCallBack(data,this.$router,this.$message);
                     });
                 }
-            },
+			},
+			copy:function(index, row){
+				this.addFormVisible = true;
+				this.addForm = Object.assign({}, row);
+				this.addForm.id = null;
+                this.currentRow = this.addForm;
+			},
             handleSetNew:function(index, row){
                 this.currentRow = Object.assign({}, row);
                 this.currentRow.fittingSkuStatus = 'NEW';
@@ -1056,6 +1089,16 @@
 			},
 			//点击图片管理
             handlePicManager:function(index, row){
+				var options = {
+					padding:10,
+					width:256,
+					height:256,
+					reverse:false,
+					background:"#ffffff",
+					foreground:"#000000"  
+				}
+				var imgBase64 = jrQrcode.getQrBase64('http://www.xbjg.org/productDetails.html?skucode='+row.fittingSkuCode, options);
+				this.qrCodeUrl = imgBase64
                 this.fileList = [];
                 this.currentRow = Object.assign({}, row);
                 this.dialogPicManagerVisible  = true;
@@ -1063,6 +1106,7 @@
 			},
 			//编辑
 			editSubmit: function () {
+				let _this = this;
 				this.$refs.editForm.validate((valid) => {
 					if (valid) {
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
@@ -1081,7 +1125,7 @@
                                 }else{
                                     this.$message.error(res.data.msg);
                                 }
-								this.$refs['editForm'].resetFields();
+								_this.$refs['editForm'].resetFields();
 								this.editFormVisible = false;
 								this.getSkus();
 							}).catch((data) => {
@@ -1094,6 +1138,7 @@
 			},
 			//新增
 			addSubmit: function () {
+				let _this = this;
 				this.$refs.addForm.validate((valid) => {
 					if (valid) {
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
@@ -1112,7 +1157,7 @@
                                 }else{
                                     this.$message.error(res.data.msg);
                                 }
-								this.$refs['addForm'].resetFields();
+								_this.$refs['addForm'].resetFields();
 								this.addFormVisible = false;
 								this.getSkus();
 							}).catch((data) => {

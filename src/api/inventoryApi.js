@@ -14,5 +14,7 @@ export const getAvailbleInventoryListPage = params => { return axios.get(`/xibin
 export const move = params => { return axios.get(`/xibin/inventory/move.shtml`, { params: params }); };
 
 export const transfer = params => { return axios.get(`/xibin/inventory/transfer.shtml`, { params: params }); };
+
+export const add = params => { return axios.get(`/xibin/inventory/add.shtml`, { params: params }); };
 // export const removeFittingSkuPic = params => { return axios.get(`/xibin/fittingSku/removeFittingSkuPic.shtml`, { params: params }); };
 

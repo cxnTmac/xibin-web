@@ -1,5 +1,6 @@
 <template>
     <section class="chart-container">
+        <div v-title data-title="数据图表"></div>
         <el-row>
             <el-row :gutter="20">
                 <el-col :span="24">

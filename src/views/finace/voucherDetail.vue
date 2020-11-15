@@ -339,7 +339,6 @@
                         this.$message.error('行号'+this.detailGrid.voucherDetail[i].lineNo+'借贷金额均为空');
                         return false;
 					}
-					debugger
 					//如果该行的辅助核算项目是必填的
 					if(this.detailGrid.voucherDetail[i]['auxirequired'] == true
 							&&(this.detailGrid.voucherDetail[i].auxiId === null||this.detailGrid.voucherDetail[i].auxiId === '')){
@@ -551,7 +550,6 @@
             changePopValueForCourseNo:function (row) {
                 this.detailGrid.currentRow.courseName = row.courseName;
                 this.detailGrid.currentRow.auxiId = null;
-				debugger
                 //如果 辅助核算ID不为空
 			    if(!util.isNullOrUndefined(row.auxiliary)&&row.auxiliary!== ''){
                     this.auxiliaryQueryCondition = {fid:row.auxiliary}

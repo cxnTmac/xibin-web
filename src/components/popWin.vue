@@ -15,6 +15,7 @@
         props: {
             // 基础类型检测 （`null` 意思是任何类型都可以）
             popKey: String,
+            id:String,
 			selectValue:String,
             disabled:Boolean,
             staticCondition:{},
@@ -30,16 +31,16 @@
         template:'<div><el-popover ref="popBtn" placement="top-start" width="510" trigger="click">'+
          '<el-form :inline="true" :model="filters">'+
         	 '<el-form-item>'+
-         		'<el-select v-model="filters.queryValue" size="small"  placeholder="查询条件">'+
+         		'<el-select v-model="filters.queryValue"  size="small"  placeholder="查询条件">'+
             		'<el-option v-for="item in getConditions" :key="item.value" :label="item.title" :value="item.name">'+
             		'</el-option>'+
          		'</el-select>'+
         	 '</el-form-item>'+
          	'<el-form-item>'+
-            	'<el-input  size="small" v-model="filters.condition" ></el-input>'+
+            	'<el-input ref="queryInput" size="small" v-model="filters.condition" @keyup.enter.native="getData" ></el-input>'+
             '</el-form-item>'+
             '<el-form-item>'+
-            	'<el-button type="primary" size="small" v-on:click="getData">查询</el-button>'+
+            	'<el-button type="primary" size="small"  v-on:click="getData">查询</el-button>'+
             '</el-form-item>'+
 		 '</el-form>'+
 		 '<el-table :data="data2" border highlight-current-row v-loading="listLoading" @current-change="handleCurrentChange" stripe>'+
@@ -52,7 +53,7 @@
 		 '</el-popover>'+
          '<el-row :gutter="0">'+
          '<el-col :span="18">'+
-         '<el-autocomplete v-if="!showName" popper-class="my-autocomplete" :disabled="disabled" v-model="inputValue" :fetch-suggestions="querySearch"  style="width:100%" placeholder="请输入内容" @select="handleSelect" :trigger-on-focus=false>'+
+         '<el-autocomplete v-if="!showName" :id="id" popper-class="my-autocomplete" :disabled="disabled"  v-model="inputValue" :fetch-suggestions="querySearch"  style="width:100%" placeholder="请输入内容" @select="handleSelect" :trigger-on-focus=false>'+
          '<i class="el-icon-circle-close el-input__icon" slot="suffix" @click="handleIconClick">'+
          '</i>'+
          '<template slot-scope="props">'+
@@ -61,7 +62,7 @@
          '<div class="name" style="display: none">{{ props.item.row }}</div>'+
          '</template>'+
          '</el-autocomplete>' +
-         '<el-autocomplete v-if="showName" popper-class="my-autocomplete" :disabled="disabled" v-model="name" :fetch-suggestions="querySearch" style="width:100%"  placeholder="请输入内容" @select="handleSelect" :trigger-on-focus=false>'+
+         '<el-autocomplete v-if="showName" popper-class="my-autocomplete" :disabled="disabled"  v-model="name" :fetch-suggestions="querySearch" style="width:100%"  placeholder="请输入内容" @select="handleSelect" :trigger-on-focus=false>'+
             '<i class="el-icon-circle-close el-input__icon" slot="suffix" @click="handleIconClick">'+
             '</i>'+
             '<template slot-scope="props">'+
@@ -141,6 +142,7 @@
                 this.page = val;
                 this.getData();
             },
+
             getData:function(){
                 this.listLoading = true;
                 let para = {};
@@ -149,6 +151,7 @@
                 queryConditions = Object.assign(queryConditions, this.staticCondition);
                 para['page'] = this.page;
                 para['size'] = this.size;
+                para['isPage'] = 'Y';
                 para['queryConditions'] = JSON.stringify(queryConditions);
                 para['queryType']= popConfig[this.popKey].query;
                 para['sys']= popConfig[this.popKey].sys;

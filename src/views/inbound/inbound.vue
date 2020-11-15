@@ -1,5 +1,6 @@
 <template>
 	<section>
+		<div v-title data-title="入库单"></div>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters" ref="queryForm">
@@ -46,6 +47,7 @@
 						<el-date-picker
 								v-model="filters.orderTimeFm"
 								type="datetime"
+								value-format="yyyy-MM-dd HH:mm:ss"
 								placeholder="选择日期时间">
 						</el-date-picker>
 						<!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
@@ -54,6 +56,7 @@
 						<el-date-picker
 								v-model="filters.orderTimeTo"
 								type="datetime"
+								value-format="yyyy-MM-dd HH:mm:ss"
 								placeholder="选择日期时间">
 						</el-date-picker>
 						<!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
@@ -89,7 +92,7 @@
 			</el-table-column>
 			<el-table-column prop="isCalculated" label="是否核算" width="80" >
 			</el-table-column>
-			<el-table-column prop="calculate_time" label="核算时间" width="155">
+			<el-table-column prop="calculateTime" label="核算时间" width="155">
 			</el-table-column>
 			<el-table-column prop="remark" label="备注" >
 			</el-table-column>
@@ -139,9 +142,7 @@
 				size:10,
 				listLoading: false,
                 loading:true,
-				sels: [],//列表选中列
-
-
+				sels: []//列表选中列
 			}
 		},
 		methods: {
@@ -182,14 +183,14 @@
                 this.$store.commit('changeInboundOrderNo', '')
                 this.$store.commit('changeInboundStatus', 'ADD')
                 this.$store.commit('changeInboundFilters',this.filters)
-                this.$store.commit('changeInboundDetailFromPath', '/inboundOrder')
+                this.$store.commit('changeInboundDetailFromPath', '/inbound')
                 this.$router.push({ path: '/inboundDetail' })
             },
             handleEdit:function(index,row){
                 this.$store.commit('changeInboundOrderNo', row.orderNo)
                 this.$store.commit('changeInboundStatus', 'EDIT')
                 this.$store.commit('changeInboundFilters',this.filters)
-                this.$store.commit('changeInboundDetailFromPath', '/inboundOrder')
+                this.$store.commit('changeInboundDetailFromPath', '/inbound')
                 this.$router.push({ path: '/inboundDetail' })
 			},
 			//获取用户列表
@@ -224,7 +225,6 @@
 					let para = {orderNos:[row.orderNo].join(',')};
                     remove(para).then((res) => {
 						this.listLoading = false;
-						debugger
 						//NProgress.done();
                         if(res.data.code == 200){
                             this.$message({

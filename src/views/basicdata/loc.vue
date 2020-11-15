@@ -1,5 +1,6 @@
 <template>
 	<section>
+		<div v-title data-title="库位"></div>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters" ref="queryForm">
@@ -342,6 +343,7 @@
             },
             //编辑
             editSubmit: function () {
+				let _this = this;
                 this.$refs.editForm.validate((valid) => {
                     if (valid) {
                         this.$confirm('确认提交吗？', '提示', {}).then(() => {
@@ -359,7 +361,7 @@
                                 }else{
                                     this.$message.error(res.data.msg);
                                 }
-                                this.$refs['editForm'].resetFields();
+                                _this.$refs['editForm'].resetFields();
                                 this.editFormVisible = false;
                                 this.getRecords();
                             }).catch((data) => {
@@ -372,6 +374,7 @@
             },
             //新增
             addSubmit: function () {
+				let _this = this;
                 this.$refs.addForm.validate((valid) => {
                     if (valid) {
                         this.$confirm('确认提交吗？', '提示', {}).then(() => {
@@ -389,7 +392,7 @@
                                 }else{
                                     this.$message.error(res.data.msg);
                                 }
-                                this.$refs['addForm'].resetFields();
+                                _this.$refs['addForm'].resetFields();
                                 this.addFormVisible = false;
                                 this.getRecords();
                             }).catch((data) => {

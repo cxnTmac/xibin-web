@@ -260,6 +260,7 @@
 			},
 			//编辑
 			editSubmit: function () {
+				let _this = this;
 				this.$refs.editForm.validate((valid) => {
 					if (valid) {
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
@@ -274,7 +275,7 @@
 									message: '提交成功',
 									type: 'success'
 								});
-								this.$refs['editForm'].resetFields();
+								_this.$refs['editForm'].resetFields();
 								this.editFormVisible = false;
 								this.getUsers();
 							});
@@ -284,6 +285,7 @@
 			},
 			//新增
 			addSubmit: function () {
+				let _this = this;
 				this.$refs.addForm.validate((valid) => {
 					if (valid) {
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
@@ -298,7 +300,7 @@
 									message: '提交成功',
 									type: 'success'
 								});
-								this.$refs['addForm'].resetFields();
+								_this.$refs['addForm'].resetFields();
 								this.addFormVisible = false;
 								this.getUsers();
 							});

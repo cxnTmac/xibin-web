@@ -100,6 +100,10 @@ export const importOutboundDetailByExcel = params => { return axios.get(`/xibin/
 
 export const aiForOrders = params => { return axios.get(`/xibin/outbound/aiForOrders.shtml`, { params: params }); };
 export const queryWmOutboundDetailByPage = params => { return axios.get(`/xibin/outbound/queryWmOutboundDetailByPage.shtml`, { params: params }); };
+
+export const selectNextOrderNo = params => { return axios.get(`/xibin/outbound/selectNextOrderNo.shtml`, { params: params }); };
+
+export const selectPreOrderNo = params => { return axios.get(`/xibin/outbound/selectPreOrderNo.shtml`, { params: params }); };
 // export const receive = params => { return axios.get(`/xibin/outbound/receive.shtml`, { params: params }); };
 //
 // export const cancelReceive = params => { return axios.get(`/xibin/outbound/cancelReceive.shtml`, { params: params }); };

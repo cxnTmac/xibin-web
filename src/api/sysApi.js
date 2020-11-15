@@ -14,7 +14,7 @@ export const showAllFunctionListPage = params => { return axios.get(`/xibin/sys/
 
 export const getAllRoleFunctions = params => { return axios.get(`/xibin/sys/getAllRoleFunctions.shtml`, { params: params }); };
 
-export const showAllMenu = params => { return axios.get(`/xibin/sys/showAllMenu.shtml`, { params: params }); };
+export const showAllMenus = params => { return axios.get(`/xibin/sys/showAllMenus.shtml`, { params: params }); };
 
 
 

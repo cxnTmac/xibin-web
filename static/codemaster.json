@@ -65,7 +65,8 @@
     {"code":"ASSEMBLE_S","name":"组装消耗子件"},
     {"code":"ASSEMBLE_F","name":"组装生成父件"},
     {"code":"MOVE","name":"移动"},
-    {"code":"TRANSFER","name":"转变"}
+    {"code":"TRANSFER","name":"转变"},
+    {"code":"ADD","name":"手动增加库存"}
   ],
   "WM_ORDER_TYPE":[
     {"code":"INB","name":"入库单"},

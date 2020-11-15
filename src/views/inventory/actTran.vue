@@ -1,5 +1,6 @@
 <template>
 	<section>
+		<div v-title data-title="库存记录查询"></div>
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters" ref="queryForm">
@@ -46,6 +47,7 @@
                     <el-date-picker
                             v-model="filters.tranTimeFm"
                             type="datetime"
+							value-format="yyyy-MM-dd HH:mm:ss"
                             placeholder="选择日期时间">
                     </el-date-picker>
                     <!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
@@ -54,6 +56,7 @@
                     <el-date-picker
                             v-model="filters.tranTimeTo"
                             type="datetime"
+							value-format="yyyy-MM-dd HH:mm:ss"
                             placeholder="选择日期时间">
                     </el-date-picker>
                     <!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
