@@ -120,6 +120,8 @@
       highlight-current-row
       v-loading="listLoading"
       @selection-change="selsChange"
+      :summary-method="getSummaries"
+      show-summary
       stripe
       style="width: 100%"
     >
@@ -183,6 +185,8 @@
       </el-table-column>
       <el-table-column prop="inboundPrice" label="价格" width="80">
       </el-table-column>
+      <el-table-column prop="totalPrice" label="总价" width="200">
+      </el-table-column>
       <el-table-column prop="uomDesc" label="单位" width="50">
       </el-table-column>
       <el-table-column prop="fittingSkuCode" label="产品编码" width="80">
@@ -232,7 +236,7 @@ import util from "../../common/js/util";
 //import NProgress from 'nprogress'
 import { queryWmInboundDetailByPage } from "../../api/inboundApi";
 import NProgress from "nprogress";
-
+import NP from "number-precision";
 var codemaster = require("../../../static/codemaster.json");
 export default {
   data() {
@@ -273,6 +277,34 @@ export default {
     };
   },
   methods: {
+    getSummaries(param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = "合计";
+          return;
+        }
+        if (index !== 4 && index !== 5 && index !== 7) {
+          sums[index] = "";
+          return;
+        }
+        const values = data.map((item) => Number(item[column.property]));
+        if (!values.every((value) => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return NP.plus(prev, curr);
+            } else {
+              return prev;
+            }
+          }, 0);
+        } else {
+          sums[index] = "N/A";
+        }
+      });
+      return sums;
+    },
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 0) {
         let i = this.arrayContains(this.orderGroup, rowIndex);
