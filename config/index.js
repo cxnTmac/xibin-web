@@ -28,8 +28,9 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-        '/xibin': {
-            target: 'http://127.0.0.1:8081/xibin',
+        '/xibin/': {
+            target: 'http://127.0.0.1:8080/',
+            // target: 'http://127.0.0.1:8082/xibin',
             // target: 'http://118.89.37.186:8081/xibin',
             pathRewrite: {
                 '^/xibin': ''

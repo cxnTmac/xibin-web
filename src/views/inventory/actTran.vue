@@ -47,7 +47,7 @@
                     <el-date-picker
                             v-model="filters.tranTimeFm"
                             type="datetime"
-							value-format="yyyy-MM-dd HH:mm:ss"
+							 
                             placeholder="选择日期时间">
                     </el-date-picker>
                     <!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
@@ -56,7 +56,7 @@
                     <el-date-picker
                             v-model="filters.tranTimeTo"
                             type="datetime"
-							value-format="yyyy-MM-dd HH:mm:ss"
+							 
                             placeholder="选择日期时间">
                     </el-date-picker>
                     <!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->

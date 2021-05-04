@@ -258,10 +258,9 @@
       <el-table
         :data="sDetailGrid.sDetail"
         border
-        highlight-current-row
+        :row-class-name="tableRowClassName"
         v-loading="sDetailGrid.listLoading"
         @selection-change="sDetailSelsChange"
-        stripe
         style="width: 100%"
       >
         <el-table-column type="selection" width="40"> </el-table-column>
@@ -348,7 +347,7 @@
         style="width: 100%"
       >
         <el-table-column type="selection" width="40"> </el-table-column>
-        <el-table-column prop="sLineNo" label="子件行号" width="50">
+        <el-table-column prop="slineNo" label="子件行号" width="50">
         </el-table-column>
         <el-table-column prop="allocId" label="分配ID" width="200">
         </el-table-column>
@@ -492,7 +491,7 @@
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
-            <el-form-item label="组装库位" prop="planLoc">
+            <el-form-item label="组装库位" prop="assembleLoc">
               <popwin-button
                 popKey="POP_LOC"
                 :staticCondition="assembleLocCondition"
@@ -624,7 +623,18 @@ export default {
           warehouseId: "",
           toAssembleNum: 0,
         },
-        editFormRules: {},
+        editFormRules: {
+          assembleLoc: [
+            { required: true, message: "请选择组装库位", trigger: "blur" },
+          ],
+          toLoc: [
+            {
+              required: true,
+              message: "请选择成品库位",
+              trigger: "blur",
+            },
+          ],
+        },
         fDetail: [],
         page: 1,
         size: 10,
@@ -714,7 +724,7 @@ export default {
         ],
         orderTime: [
           {
-            type: "date",
+            type: "string",
             required: true,
             message: "请选择时间",
             trigger: "change",
@@ -802,7 +812,11 @@ export default {
         this.orderHeader.auditStatus !== "00" &&
         this.orderHeader.status === "10"
       ) {
-        return false;
+        if(this.allocGrid.alloc.length>0){
+          return true;
+        }else{
+          return false;
+        }
       } else {
         return true;
       }
@@ -815,6 +829,14 @@ export default {
     },
   },
   methods: {
+    tableRowClassName({ row, rowIndex }) {
+      if (row.status === "00" || row.status === "20") {
+        return "un-alloc-row";
+      }else if(row.status === "40"){
+        return "part-row";
+      }
+      return "";
+    },
     allocSelsChange: function (sels) {
       this.allocGrid.sels = sels;
     },
@@ -1032,10 +1054,13 @@ export default {
     },
     batchPick() {
       var allocIds = "";
-      allocIds = this.allocGrid.sels.map(function (elem, index) {
+      allocIds = this.allocGrid.sels
+        .map(function (elem, index) {
           return elem.allocId;
-      }).join(",");
-      pickByAllocIds({allocIds: allocIds}).then((res) => {
+        })
+        .join(",");
+      pickByAllocIds({ allocIds: allocIds })
+        .then((res) => {
           if (res.data.code == 200) {
             this.$message({
               message: res.data.msg,
@@ -1046,9 +1071,10 @@ export default {
           } else {
             this.$message.error(res.data.msg);
           }
-      }).catch((data) => {
+        })
+        .catch((data) => {
           util.errorCallBack(data, this.$router, this.$message);
-      });
+        });
     },
     batchAlloc() {
       var lineNos = "";
@@ -1057,7 +1083,11 @@ export default {
           return elem.lineNo;
         })
         .join(",");
-      allocByOrderNoAndLineNos({orderNo:this.orderHeader.orderNo,lineNos: lineNos}).then((res) => {
+      allocByOrderNoAndLineNos({
+        orderNo: this.orderHeader.orderNo,
+        lineNos: lineNos,
+      })
+        .then((res) => {
           if (res.data.code == 200) {
             this.$message({
               message: res.data.msg,
@@ -1068,10 +1098,10 @@ export default {
           } else {
             this.$message.error(res.data.msg);
           }
-      }).catch((data) => {
+        })
+        .catch((data) => {
           util.errorCallBack(data, this.$router, this.$message);
-      });  
-      
+        });
     },
     handleSDetailAllocPick(index, row) {
       let para = Object.assign({}, row);
@@ -1175,6 +1205,11 @@ export default {
     },
     cancelCreateSDetail() {
       this.cancelCreateSDetailBtnLoading = true;
+      debugger;
+      if(this.sDetailAllocGrid.sDetailAlloc.size>0){
+        this.$message.error("请取消所有分配后再取消生成子件！");
+        return;
+      }
       cancelCreateByOrderNo({ orderNo: this.orderHeader.orderNo })
         .then((res) => {
           this.cancelCreateSDetailBtnLoading = false;
@@ -1199,8 +1234,8 @@ export default {
         .then((res) => {
           this.orderHeader = Object.assign({}, res.data);
           //处理时间
-          this.orderHeader.orderTime = new Date(res.data.orderTime);
-          this.orderHeader.auditTime = new Date(res.data.auditTime);
+          this.orderHeader.orderTime = res.data.orderTime?util.formatDate.format(new Date(res.data.orderTime), "yyyy-MM-dd hh:mm:ss"):'';
+          this.orderHeader.auditTime = res.data.auditTime?util.formatDate.format(new Date(res.data.auditTime), "yyyy-MM-dd hh:mm:ss"):'';
           this.getAssembleFDetail();
           this.getAssembleSDetail();
           this.getAllAssembleAlloc();
@@ -1280,7 +1315,7 @@ export default {
         auditStatus: "00",
         auditor: "",
         auditDate: null,
-        orderTime: new Date(),
+        orderTime: util.formatDate.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
         remark: "",
         creator: "",
         createTime: "",
@@ -1295,4 +1330,11 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style>
+.el-table .un-alloc-row {
+  background: #f6ab00;
+}
+.el-table .part-row {
+  background: #F5DA81;
+}
+</style>

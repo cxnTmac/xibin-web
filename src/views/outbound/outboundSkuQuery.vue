@@ -45,10 +45,7 @@
             ></el-input>
           </el-form-item>
           <el-form-item label="车型" prop="modelCode">
-            <el-input
-              v-model="filters.modelCode"
-              placeholder="车型"
-            ></el-input>
+            <el-input v-model="filters.modelCode" placeholder="车型"></el-input>
           </el-form-item>
           <el-button
             type="primary"
@@ -69,7 +66,6 @@
               v-model="filters.orderTimeFm"
               type="datetime"
               placeholder="选择日期时间"
-              value-format="yyyy-MM-dd HH:mm:ss"
             >
             </el-date-picker>
             <!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
@@ -79,14 +75,13 @@
               v-model="filters.orderTimeTo"
               type="datetime"
               placeholder="选择日期时间"
-              value-format="yyyy-MM-dd HH:mm:ss"
             >
             </el-date-picker>
             <!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
           </el-form-item>
           <el-form-item label="出库单类型" prop="outboundTypes">
             <el-select
-              multiple 
+              multiple
               v-model="filters.outboundTypes"
               placeholder="请选择 "
             >
@@ -102,6 +97,12 @@
                 }}</span>
               </el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item label="备注" prop="remark">
+            <el-input
+              v-model="filters.remark"
+              placeholder="备注"
+            ></el-input>
           </el-form-item>
         </el-row>
         <transition name="el-zoom-in-top"> </transition>
@@ -121,6 +122,16 @@
       :summary-method="getSummaries"
       show-summary
     >
+      <!-- <el-table
+      :data="records"
+      border
+      :span-method="objectSpanMethod"
+      highlight-current-row
+      v-loading="listLoading"
+      @selection-change="selsChange"
+      stripe
+      style="width: 100%"
+    > -->
       <!-- <el-table-column type="selection" width="55"> </el-table-column> -->
       <el-table-column prop="orderNo" label="出库单头信息" width="200">
         <template slot-scope="scope">
@@ -141,6 +152,9 @@
           </div>
           <div>
             {{ formatOrderTime(scope.row.orderTime) }}
+          </div>
+          <div>
+            {{ "总价："+totalPriceMap[scope.row.orderNo] }}
           </div>
         </template>
       </el-table-column>
@@ -195,6 +209,11 @@
       <el-table-column prop="outboundPrice" label="单价" width="80">
       </el-table-column>
       <el-table-column prop="cost" label="成本" width="80"> </el-table-column>
+      <el-table-column prop="totalCost" label="总成本" width="80">
+        <template slot-scope="scope">
+          {{ getTotalCost(scope.row.cost, scope.row.outboundNum) }}
+        </template>
+      </el-table-column>
       <el-table-column prop="fittingSkuCode" label="产品编码" width="80">
       </el-table-column>
       <el-table-column prop="quickCode" label="快捷编码" width="80">
@@ -210,12 +229,20 @@
       <!--</el-table-column>-->
     </el-table>
 
-    <!--工具条-->
     <el-col :span="24" class="toolbar">
-      <!--<el-button type="primary" @click="handleAdd">新增</el-button>-->
-      <!--<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>-->
-      <!-- <el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="size" :total="total" style="float:right;">
-			</el-pagination> -->
+      <download-excel
+        class="export-excel-wrapper"
+        :data="records"
+        :fields="json_fields"
+        name="出库记录导出.xls"
+      >
+        <!-- 上面可以自定义自己的样式，还可以引用其他组件button -->
+        <el-button type="primary" size="small">导出EXCEL</el-button>
+      </download-excel>
+      <!--<el-button type="primary" @click="handleAdd">新增</el-button>
+      <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
+      <el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="size" :total="total" style="float:right;">
+			</el-pagination>-->
     </el-col>
   </section>
 </template>
@@ -226,21 +253,37 @@ import util from "../../common/js/util";
 import { queryWmOutboundDetailByPage } from "../../api/outboundApi";
 import NProgress from "nprogress";
 import NP from "number-precision";
+
 var codemaster = require("../../../static/codemaster.json");
 export default {
   data() {
     return {
+      json_fields: {
+        出库单号: "orderNo", //常规字段
+        出库单时间: "orderTime", 
+        客户: "buyerName",
+        出库类型: "outboundType",
+        行号: "lineNo",
+        产品编码: "fittingSkuCode",
+        产品名称: "fittingSkuName",
+        车型: "modelCode",
+        单位: "uomDesc",
+        数量: "outboundNum",
+        单价: "outboundPrice",
+      },
+      totalPriceMap:{},
       showMoreQueryCondition: false,
       status: codemaster.WM_OUTBOUND_STATUS,
       filters: {
         buyerCode: "",
         fittingSkuCode: "",
         fittingSkuName: "",
-        modelCode:"",
+        modelCode: "",
         headerStatus: "",
-        outboundTypes:[],
-        orderTimeFm:"",
-        orderTimeTo:""
+        outboundTypes: [],
+        orderTimeFm: null,
+        orderTimeTo: null,
+        remark:""
       },
       outboundTypes: codemaster.WM_OUTBOUND_TYPE,
       records: [],
@@ -254,6 +297,9 @@ export default {
     };
   },
   methods: {
+    getTotalCost(cost, num) {
+      return NP.times(cost ? cost : 0, num ? num : 0);
+    },
     getSummaries(param) {
       const { columns, data } = param;
       const sums = [];
@@ -262,11 +308,18 @@ export default {
           sums[index] = "合计";
           return;
         }
-        if (index !== 4 && index !== 5) {
+        if (index !== 4 && index !== 5 && index !== 11) {
           sums[index] = "";
           return;
         }
-        const values = data.map((item) => Number(item[column.property]));
+        let values = [];
+        if (index === 11) {
+          values = data.map((item) => {
+            return NP.times(item.cost?item.cost:0,item.outboundNum?item.outboundNum:0);
+          });
+        }else if(index === 4||index === 5){
+          values = data.map((item) => Number(item[column.property]));
+        }
         if (!values.every((value) => isNaN(value))) {
           sums[index] = values.reduce((prev, curr) => {
             const value = Number(curr);
@@ -328,11 +381,20 @@ export default {
     updateOrderGroup: function () {
       let array = [];
       array.push(0);
+      let sum = 0;
+      let tongji = {};
       for (let i = 0; i < this.records.length - 1; i++) {
+        sum = NP.plus(sum,this.records[i].totalPrice?this.records[i].totalPrice:0);
         if (this.records[i].orderNo !== this.records[i + 1].orderNo) {
           array.push(i + 1);
+          tongji[this.records[i].orderNo] = sum;
+          sum = 0;
+        }
+        if(i+1 === this.records.length - 1){
+          tongji[this.records[i].orderNo] = NP.plus(sum,this.records[i+1].totalPrice?this.records[i+1].totalPrice:0);
         }
       }
+      this.totalPriceMap = tongji;
       this.orderGroup = array;
     },
     arrayContains: function (array, num) {
@@ -350,13 +412,11 @@ export default {
       };
       this.listLoading = true;
       //NProgress.start();
-      console.log(para);
       queryWmOutboundDetailByPage(para)
         .then((res) => {
           this.total = res.data.size;
           this.records = res.data.list;
           this.listLoading = false;
-          console.log(res.data.list);
           this.updateOrderGroup();
           //NProgress.done();
         })
@@ -367,8 +427,9 @@ export default {
     },
     handleEdit: function (index, row) {
       this.$store.commit("changeOutboundOrderNo", row.orderNo);
-      this.$store.commit("changeOutboundStatus", "EDIT");
+      this.$store.commit("changeOutboundSkuQueryFilters", this.filters);
       this.$store.commit("changeOutboundDetailFromPath", "/outboundSkuQuery");
+      this.$store.commit("changeOutboundStatus", "EDIT");
       this.$router.push({ path: "/outboundDetail" });
     },
     selsChange: function (sels) {
@@ -376,6 +437,20 @@ export default {
     },
   },
   mounted() {
+    let now = new Date(); //当前日期
+    let nowMonth = now.getMonth(); //当前月
+    let nowYear = now.getFullYear(); //当前年
+    //本月的开始时间
+    let monthStartDate = new Date(nowYear, nowMonth, 1);
+    //本月的结束时间
+    let monthEndDate = new Date(nowYear, nowMonth + 1, 1);
+    this.filters = this.$store.state.outboundSkuQuery.filters;
+    if (this.filters.orderTimeFm === null) {
+      this.filters.orderTimeFm = monthStartDate;
+    }
+    if (this.filters.orderTimeTo === null) {
+      this.filters.orderTimeTo = monthEndDate;
+    }
     this.getRecords();
   },
 };

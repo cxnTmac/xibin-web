@@ -7,8 +7,8 @@ let base = '';
 
 // export const requestLogin = params => { return axios.post(`${base}/login`, params).then(res => res.data); };
 
-export const getActTranListPage = params => { return axios.get(`/xibin/actTran/showAllActTran.shtml`, { params: params }); };
+export const getActTranListPage = params => { return axios.get(`/xibin/actTran/showAllActTran`, { params: params }); };
 
 
-// export const removeFittingSkuPic = params => { return axios.get(`/xibin/fittingSku/removeFittingSkuPic.shtml`, { params: params }); };
+// export const removeFittingSkuPic = params => { return axios.get(`/xibin/fittingSku/removeFittingSkuPic `, { params: params }); };
 

@@ -162,7 +162,7 @@
 							   :on-success="uploadConnectSuccess"
 							   :on-error="uploadConnectFail"
 							   :before-upload="beforeExcelUplaod"
-							   action="/xibin/anotherName/importSkuCodesByExcel.shtml"
+							   action="/xibin/anotherName/importSkuCodesByExcel "
 							   :file-list="excelFileList"
 							   multiple
 							   list-type="text"
@@ -219,7 +219,7 @@
 							   :on-success="uploadSaveExcelConnectSuccess"
 							   :on-error="uploadSaveExcelConnectFail"
 							   :before-upload="beforeSaveExcelUplaod"
-							   action="/xibin/anotherName/importSkuCodesByExcelForSave.shtml"
+							   action="/xibin/anotherName/importSkuCodesByExcelForSave "
 							   :file-list="excelFileForSaveList"
 							   multiple
 							   list-type="text"

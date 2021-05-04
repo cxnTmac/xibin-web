@@ -78,11 +78,11 @@
           <el-button size="small" @click="handleEdit(scope.$index, scope.row)"
             >编辑</el-button
           >
-          <el-button
+          <!-- <el-button
             size="small"
             @click="handleAddBalance(scope.$index, scope.row)"
             >设置关联科目年初余额</el-button
-          >
+          > -->
           <el-button
             type="danger"
             size="small"

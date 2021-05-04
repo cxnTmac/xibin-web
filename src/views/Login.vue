@@ -86,11 +86,15 @@ export default {
           //_this.$router.replace('/table');
           this.logining = true;
           //NProgress.start();
+          // let loginParams = {
+          //   data: JSON.stringify({
+          //     userName: this.ruleForm2.userName,
+          //     password: this.ruleForm2.password,
+          //   }),
+          // };
           let loginParams = {
-            data: JSON.stringify({
-              userName: this.ruleForm2.userName,
-              password: this.ruleForm2.password,
-            }),
+              username: this.ruleForm2.userName,
+              password: this.ruleForm2.password
           };
           requestLogin(loginParams).then((data) => {
             this.logining = false;

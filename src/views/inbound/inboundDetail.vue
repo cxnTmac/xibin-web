@@ -50,6 +50,47 @@
         >成本核算</el-button
       >
       <el-button @click="back" style="float: right">返回</el-button>
+       <el-button
+        @click="nextOrder"
+        icon="el-icon-caret-right"
+        type="primary"
+        style="float: right"
+        circle
+      ></el-button>
+      <el-button
+        @click="preOrder"
+        icon="el-icon-caret-left"
+        type="primary"
+        style="float: right"
+        circle
+      ></el-button>
+      <!-- <el-button
+        type="primary"
+        style="float: right"
+        @click="printInboundOrder"
+        >打印收货单</el-button
+      > -->
+      <el-popover placement="bottom" trigger="click">
+        <el-date-picker
+          v-model="receiveTime"
+          type="datetime"
+          value-format="yyyy-MM-dd HH:mm:ss"
+          placeholder="选择日期时间"
+        >
+        </el-date-picker>
+        <el-button
+          type="primary"
+          style="float: right"
+          @click="printInboundOrder"
+          >打印</el-button
+        >
+        <el-button
+          type="primary"
+          style="float: right"
+          slot="reference"
+          >打印收货单</el-button
+        >
+      </el-popover>
     </el-col>
 
     <el-form
@@ -203,6 +244,15 @@
               ></el-input>
             </el-form-item>
           </el-col>
+           <el-col :span="6">
+            <el-form-item label="总价" prop="totalPrice">
+              <el-input
+                v-model="totalPrice"
+                :disabled="true"
+                auto-complete="off"
+              ></el-input>
+            </el-form-item>
+          </el-col>
         </el-row>
       </el-card>
       <el-card class="box-card">
@@ -265,7 +315,7 @@
           <!--<el-table-column prop="password" label="密码" width="100" :formatter="formatSex" sortable>-->
           <!--</el-table-column>-->
 
-          <el-table-column label="操作" fixed="right" min-width="150">
+          <el-table-column label="操作" fixed="right" min-width="180">
             <template slot-scope="scope">
               <el-button
                 size="small"
@@ -863,6 +913,7 @@
 <script>
 import util from "../../common/js/util";
 import NProgress from "nprogress";
+import NP from "number-precision";
 import {
   getInboundOrderListPage,
   saveInboundOrder,
@@ -880,13 +931,17 @@ import {
   accountByOrderNo,
   accountCostByOrderNo,
   batchSaveInboundDetail,
-  queryHistorySale
+  queryHistorySale,
+  selectNextOrderNo,
+  selectPreOrderNo
 } from "../../api/inboundApi";
 import { getFittingSkuListPage } from "../../api/fittingSkuApi";
 var codemaster = require("../../../static/codemaster.json");
+var config = require("../../../static/config.json");
 export default {
   data() {
     return {
+      receiveTime:util.formatDate.format(new Date(),"yyyy-MM-dd hh:mm:ss"),
       orderHeader: {
         id: "",
         orderNo: "",
@@ -896,7 +951,7 @@ export default {
         isCostCalculated: "",
         voucherId: 0,
         costVoucherId: 0,
-        orderTime: "",
+        orderTime: util.formatDate.format(new Date(),"yyyy-MM-dd hh:mm:ss"),
         auditOp: "",
         auditStatus: "",
         auditTime: "",
@@ -961,7 +1016,7 @@ export default {
         },
         orderDetail: [],
         page: 1,
-        size: 10,
+        size: 999,
         total: 0,
         listLoading: false,
         sels: [],
@@ -1043,7 +1098,7 @@ export default {
         ],
         orderTime: [
           {
-            type: "date",
+            type: "string",
             required: true,
             message: "请选择时间",
             trigger: "change",
@@ -1107,6 +1162,16 @@ export default {
       } else if (this.orderHeader.status === "99") {
         return 5;
       }
+    },
+    totalPrice: function () {
+      let totalPrice = 0;
+      this.detailGrid.orderDetail.forEach((row, index) => {
+        totalPrice = NP.plus(
+          totalPrice,
+          NP.times(row.inboundPrice, row.inboundNum)
+        );
+      });
+      return totalPrice;
     },
     btnEditSubmitStatus: function () {
       if (this.orderHeader.auditStatus === "00") {
@@ -1216,6 +1281,43 @@ export default {
     },
   },
   methods: {
+    nextOrder() {
+      selectNextOrderNo({
+        id:  this.orderHeader.id
+      })
+        .then((res) => {
+          debugger;
+          if (res.data === null || res.data === "" || res.data == undefined) {
+            this.$message.error("已经是最后一个订单");
+          } else {
+            this.$store.commit("changeInboundOrderNo", res.data);
+            this.getOrder();
+          }
+          // this.$router.push({ path: "/outboundDetail" });
+        })
+        .catch((data) => {
+          this.pageControl.allocByHeaderBtnLoading = false;
+          util.errorCallBack(data, this.$router, this.$message);
+        });
+    },
+    preOrder() {
+      selectPreOrderNo({
+        id:  this.orderHeader.id
+      })
+        .then((res) => {
+          if (res.data === null || res.data === "" || res.data == undefined) {
+            this.$message.error("已经是第一个订单");
+          } else {
+            this.$store.commit("changeInboundOrderNo", res.data);
+            this.getOrder();
+          }
+          // this.$router.push({ path: "/outboundDetail" });
+        })
+        .catch((data) => {
+          this.pageControl.allocByHeaderBtnLoading = false;
+          util.errorCallBack(data, this.$router, this.$message);
+        });
+    },
     openBatchAddPopWin: function () {
       this.pageControl.batchAddPopWinVisiable = true;
     },
@@ -1280,6 +1382,21 @@ export default {
           this.batchAddPopWin.listLoading = false;
           util.errorCallBack(data, this.$router, this.$message);
         });
+    },
+    printInboundOrder() {
+      let user = JSON.parse(localStorage.getItem("user"));
+      window.open(
+        config.reportUrl  +
+          "inboundOrder?orderNo=" +
+          this.orderHeader.orderNo +
+          "&companyId=" +
+          user.companyId +
+          "&warehouseId=" +
+          user.warehouseId +
+          "&inboundTime=" +
+          this.receiveTime
+
+      );
     },
     addSale: function (row, event) {
       let para = {};
@@ -1416,8 +1533,8 @@ export default {
     updateOrderHeader(data) {
       this.orderHeader = Object.assign({}, data);
       //处理时间
-      this.orderHeader.orderTime = new Date(data.orderTime);
-      this.orderHeader.auditTime = new Date(data.auditTime);
+      this.orderHeader.orderTime = data.orderTime;
+      this.orderHeader.auditTime = data.auditTime;
     },
     save() {
       this.$refs.orderHeader.validate((valid) => {
@@ -1826,7 +1943,7 @@ export default {
         orderNo: "",
         supplierCode: "",
         status: "00",
-        orderTime: new Date(),
+        orderTime: util.formatDate.format(new Date(),"yyyy-MM-dd hh:mm:ss"),
         auditOp: "",
         auditStatus: "00",
         auditTime: "",

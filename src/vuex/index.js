@@ -6,6 +6,7 @@ import inboundDetail from './modules/inboundDetail/inboundDetail'
 import inbound from './modules/inbound/inbound'
 import outboundDetail from './modules/outboundDetail/outboundDetail'
 import outbound from './modules/outbound/outbound'
+import outboundSkuQuery from './modules/outboundSkuQuery/outboundSkuQuery'
 import voucherDetail from './modules/voucherDetail/voucherDetail'
 import assembleDetail from './modules/assembleDetail/assembleDetail'
 import roleFunctions from './modules/roleFunctions/roleFunctions'
@@ -23,6 +24,7 @@ export default new Vuex.Store({
         'outbound': outbound,
         'voucherDetail': voucherDetail,
         'assembleDetail': assembleDetail,
-        'roleFunctions':roleFunctions
+        'roleFunctions':roleFunctions,
+        'outboundSkuQuery':outboundSkuQuery
     }
 })

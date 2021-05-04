@@ -109,13 +109,29 @@
         @click="printShipOrder"
         >打印发货单</el-button
       > -->
-      <el-button
-        type="primary"
-        style="float: right"
-        :disabled="btnPrintShipOrderStatus"
-        @click="printShipOrder"
-        >打印发货单</el-button
-      >
+      <el-popover placement="bottom" trigger="click">
+        <el-date-picker
+          v-model="shipTime"
+          type="datetime"
+          value-format="yyyy-MM-dd HH:mm:ss"
+          placeholder="选择日期时间"
+        >
+        </el-date-picker>
+        <el-button
+          type="primary"
+          style="float: right"
+          :disabled="btnPrintShipOrderStatus"
+          @click="printShipOrder"
+          >打印</el-button
+        >
+        <el-button
+          type="primary"
+          style="float: right"
+          :disabled="btnPrintShipOrderStatus"
+          slot="reference"
+          >打印发货单</el-button
+        >
+      </el-popover>
       <el-button
         type="primary"
         style="float: right"
@@ -298,9 +314,18 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="总价" prop="remark">
+            <el-form-item label="总价" prop="totalPrice">
               <el-input
                 v-model="totalPrice"
+                :disabled="true"
+                auto-complete="off"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="成本" prop="totalCost">
+              <el-input
+                v-model="totalCost"
                 :disabled="true"
                 auto-complete="off"
               ></el-input>
@@ -337,13 +362,13 @@
               ></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <!-- <el-col :span="6">
             <el-button
               @click="alert('还没完成')"
               :disabled="logisticsInfoStatus"
               >历史物流信息</el-button
             >
-          </el-col>
+          </el-col> -->
         </el-row>
       </el-card>
       <el-card class="box-card">
@@ -353,7 +378,6 @@
         <el-table
           :data="detailGrid.orderDetail"
           :row-class-name="tableRowClassName"
-          height="800"
           show-summary
           :summary-method="getSummaries"
           border
@@ -362,9 +386,9 @@
           style="width: 100%"
         >
           <el-table-column type="selection" width="55"> </el-table-column>
-          <el-table-column prop="id" label="id" width="50" sortable>
-          </el-table-column>
-          <el-table-column prop="lineNo" label="行号" width="80" sortable>
+          <!-- <el-table-column prop="id" label="id" width="50"> 
+          </el-table-column>-->
+          <el-table-column prop="lineNo" label="行号" width="80">
           </el-table-column>
           <el-table-column
             prop="status"
@@ -408,7 +432,6 @@
           </el-table-column>
           <el-table-column prop="outboundPickNum" label="拣货数" width="80">
           </el-table-column>
-
           <el-table-column prop="cost" label="成本" width="80">
           </el-table-column>
           <el-table-column prop="groupCode" label="通用组编码" width="80">
@@ -424,7 +447,7 @@
           <el-table-column prop="planShipLoc" label="计划发货库位" width="100">
           </el-table-column>
           <el-table-column prop="remark" label="备注"> </el-table-column>
-          <el-table-column label="操作" fixed="right" min-width="150">
+          <el-table-column label="操作" fixed="right" min-width="180">
             <template slot-scope="scope">
               <el-button
                 size="small"
@@ -499,11 +522,11 @@
           style="width: 100%"
         >
           <el-table-column type="selection" width="55"> </el-table-column>
-          <el-table-column prop="id" label="id" width="50" sortable>
+          <!-- <el-table-column prop="id" label="id" width="50" sortable>
+          </el-table-column> -->
+          <el-table-column prop="lineNo" label="行号" width="80">
           </el-table-column>
-          <el-table-column prop="lineNo" label="行号" width="80" sortable>
-          </el-table-column>
-          <el-table-column prop="allocId" label="分配ID" width="100" sortable>
+          <el-table-column prop="allocId" label="分配ID" width="100">
           </el-table-column>
           <el-table-column
             prop="status"
@@ -619,7 +642,6 @@
             <el-form-item label="产品" prop="skuCode">
               <popwin-button
                 popKey="POP_SKU"
-                id="1"
                 :disabled="editFormSkuCodeStatus"
                 @changeValue="editFormSkuChangeValue"
                 v-model="detailGrid.editForm.skuCode"
@@ -649,6 +671,16 @@
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
+            <el-form-item label="计划发货库位" prop="planShipLoc">
+              <popwin-button
+                popKey="POP_LOC"
+                :staticCondition="{ useType: 'SS' }"
+                :selectValue="detailGrid.editForm.planShipLoc"
+                v-model="detailGrid.editForm.planShipLoc"
+              ></popwin-button>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item label="状态" prop="status">
               <el-select
                 v-model="detailGrid.editForm.status"
@@ -667,16 +699,6 @@
                   }}</span>
                 </el-option>
               </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="计划发货库位" prop="planShipLoc">
-              <popwin-button
-                popKey="POP_LOC"
-                :staticCondition="{ useType: 'SS' }"
-                :selectValue="detailGrid.editForm.planShipLoc"
-                v-model="detailGrid.editForm.planShipLoc"
-              ></popwin-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -754,6 +776,7 @@
           </el-col>
         </el-row>
       </el-form>
+
       <div slot="footer" class="dialog-footer">
         <el-button @click.native="pageControl.editFormVisible = false"
           >取消</el-button
@@ -995,6 +1018,13 @@
           ></popwin-button>
           <!--<el-input v-model="orderHeader.supplierCode" auto-complete="off"></el-input>-->
         </el-form-item>
+        <el-form-item label="当前数量" prop="currentNum">
+          <el-input-number
+            v-model="batchAddPopWin.currentNum"
+            auto-complete="off"
+          ></el-input-number>
+        </el-form-item>
+
         <el-form-item>
           <el-button type="primary" v-on:click="batchAddPopWinQuery"
             >查询</el-button
@@ -1008,6 +1038,7 @@
             border
             :data="batchAddPopWin.saleList"
             @row-dblclick="addSale"
+            @row-click="queryInvAvaiableForSale"
             v-loading="batchAddPopWin.saleListLoading"
             @selection-change="batchAddSaleSelsChange"
           >
@@ -1015,7 +1046,7 @@
             <el-table-column
               property="skuCode"
               label="商品编码"
-              width="150"
+              width="80"
             ></el-table-column>
             <el-table-column
               property="fittingSkuName"
@@ -1036,6 +1067,10 @@
               label="发货价格"
             ></el-table-column>
             <el-table-column
+              property="packageCode"
+              label="包装"
+            ></el-table-column>
+            <el-table-column
               property="modifyTime"
               label="发货时间"
               :formatter="formatTime"
@@ -1043,6 +1078,12 @@
           </el-table>
           <el-col :span="24" class="toolbar">
             <el-button type="primary" v-on:click="batchAdd">批量新增</el-button>
+            <el-button
+              type="success"
+              :loading="pageControl.currentInvAvaibleNumSumLoading"
+              plain
+              >当前库存可用数{{ currentInvAvaibleNumSum }}</el-button
+            >
             <el-pagination
               layout="prev, pager, next"
               @current-change="handleBatchSaleAddCurrentChange"
@@ -1060,13 +1101,14 @@
             :data="batchAddPopWin.skuList"
             v-loading="batchAddPopWin.listLoading"
             @row-dblclick="addSku"
+            @row-click="queryInvAvaiableForSku"
             @selection-change="batchAddSelsChange"
           >
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column
               property="fittingSkuCode"
               label="商品编码"
-              width="150"
+              width="80"
             ></el-table-column>
             <el-table-column
               property="fittingSkuName"
@@ -1076,15 +1118,26 @@
             <el-table-column
               property="modelCode"
               label="车型"
+              width="180"
             ></el-table-column>
             <el-table-column
               property="price"
               label="参考价格"
-              width="200"
+              width="80"
+            ></el-table-column>
+            <el-table-column
+              property="packageCode"
+              label="包装"
             ></el-table-column>
           </el-table>
           <el-col :span="24" class="toolbar">
             <el-button type="primary" v-on:click="batchAdd">批量新增</el-button>
+            <el-button
+              type="success"
+              :loading="pageControl.currentInvAvaibleNumSumLoading"
+              plain
+              >当前库存可用数{{ currentInvAvaibleNumSum }}</el-button
+            >
             <el-pagination
               layout="prev, pager, next"
               @current-change="handleBatchAddCurrentChange"
@@ -1130,7 +1183,7 @@
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
-            <el-form-item label="产品编码列名" prop="skuCodeColumnName">
+            <el-form-item label="编码列名" prop="skuCodeColumnName">
               <el-input
                 v-model="detailGrid.excelImportPopWinForm.skuCodeColumnName"
               ></el-input>
@@ -1152,6 +1205,19 @@
               ></el-input>
             </el-form-item>
           </el-col>
+          <el-col :span="12"> </el-col>
+        </el-row>
+        <el-row :gutter="0">
+          <el-switch
+            v-model="detailGrid.excelImportPopWinForm.isQueryRecentPrice"
+            active-text="自动查询最近售价"
+          >
+          </el-switch>
+          <el-switch
+            v-model="detailGrid.excelImportPopWinForm.isByBuyerCode"
+            active-text="是否同货主售价"
+          >
+          </el-switch>
         </el-row>
       </el-form>
       <el-upload
@@ -1162,7 +1228,7 @@
         :on-success="uploadConnectSuccess"
         :on-error="uploadConnectFail"
         :before-upload="beforeExcelUplaod"
-        action="/xibin/outbound/importOutboundDetailByExcel.shtml"
+        action="/xibin/outbound/importOutboundDetailByExcel "
         :file-list="detailGrid.excelFileList"
         multiple
         list-type="text"
@@ -1227,6 +1293,7 @@ import {
   selectNextOrderNo,
   selectPreOrderNo,
 } from "../../api/outboundApi";
+import { queryAvaiableInventorySumBySkuCode } from "../../api/inventoryApi";
 var codemaster = require("../../../static/codemaster.json");
 var config = require("../../../static/config.json");
 import NP from "number-precision";
@@ -1261,8 +1328,12 @@ export default {
         数量: "outboundNum",
         单价: "outboundPrice",
       },
+      shipTime: util.formatDate.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
+      currentInvAvaibleNumSum: 0,
       testFocus: true,
       batchAddPopWin: {
+        // 当前新增商品数量
+        currentNum: 0,
         batchAddPopWinActiveName: "sale",
         saleList: [],
         salePage: 1,
@@ -1293,7 +1364,7 @@ export default {
         orderNo: "",
         buyerCode: "",
         status: "",
-        orderTime: "",
+        orderTime: util.formatDate.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
         auditOp: "",
         auditStatus: "",
         auditTime: "",
@@ -1364,7 +1435,7 @@ export default {
         },
         orderDetail: [],
         page: 1,
-        size: 200,
+        size: 999,
         total: 0,
         listLoading: false,
         sels: [],
@@ -1401,6 +1472,7 @@ export default {
         accountCostBtnLoading: false,
         preAssembleAllocSubmitLoading: false,
         excelImportPopWinVisible: false,
+        currentInvAvaibleNumSumLoading: true,
       },
       detailAllocGrid: {
         editForm: {
@@ -1457,7 +1529,7 @@ export default {
         ],
         orderTime: [
           {
-            type: "date",
+            type: "string",
             required: true,
             message: "请选择时间",
             trigger: "change",
@@ -1487,6 +1559,16 @@ export default {
         );
       });
       return totalPrice;
+    },
+    totalCost: function () {
+      let totalCost = 0;
+      this.detailGrid.orderDetail.forEach((row, index) => {
+        totalCost = NP.plus(
+          totalCost,
+          NP.times(row.cost ? row.cost : 0, row.outboundNum)
+        );
+      });
+      return totalCost;
     },
     // 物流信息状态
     logisticsInfoStatus: function () {
@@ -1892,7 +1974,6 @@ export default {
         },
         function (e) {
           alert("Can not copy");
-          console.log(e);
         }
       );
     },
@@ -1907,7 +1988,7 @@ export default {
           sums[index] = "合计";
           return;
         }
-        if (index !== 7 && index !== 8 && index !== 9 && index !== 10) {
+        if (index !== 7) {
           sums[index] = "";
           return;
         }
@@ -1938,6 +2019,8 @@ export default {
     tableRowClassName({ row, rowIndex }) {
       if (row.status === "00" || row.status === "30") {
         return "un-alloc-row";
+      } else if (row.status === "50" || row.status === "70") {
+        return "part-row";
       }
       return "";
     },
@@ -1951,17 +2034,30 @@ export default {
         this.$message.error("请填写完整数据！");
         return false;
       }
+      if (this.detailGrid.excelImportPopWinForm.isQueryRecentPrice) {
+        if (this.detailGrid.excelImportPopWinForm.isByBuyerCode) {
+          this.detailGrid.excelImportPopWinForm[
+            "buyerCode"
+          ] = this.orderHeader.buyerCode;
+        }
+      }
       return true;
     },
     uploadConnectSuccess: function (response, file, fileList) {
       if (response.code == 0) {
-        this.$message.error(res.data.msg);
+        // this.$message.error(res.data.msg);
+        this.$alert(response.msg, "导入结果", {
+          confirmButtonText: "确定",
+        });
       } else if (response.code == 200) {
         this.getDetails();
-        this.$message({
-          message: response.msg,
-          type: "success",
+        this.$alert(response.msg, "导入结果", {
+          confirmButtonText: "确定",
         });
+        // this.$message({
+        //   message: response.msg,
+        //   type: "success",
+        // });
       }
     },
     uploadConnectFail: function (err, file, fileList) {
@@ -1969,15 +2065,24 @@ export default {
     },
     updateOrderHeader(data) {
       this.orderHeader = Object.assign({}, data);
-      //处理时间
-      this.orderHeader.orderTime = new Date(data.orderTime);
-      this.orderHeader.auditTime = new Date(data.auditTime);
+      this.orderHeader.orderTime = data.orderTime
+        ? util.formatDate.format(
+            new Date(data.orderTime),
+            "yyyy-MM-dd hh:mm:ss"
+          )
+        : "";
+      this.orderHeader.auditTime = data.auditTime
+        ? util.formatDate.format(
+            new Date(data.auditTime),
+            "yyyy-MM-dd hh:mm:ss"
+          )
+        : "";
     },
     printPickUpOrder() {
       let user = JSON.parse(localStorage.getItem("user"));
       window.open(
         config.reportUrl +
-          "?url=pickUp&orderNo=" +
+          "pickUp?orderNo=" +
           this.orderHeader.orderNo +
           "&companyId=" +
           user.companyId +
@@ -1992,12 +2097,14 @@ export default {
       let user = JSON.parse(localStorage.getItem("user"));
       window.open(
         config.reportUrl +
-          "?url=shipOrder&orderNo=" +
+          "shipOrder?orderNo=" +
           this.orderHeader.orderNo +
           "&companyId=" +
           user.companyId +
           "&warehouseId=" +
-          user.warehouseId
+          user.warehouseId +
+          "&shipTime=" +
+          this.shipTime
       );
     },
     account: function () {
@@ -2096,13 +2203,11 @@ export default {
             //                            row = res.data.data;
             for (let i = 0; i < newRows.length; i++) {
               if (newRows[i].id === res.data.data.id) {
-                console.log(res.data.data);
                 newRows[i] = res.data.data;
                 break;
               }
             }
             this.detailAllocGrid.orderDetailAlloc = newRows;
-            console.log(this.detailAllocGrid.orderDetailAlloc);
           } else {
             this.$message.error(res.data.msg);
           }
@@ -2130,7 +2235,6 @@ export default {
             //                            row = res.data.data;
             for (let i = 0; i < newRows.length; i++) {
               if (newRows[i].id === res.data.data.id) {
-                console.log(res.data.data);
                 newRows[i] = res.data.data;
                 break;
               }
@@ -2154,8 +2258,8 @@ export default {
     },
     getSaleData: function () {
       let para = {
-        page: this.batchAddPopWin.page,
-        size: this.batchAddPopWin.size,
+        page: this.batchAddPopWin.salePage,
+        size: this.batchAddPopWin.saleSize,
         conditions: JSON.stringify(this.batchAddPopWin.filters),
       };
       this.batchAddPopWin.saleListLoading = true;
@@ -2193,6 +2297,40 @@ export default {
           util.errorCallBack(data, this.$router, this.$message);
         });
     },
+    // 快速新增 销售历史信息单击查询当前库存总可用数
+    queryInvAvaiableForSale: function (row, event) {
+      queryAvaiableInventorySumBySkuCode({ skuCode: row.skuCode })
+        .then((res) => {
+          //NProgress.done();
+          this.pageControl.currentInvAvaibleNumSumLoading = false;
+          if (res.data !== null) {
+            this.currentInvAvaibleNumSum = res.data.invAvailableNum;
+          } else {
+            this.currentInvAvaibleNumSum = 0;
+          }
+        })
+        .catch((data) => {
+          this.pageControl.currentInvAvaibleNumSumLoading = true;
+          util.errorCallBack(data, this.$router, this.$message);
+        });
+    },
+    // 快速新增 产品信息单击查询当前库存总可用数
+    queryInvAvaiableForSku: function (row, event) {
+      queryAvaiableInventorySumBySkuCode({ skuCode: row.fittingSkuCode })
+        .then((res) => {
+          //NProgress.done();
+          this.pageControl.currentInvAvaibleNumSumLoading = false;
+          if (res.data !== null) {
+            this.currentInvAvaibleNumSum = res.data.invAvailableNum;
+          } else {
+            this.currentInvAvaibleNumSum = 0;
+          }
+        })
+        .catch((data) => {
+          this.pageControl.currentInvAvaibleNumSumLoading = true;
+          util.errorCallBack(data, this.$router, this.$message);
+        });
+    },
     addSale: function (row, event) {
       let para = {};
       para.buyerCode = this.orderHeader.buyerCode;
@@ -2200,8 +2338,8 @@ export default {
       para.skuCode = row.skuCode;
       para.orderNo = this.orderHeader.orderNo;
       para.planShipLoc = "SORTATION";
-      para.outboundNum = 0;
-      para.outboundOriginNum = 0;
+      para.outboundNum = this.batchAddPopWin.currentNum;
+      para.outboundOriginNum = this.batchAddPopWin.currentNum;
       para.outboundAllocNum = 0;
       para.outboundPickNum = 0;
       para.outboundShipNum = 0;
@@ -2231,7 +2369,7 @@ export default {
       para.skuCode = row.fittingSkuCode;
       para.orderNo = this.orderHeader.orderNo;
       para.planShipLoc = "SORTATION";
-      para.outboundNum = 0;
+      para.outboundNum = this.batchAddPopWin.currentNum;
       para.outboundOriginNum = 0;
       para.outboundAllocNum = 0;
       para.outboundPickNum = 0;
@@ -2264,7 +2402,6 @@ export default {
       } else if (this.batchAddPopWin.batchAddPopWinActiveName === "sku") {
         data = this.batchAddPopWin.sels;
       }
-      console.log(data);
       for (let i = 0; i < data.length; i++) {
         if (this.batchAddPopWin.batchAddPopWinActiveName === "sale") {
           skuCodeArray.push(data[i].skuCode);
@@ -2276,7 +2413,11 @@ export default {
           data[i].outboundPrice !== null &&
           data[i].outboundPrice !== undefined
         ) {
-          priceArray.push(data[i].outboundPrice);
+          if (this.batchAddPopWin.batchAddPopWinActiveName === "sale") {
+            priceArray.push(data[i].outboundPrice);
+          } else if (this.batchAddPopWin.batchAddPopWinActiveName === "sku") {
+            priceArray.push(data[i].price);
+          }
         } else {
           priceArray.push(0);
         }
@@ -2287,7 +2428,6 @@ export default {
         skuCodes: skuCodeArray.join(","),
         prices: priceArray.join(","),
       };
-      console.log(para);
       batchSaveOutboundDetail(para)
         .then((res) => {
           //NProgress.done();
@@ -2904,10 +3044,7 @@ export default {
     },
     nextOrder() {
       selectNextOrderNo({
-        orderTime: util.formatDate.format(
-          this.orderHeader.orderTime,
-          "yyyy-MM-dd hh:mm:ss"
-        ),
+        id: this.orderHeader.id,
       })
         .then((res) => {
           if (res.data === null || res.data === "" || res.data == undefined) {
@@ -2925,10 +3062,7 @@ export default {
     },
     preOrder() {
       selectPreOrderNo({
-        orderTime: util.formatDate.format(
-          this.orderHeader.orderTime,
-          "yyyy-MM-dd hh:mm:ss"
-        ),
+        id: this.orderHeader.id,
       })
         .then((res) => {
           if (res.data === null || res.data === "" || res.data == undefined) {
@@ -2978,6 +3112,8 @@ export default {
         priceColumnName: "",
         numColumnName: "",
         loc: "",
+        isQueryRecentPrice: true,
+        isByBuyerCode: false,
       };
       this.detailGrid.excelImportPopWinForm.orderNo = this.orderHeader.orderNo;
     },
@@ -3196,7 +3332,7 @@ export default {
         orderNo: "",
         buyerCode: "",
         status: "00",
-        orderTime: new Date(),
+        orderTime: util.formatDate.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
         auditOp: "",
         auditStatus: "00",
         auditTime: null,
@@ -3226,7 +3362,9 @@ export default {
 .el-table .un-alloc-row {
   background: #f6ab00;
 }
-
+.el-table .part-row {
+  background: #f5da81;
+}
 .el-table .picksuccess-row {
   background: #4eb319;
 }

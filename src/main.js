@@ -30,7 +30,6 @@ import LoginPopWin from "loginPopWin";
 import VueClipboard from "vue-clipboard2";
 // excel导出
 import JsonExcel from "vue-json-excel";
-
 Vue.use(LoginPopWin);
 Vue.use(ElementUI);
 Vue.use(VueRouter);

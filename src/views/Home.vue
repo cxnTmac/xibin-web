@@ -152,7 +152,7 @@ export default {
           logout().then((data) => {
             this.logining = false;
             //NProgress.done();
-            let { msg, code, user } = data;
+            let { msg, code } = data;
             if (code !== 200) {
               this.$message({
                 message: msg,
@@ -183,7 +183,7 @@ export default {
       user = JSON.parse(user);
       this.currentPeriod = user.currentPeriod;
       this.bookName = user.bookName;
-      this.sysUserName = user.userName || "";
+      this.sysUserName = user.username || "";
       //this.sysUserAvatar = user.avatar || '';
       this.sysUserAvatar = "static/logo/Lucian.jpg";
     }
@@ -198,6 +198,7 @@ export default {
   top: 0px;
   bottom: 0px;
   width: 100%;
+  background-color: #F6AB00;
   .header {
     height: 60px;
     line-height: 60px;
@@ -226,10 +227,11 @@ export default {
       //width:230px;
       height: 60px;
       font-size: 22px;
+      text-align: center;
       padding-left: 20px;
       padding-right: 20px;
-      border-color: rgba(238, 241, 146, 0.3);
-      background: #545c64;
+      border-color: #fff;
+      background:#004DA1;
       border-right-width: 1px;
       border-right-style: solid;
       img {
@@ -262,7 +264,7 @@ export default {
     display: flex;
     // background: #324057;
     position: absolute;
-    top: 60px;
+    top: 68px;
     bottom: 0px;
     overflow: hidden;
     .el-menu-vertical-demo:not(.el-menu--collapse) {
@@ -302,7 +304,7 @@ export default {
       width: 230px;
     }
     .content-container {
-      // background: #f1f2f7;
+      background: #fff;
       flex: 1;
       // position: absolute;
       // right: 0px;

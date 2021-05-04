@@ -7,10 +7,10 @@ let base = '';
 
 // export const requestLogin = params => { return axios.post(`${base}/login`, params).then(res => res.data); };
 
-export const getCaseListPage = params => { return axios.get(`/xibin/case/showAllCase.shtml`, { params: params }); };
+export const getCaseListPage = params => { return axios.get(`/xibin/case/showAllCase`, { params: params }); };
 
-export const removeCase = params => { return axios.get(`/xibin/case/removeCase.shtml`, { params: params }); };
+export const removeCase = params => { return axios.get(`/xibin/case/removeCase`, { params: params }); };
 
-export const saveCase = params => { return axios.get(`/xibin/case/saveCase.shtml`, { params: params }); };
+export const saveCase = params => { return axios.get(`/xibin/case/saveCase`, { params: params }); };
 
 

@@ -7,14 +7,14 @@ let base = '';
 
 // export const requestLogin = params => { return axios.post(`${base}/login`, params).then(res => res.data); };
 
-export const getAreaListPage = params => { return axios.get(`/xibin/area/showAllArea.shtml`, { params: params }); };
+export const getAreaListPage = params => { return axios.get(`/xibin/area/showAllArea`, { params: params }); };
 
-export const removeArea = params => { return axios.get(`/xibin/area/removeArea.shtml`, { params: params }); };
+export const removeArea = params => { return axios.get(`/xibin/area/removeArea`, { params: params }); };
 
-export const batchRemoveArea = params => { return axios.post(`/xibin/area/batchRemove.shtml`,qs.stringify(params),{headers: {
+export const batchRemoveArea = params => { return axios.post(`/xibin/area/batchRemove`,qs.stringify(params),{headers: {
     'Content-Type': 'application/x-www-form-urlencoded',
 }} ).then(res => res); };
 
-export const saveArea = params => { return axios.get(`/xibin/area/saveArea.shtml`, { params: params }); };
+export const saveArea = params => { return axios.get(`/xibin/area/saveArea`, { params: params }); };
 
 

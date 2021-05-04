@@ -57,23 +57,28 @@
       style="width: 100%"
     >
       <el-table-column type="selection" width="55"> </el-table-column>
-      <el-table-column prop="skuCode" label="产品编码" width="200" sortable>
+      <el-table-column prop="skuCode" label="产品编码" width="80" sortable>
       </el-table-column>
-      <el-table-column prop="skuName" label="产品名称" width="200" sortable>
+      <el-table-column prop="skuName" label="产品名称" width="260" sortable>
       </el-table-column>
       <el-table-column prop="modelCode" label="车型" width="200" sortable>
       </el-table-column>
       <!--<el-table-column prop="lot" label="批次号" width="200" sortable>-->
       <!--</el-table-column>-->
-      <el-table-column prop="locCode" label="库位编码" width="200" sortable>
+      <el-table-column prop="locCode" label="库位编码" width="120" sortable>
       </el-table-column>
-      <el-table-column prop="allocNum" label="待分配数" width="200">
+      <el-table-column prop="allocNum" label="待分配数" width="80">
       </el-table-column>
-      <el-table-column prop="invNum" label="库存数" width="200">
+      <el-table-column prop="invNum" label="库存数" width="80">
       </el-table-column>
-      <el-table-column prop="invAvailableNum" label="库存可用数" width="250">
+      <el-table-column prop="invAvailableNum" label="可用数" width="80">
       </el-table-column>
-      <el-table-column prop="totalPrice" label="总价值" width="250">
+      <el-table-column prop="price" label="单位价值" width="80">
+        <template slot-scope="scope">
+            {{getPerPrice(scope.row.totalPrice,scope.row.invAvailableNum)}}
+        </template>
+      </el-table-column>
+      <el-table-column prop="totalPrice" label="总价值" width="80">
       </el-table-column>
 
       <el-table-column label="操作" fixed="right" min-width="150">
@@ -369,6 +374,7 @@ import {
 } from "../../api/inventoryApi";
 import NProgress from "nprogress";
 var codemaster = require("../../../static/codemaster.json");
+import NP from "number-precision";
 export default {
   data() {
     return {
@@ -458,6 +464,9 @@ export default {
   methods: {
     reset() {
       this.$refs["queryForm"].resetFields();
+    },
+     getPerPrice(totalPrice,num){
+      return NP.divide(totalPrice,num);
     },
     showMoreConditionHandler: function () {
       this.showMoreQueryCondition = !this.showMoreQueryCondition;

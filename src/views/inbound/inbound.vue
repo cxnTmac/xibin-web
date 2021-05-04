@@ -47,7 +47,7 @@
 						<el-date-picker
 								v-model="filters.orderTimeFm"
 								type="datetime"
-								value-format="yyyy-MM-dd HH:mm:ss"
+								 
 								placeholder="选择日期时间">
 						</el-date-picker>
 						<!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
@@ -56,7 +56,7 @@
 						<el-date-picker
 								v-model="filters.orderTimeTo"
 								type="datetime"
-								value-format="yyyy-MM-dd HH:mm:ss"
+								 
 								placeholder="选择日期时间">
 						</el-date-picker>
 						<!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
@@ -99,7 +99,7 @@
 			<!--<el-table-column prop="password" label="密码" width="100" :formatter="formatSex" sortable>-->
 			<!--</el-table-column>-->
 
-			<el-table-column label="操作" fixed="right" min-width="150">
+			<el-table-column label="操作" fixed="right" min-width="180">
 				<template slot-scope="scope">
 					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
@@ -193,7 +193,6 @@
                 this.$store.commit('changeInboundDetailFromPath', '/inbound')
                 this.$router.push({ path: '/inboundDetail' })
 			},
-			//获取用户列表
             getOrders() {
 
 				let para = {

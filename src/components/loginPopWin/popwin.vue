@@ -55,7 +55,7 @@
                         //_this.$router.replace('/table');
                         this.logining = true;
                         //NProgress.start();
-                        let loginParams = {data:JSON.stringify({ userName: this.ruleForm2.userName, password: this.ruleForm2.password })};
+                        let loginParams = {username: this.ruleForm2.userName, password: this.ruleForm2.password };
                         requestLogin(loginParams).then(data => {
                             this.logining = false;
                             //NProgress.done();
@@ -80,7 +80,7 @@
         created(){
             let userDetails = JSON.parse(localStorage.user);
             if(userDetails!==null){
-                this.ruleForm2.userName = userDetails.userName;
+                this.ruleForm2.userName = userDetails.username;
             }
         },
         mounted(){

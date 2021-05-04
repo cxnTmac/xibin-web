@@ -69,7 +69,7 @@
               v-model="filters.orderTimeFm"
               type="datetime"
               placeholder="选择日期时间"
-              value-format="yyyy-MM-dd HH:mm:ss"
+               
             >
             </el-date-picker>
             <!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
@@ -79,7 +79,7 @@
               v-model="filters.orderTimeTo"
               type="datetime"
               placeholder="选择日期时间"
-              value-format="yyyy-MM-dd HH:mm:ss"
+               
             >
             </el-date-picker>
             <!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
@@ -233,9 +233,7 @@
 
 <script>
 import util from "../../common/js/util";
-//import NProgress from 'nprogress'
 import { queryWmInboundDetailByPage } from "../../api/inboundApi";
-import NProgress from "nprogress";
 import NP from "number-precision";
 var codemaster = require("../../../static/codemaster.json");
 export default {
@@ -243,7 +241,8 @@ export default {
     return {
       json_fields: {
         入库单号: "orderNo", //常规字段
-        供应商: "supplierName", //支持嵌套属性
+        入库单时间: "orderTime", 
+        供应商: "supplierName",
         入库类型: "inboundType",
         行号: "lineNo",
         产品编码: "fittingSkuCode",
@@ -263,8 +262,8 @@ export default {
         modelCode:"",
         headerStatus: "",
         inboundTypes:[],
-        orderTimeFm:"",
-        orderTimeTo:""
+        orderTimeFm:null,
+        orderTimeTo:null
       },
       records: [],
       total: 0,
@@ -398,6 +397,15 @@ export default {
     },
   },
   mounted() {
+    let now = new Date(); //当前日期 
+    let nowMonth = now.getMonth(); //当前月 
+    let nowYear = now.getFullYear(); //当前年 
+    //本月的开始时间
+    let monthStartDate = new Date(nowYear, nowMonth, 1); 
+    //本月的结束时间
+    let monthEndDate = new Date(nowYear, nowMonth+1, 1);
+    this.filters.orderTimeFm = monthStartDate;
+    this.filters.orderTimeTo =  monthEndDate;
     this.getRecords();
   },
 };

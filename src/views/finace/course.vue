@@ -405,7 +405,6 @@
 				this.listLoading = true;
                 getCourseListPage(para).then((res) => {
 					this.records = res.data.list;
-					console.log(this.records)
 					this.listLoading = false;
 				}).catch((data) => {
                     this.listLoading = false;

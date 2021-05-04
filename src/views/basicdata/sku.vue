@@ -116,7 +116,7 @@
 							   :data= "currentRow"
 							   :on-success="uploadConnectSuccess"
 							   :on-error="uploadConnectFail"
-						action="/xibin/file/uploadFittingSkuPic.shtml"
+						action="/xibin/file/uploadFittingSkuPic "
 							   :file-list="fileList"
 						multiple
 							   list-type="picture"
@@ -314,9 +314,19 @@
 						</el-row>
 						<el-row :gutter="0">
 							
-							<el-col :span="12">
+							<el-col :span="8">
 								<el-form-item label="详细尺寸" prop="def1">
 									<el-input v-model="editForm.def1" auto-complete="off"></el-input>
+								</el-form-item>
+							</el-col>
+							<el-col :span="8">
+								<el-form-item label="默认库位" prop="defaultLoc">
+									<popwin-button popKey="POP_LOC"  :staticCondition="{ useType: 'RS' }" :displayName="editForm.defaultLoc" v-model="editForm.defaultLoc" ></popwin-button>
+								</el-form-item>
+							</el-col>
+							<el-col :span="8">
+								<el-form-item label="最低库存数" prop="minInventory">
+									<el-input-number v-model="editForm.minInventory" auto-complete="off"></el-input-number>
 								</el-form-item>
 							</el-col>
 							
@@ -344,11 +354,11 @@
 						<el-table-column prop="sSkuCode" label="子件编码" width="200" >
 							<template slot-scope="scope">
 								<div slot="reference" class="name-wrapper">
-									<popwin-button popKey="POP_SKU" :selectValue="scope.row.sSkuCode" v-model="scope.row.sSkuCode" @changeValue="changePopValueForSkuCode"></popwin-button>
+									<popwin-button popKey="POP_SKU" :selectValue="scope.row.sskuCode" v-model="scope.row.sskuCode" @changeValue="changePopValueForSkuCode"></popwin-button>
 								</div>
 							</template>
 						</el-table-column>
-						<el-table-column prop="sSkuName" label="子件名称" width="250" >
+						<el-table-column prop="sskuName" label="子件名称" width="250" >
 						</el-table-column>
 						<el-table-column prop="num" label="数量" width="200">
 							<template slot-scope="scope">
@@ -577,7 +587,7 @@
 							   :on-success="uploadExcelConnectSuccess"
 							   :on-error="uploadExcelConnectFail"
 							   :before-upload="beforeExcelUplaod"
-							   action="/xibin/fittingSku/importSkuCodesByExcel.shtml"
+							   action="/xibin/fittingSku/importSkuCodesByExcel "
 							   :file-list="excelFileList"
 							   multiple
 							   list-type="text"
@@ -671,7 +681,9 @@
                     fittingTypeCode:'',
                     type:'',
                     isShow:'',
-                    groupCode:'',
+					groupCode:'',
+					defaultLoc:'',
+					minInventory:0,
                     def1:'',
                     def2:'',
                     def3:'',
@@ -714,7 +726,9 @@
                     fittingTypeCode:'',
                     type:'',
                     isShow:'',
-                    groupCode:'',
+					groupCode:'',
+					defaultLoc:'',
+					minInventory:0,
                     def1:'',
                     def2:'',
                     def3:'',
@@ -778,12 +792,12 @@
 			printQrCode(){ 
 				let user = JSON.parse(localStorage.getItem('user'));
 				// window.open(config.reportUrl+"?fittingSkuCode="+this.currentRow.fittingSkuCode+"&companyId="+user.companyId+"&URL="+"http://www.xbjg.org/productDetails.html?skucode=");
-                window.open("http://localhost:8081/xibin/report/report.shtml?url=qrCode"+"&fittingSkuCode="+this.currentRow.fittingSkuCode+"&companyId="+user.companyId+"&URL="+"http://www.xbjg.org/productDetails.html?skucode=");
+                window.open("http://localhost:8081/xibin/report/report ?url=qrCode"+"&fittingSkuCode="+this.currentRow.fittingSkuCode+"&companyId="+user.companyId+"&URL="+"http://www.xbjg.org/productDetails.html?skucode=");
 			},
 			printQrCodeSingle(){ 
 				let user = JSON.parse(localStorage.getItem('user'));
 				// window.open(config.reportUrl+"?fittingSkuCode="+this.currentRow.fittingSkuCode+"&companyId="+user.companyId+"&URL="+"http://www.xbjg.org/productDetails.html?skucode=");
-                window.open("http://localhost:8081/xibin/report/report.shtml?url=qrCodeSingle"+"&fittingSkuCode="+this.currentRow.fittingSkuCode+"&companyId="+user.companyId+"&URL="+"http://www.xbjg.org/productDetails.html?skucode=");
+                window.open("http://localhost:8081/xibin/report/report ?url=qrCodeSingle"+"&fittingSkuCode="+this.currentRow.fittingSkuCode+"&companyId="+user.companyId+"&URL="+"http://www.xbjg.org/productDetails.html?skucode=");
             },
             handleSelect(item){
                 console.log(item);
@@ -805,7 +819,6 @@
                     for(let i = 0;i<res.data.length;i++){
                         this.models.push({value:res.data[i].modelName})
                     }
-                    console.log(this.models)
                     //NProgress.done();
                 }).catch((data) => {
                     util.errorCallBack(data,this.$router,this.$message);
@@ -816,7 +829,7 @@
 
             },
             changePopValueForSkuCode:function (row) {
-                this.currentAssembleRow['sSkuName'] = row.fittingSkuName;
+                this.currentAssembleRow['sskuName'] = row.fittingSkuName;
             },
             handleAssembleSkuDel:function (index,row) {
                 if(row.id!==null){
@@ -927,7 +940,7 @@
 
             beforeSaveAssemble:function () {
                 for(let i = 0;i<this.assembleSkus.length;i++){
-                    if(this.assembleSkus[i].sSkuCode === null||this.assembleSkus[i].sSkuCode === ''){
+                    if(this.assembleSkus[i].sskuCode === null||this.assembleSkus[i].sskuCode === ''){
                         this.$message.error('输入数据不完整');
                         return false;
 					}
@@ -1023,7 +1036,9 @@
                     fittingTypeCode:'',
                     type:'',
 					isShow:'Y',
-                    groupCode:'',
+					groupCode:'',
+					defaultLoc:'',
+					minInventory:0,
                     def1:'',
                     def2:'',
                     def3:'',
@@ -1076,8 +1091,6 @@
                         zipPics.push(res.data[i]);
                     }
                 }
-                console.log(normalPics);
-                console.log(zipPics);
                 for(let z = 0;z<normalPics.length;z++){
                     for(let j = 0;j<zipPics.length;j++){
                         if(normalPics[z].fittingSkuPicName === zipPics[j].fittingSkuPicName){
@@ -1085,7 +1098,6 @@
                         }
                     }
                 }
-                console.log(this.imgs);
 			},
 			//点击图片管理
             handlePicManager:function(index, row){

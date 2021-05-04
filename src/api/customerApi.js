@@ -7,16 +7,16 @@ let base = '';
 
 // export const requestLogin = params => { return axios.post(`${base}/login`, params).then(res => res.data); };
 
-export const getCustomerListPage = params => { return axios.get(`/xibin/customer/showAllCustomer.shtml`, { params: params }); };
+export const getCustomerListPage = params => { return axios.get(`/xibin/customer/showAllCustomer`, { params: params }); };
 
-export const removeCustomer = params => { return axios.get(`/xibin/customer/removeCustomer.shtml`, { params: params }); };
+export const removeCustomer = params => { return axios.get(`/xibin/customer/removeCustomer`, { params: params }); };
 
-export const batchRemoveCustomer = params => { return axios.post(`/xibin/customer/batchRemove.shtml`,qs.stringify(params),{headers: {
+export const batchRemoveCustomer = params => { return axios.post(`/xibin/customer/batchRemove`,qs.stringify(params),{headers: {
     'Content-Type': 'application/x-www-form-urlencoded',
 }} ).then(res => res); };
 
-export const saveCustomer = params => { return axios.get(`/xibin/customer/saveCustomer.shtml`, { params: params }); };
+export const saveCustomer = params => { return axios.get(`/xibin/customer/saveCustomer`, { params: params }); };
 
-export const addCustomerCourseAuxiliaryBlance = params => { return axios.get(`/xibin/customer/addCustomerCourseAuxiliaryBlance.shtml`, { params: params }); };
+export const addCustomerCourseAuxiliaryBlance = params => { return axios.get(`/xibin/customer/addCustomerCourseAuxiliaryBlance`, { params: params }); };
 
 

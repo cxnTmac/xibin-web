@@ -39,10 +39,10 @@ import role from "./views/sys/role.vue";
 import functions from "./views/sys/functions.vue";
 import report from "./views/finace/report.vue";
 import echarts from "./views/charts/echarts.vue";
-import cases from "./views/crm/cases.vue";
+import provinceSaleCharts from "./views/charts/provinceSaleCharts.vue";
+import saleLineCharts from "./views/charts/saleLineCharts.vue";
 
 export const pages = {
-  cases: cases,
   login: Login,
   NotFound: NotFound,
   Home: Home,
@@ -84,6 +84,8 @@ export const pages = {
   role: role,
   report: report,
   functions: functions,
+  provinceSaleCharts: provinceSaleCharts,
+  saleLineCharts:saleLineCharts
 };
 export const convertRole2FunctionForBtnAndColumn = function (role2Functions) {
   // 获取到所有的页面权限
