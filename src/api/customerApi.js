@@ -19,4 +19,6 @@ export const saveCustomer = params => { return axios.get(`/xibin/customer/saveCu
 
 export const addCustomerCourseAuxiliaryBlance = params => { return axios.get(`/xibin/customer/addCustomerCourseAuxiliaryBlance`, { params: params }); };
 
+export const getCustomerByCustomerCode = params => { return axios.get(`/xibin/customer/getCustomerByCustomerCode`, { params: params }); };
+
 

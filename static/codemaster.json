@@ -112,6 +112,10 @@
     {"code":"60","name":"部分加工"},
     {"code":"70","name":"完全加工"}
   ],
+  "WM_FREIGHT_TYPE":[
+    {"code":"PAID","name":"已付"},
+    {"code":"COLLECT","name":"到付"}
+  ],
   "BD_SKU_STATUS":[
     {"code":"NEW","name":"新品"},
     {"code":"NORMAL","name":"普通"}
@@ -176,6 +180,35 @@
   "CRM_COMMISSION_RATE_TYPE":[
     {"code":"ONCE","name":"一次性"},
     {"code":"PERYEAR","name":"每年"}
+  ],
+  "BS_CUSTOMER_RECORD_TYPE":[
+    {"code":"X_SALE","name":"现销"},
+    {"code":"S_SALE","name":"奢销"},
+    {"code":"X_PURCHASE","name":"现购"},
+    {"code":"S_PURCHASE","name":"奢购"},
+    {"code":"RECEIVE","name":"收到货款"},
+    {"code":"RECEIVE_CASH","name":"收到现金"},
+    {"code":"PAY","name":"付款"},
+    {"code":"ABSENCE_PAY","name":"现销少付款"},
+    {"code":"DISCOUNT","name":"下浮"},
+    {"code":"PRICE_DIFFRENCT","name":"差价"},
+    {"code":"SUPPLIER_DISCOUNT","name":"供应商下浮"},
+    {"code":"SUPPLIER_PRICE_DIFFRENCT","name":"供应商差价"},
+    {"code":"RETURN_INBOUND","name":"退货入库"},
+    {"code":"RETURN_OUTBOUND","name":"退货出库"},
+    {"code":"FREIGHT_PAID","name":"运费-已付"},
+    {"code":"FREIGHT_COLLECT","name":"运费-到付"},
+    {"code":"SURPLUS","name":"盘盈"},
+    {"code":"LOSS","name":"盘亏"}
+  ],
+  "BS_SKU_SERIES":[
+    {"code":"福田","name":"福田"},
+    {"code":"江淮","name":"江淮"},
+    {"code":"一汽","name":"一汽"},
+    {"code":"解放","name":"解放"},
+    {"code":"东风","name":"东风"},
+    {"code":"五十铃","name":"五十铃"},
+    {"code":"五征","name":"五征"},
+    {"code":"时风","name":"时风"}
   ]
-
 }

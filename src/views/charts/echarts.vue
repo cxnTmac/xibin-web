@@ -102,7 +102,7 @@ export default {
             data.currentMonth.push(currentMonth[i].sales);
             data.preMonth.push(preMonth[j].sales);
             data.currentMonthNum.push(currentMonth[i].outboundNum);
-            data.preMonthNum.push(preMonth[i].outboundNum);
+            data.preMonthNum.push(preMonth[j].outboundNum);
             sameCurrentIndex.push(i);
             samePreIndex.push(j);
             break;

@@ -34,6 +34,18 @@
 					<el-form-item label="快速编码" prop="quickCode">
 						<el-input v-model="filters.quickCode" placeholder="快速编码"></el-input>
 					</el-form-item>
+					<el-form-item label="系列" prop="series">
+					<el-select v-model="filters.series" clearable  placeholder="请选择">
+						<el-option
+								v-for="item in series"
+								:key="item.code"
+								:label="item.name"
+								:value="item.code">
+							<span style="float: left">{{ item.name }}</span>
+						</el-option>
+					</el-select>
+					<!--<el-input v-model="orderHeader.auditStatus" auto-complete="off"></el-input>-->
+				</el-form-item>
 				</el-row>
 				</transition>
 			</el-form>
@@ -50,6 +62,8 @@
 			<el-table-column prop="fittingSkuName" label="产品名称" width="120">
 			</el-table-column>
 			<el-table-column prop="modelCode" label="车型" width="120" >
+			</el-table-column>
+			<el-table-column prop="series" label="系列" width="120" >
 			</el-table-column>
 			<el-table-column prop="fittingSkuStatus" label="状态"  width="80" >
 				<template slot-scope="scope">
@@ -286,7 +300,19 @@
 							
 						</el-row>
 						<el-row :gutter="0">
-							
+							<el-col :span="8">
+								<el-form-item label="系列" prop="type">
+									<el-select v-model="editForm.series" placeholder="请选择">
+										<el-option
+												v-for="item in series"
+												:key="item.code"
+												:label="item.name"
+												:value="item.code">
+											<span style="float: left">{{ item.name }}</span>
+										</el-option>
+									</el-select>
+								</el-form-item>
+							</el-col>
 							<el-col :span="12">
 								<el-form-item label="通用组" prop="groupCode">
 									<popwin-button popKey="POP_SKU_GROUP" :selectValue="editForm.groupCode" v-model="editForm.groupCode" ></popwin-button>
@@ -514,6 +540,19 @@
 					</el-col>
 				</el-row>
 				<el-row :gutter="0">
+					<el-col :span="8">
+								<el-form-item label="系列" prop="type">
+									<el-select v-model="addForm.series" placeholder="请选择">
+										<el-option
+												v-for="item in series"
+												:key="item.code"
+												:label="item.name"
+												:value="item.code">
+											<span style="float: left">{{ item.name }}</span>
+										</el-option>
+									</el-select>
+								</el-form-item>
+							</el-col>
 					<el-col :span="12">
 						<el-form-item label="通用组" prop="groupCode">
 							<popwin-button popKey="POP_SKU_GROUP" :selectValue="addForm.groupCode" v-model="addForm.groupCode" ></popwin-button>
@@ -625,10 +664,12 @@
                 imgs: [],
 				is_packed:codemaster.WM_IS_PACKED,
 				stautus:codemaster.BD_SKU_STATUS,
+				series:codemaster.BS_SKU_SERIES,
 				filters: {
 				    fittingSkuCode:'',
 					fittingSkuName: '',
                     modelCode:'',
+					series:'',
 					fittingTypeCode:'',
 					fittingTypeName:'',
                     quickCode:''
@@ -678,6 +719,7 @@
                     uomDesc:'',
                     price:'',
                     modelCode:'',
+					series:'',
                     fittingTypeCode:'',
                     type:'',
                     isShow:'',
@@ -723,6 +765,7 @@
                     uomDesc:'',
                     price:'',
                     modelCode:'',
+					series:'',
                     fittingTypeCode:'',
                     type:'',
                     isShow:'',
@@ -1033,6 +1076,7 @@
                     uomDesc:'',
                     price:'',
                     modelCode:'',
+					series:'',
                     fittingTypeCode:'',
                     type:'',
 					isShow:'Y',

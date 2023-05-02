@@ -99,10 +99,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="备注" prop="remark">
-            <el-input
-              v-model="filters.remark"
-              placeholder="备注"
-            ></el-input>
+            <el-input v-model="filters.remark" placeholder="备注"></el-input>
           </el-form-item>
         </el-row>
         <transition name="el-zoom-in-top"> </transition>
@@ -154,7 +151,7 @@
             {{ formatOrderTime(scope.row.orderTime) }}
           </div>
           <div>
-            {{ "总价："+totalPriceMap[scope.row.orderNo] }}
+            {{ "总价：" + totalPriceMap[scope.row.orderNo] }}
           </div>
         </template>
       </el-table-column>
@@ -260,7 +257,7 @@ export default {
     return {
       json_fields: {
         出库单号: "orderNo", //常规字段
-        出库单时间: "orderTime", 
+        出库单时间: "orderTime",
         客户: "buyerName",
         出库类型: "outboundType",
         行号: "lineNo",
@@ -270,8 +267,9 @@ export default {
         单位: "uomDesc",
         数量: "outboundNum",
         单价: "outboundPrice",
+        成本: "cost",
       },
-      totalPriceMap:{},
+      totalPriceMap: {},
       showMoreQueryCondition: false,
       status: codemaster.WM_OUTBOUND_STATUS,
       filters: {
@@ -283,7 +281,7 @@ export default {
         outboundTypes: [],
         orderTimeFm: null,
         orderTimeTo: null,
-        remark:""
+        remark: "",
       },
       outboundTypes: codemaster.WM_OUTBOUND_TYPE,
       records: [],
@@ -315,9 +313,12 @@ export default {
         let values = [];
         if (index === 11) {
           values = data.map((item) => {
-            return NP.times(item.cost?item.cost:0,item.outboundNum?item.outboundNum:0);
+            return NP.times(
+              item.cost ? item.cost : 0,
+              item.outboundNum ? item.outboundNum : 0
+            );
           });
-        }else if(index === 4||index === 5){
+        } else if (index === 4 || index === 5) {
           values = data.map((item) => Number(item[column.property]));
         }
         if (!values.every((value) => isNaN(value))) {
@@ -384,14 +385,20 @@ export default {
       let sum = 0;
       let tongji = {};
       for (let i = 0; i < this.records.length - 1; i++) {
-        sum = NP.plus(sum,this.records[i].totalPrice?this.records[i].totalPrice:0);
+        sum = NP.plus(
+          sum,
+          this.records[i].totalPrice ? this.records[i].totalPrice : 0
+        );
         if (this.records[i].orderNo !== this.records[i + 1].orderNo) {
           array.push(i + 1);
           tongji[this.records[i].orderNo] = sum;
           sum = 0;
         }
-        if(i+1 === this.records.length - 1){
-          tongji[this.records[i].orderNo] = NP.plus(sum,this.records[i+1].totalPrice?this.records[i+1].totalPrice:0);
+        if (i + 1 === this.records.length - 1) {
+          tongji[this.records[i].orderNo] = NP.plus(
+            sum,
+            this.records[i + 1].totalPrice ? this.records[i + 1].totalPrice : 0
+          );
         }
       }
       this.totalPriceMap = tongji;

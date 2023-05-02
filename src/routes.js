@@ -41,7 +41,11 @@ import report from "./views/finace/report.vue";
 import echarts from "./views/charts/echarts.vue";
 import provinceSaleCharts from "./views/charts/provinceSaleCharts.vue";
 import saleLineCharts from "./views/charts/saleLineCharts.vue";
-
+import turnoverRate from "./views/charts/turnoverRate.vue";
+import customerRecord from "./views/bussiness/customerRecord.vue";
+import customerRecordListPage from "./views/bussiness/customerRecordListPage.vue";
+import monthReport from "./views/bussiness/monthReport.vue";
+import outboundDaily from "./views/outbound/outboundDaily.vue";
 export const pages = {
   login: Login,
   NotFound: NotFound,
@@ -85,7 +89,12 @@ export const pages = {
   report: report,
   functions: functions,
   provinceSaleCharts: provinceSaleCharts,
-  saleLineCharts:saleLineCharts
+  saleLineCharts:saleLineCharts,
+  turnoverRate:turnoverRate,
+  customerRecord:customerRecord,
+  outboundDaily:outboundDaily,
+  customerRecordListPage:customerRecordListPage,
+  monthReport:monthReport
 };
 export const convertRole2FunctionForBtnAndColumn = function (role2Functions) {
   // 获取到所有的页面权限

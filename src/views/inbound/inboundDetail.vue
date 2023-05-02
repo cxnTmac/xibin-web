@@ -9,8 +9,8 @@
       <el-step title="创建订单"></el-step>
       <el-step title="完成审核（可取消）"></el-step>
       <el-step title="完成收货（可取消）"></el-step>
-      <el-step title="关闭订单"></el-step>
       <el-step title="完成入库核算"></el-step>
+      <el-step title="关闭订单"></el-step>
     </el-steps>
     <!--工具条-->
     <el-col :span="24" class="toolbar">
@@ -29,28 +29,35 @@
         >取消审核</el-button
       >
       <el-button
+        type="success"
+        :disabled="btnAccountStatus"
+        @click="account"
+        :loading="pageControl.accountBtnLoading"
+        >入库核算</el-button
+      >
+      <el-button
+        type="success"
+        :disabled="btnCancelAccountStatus"
+        @click="cancelAccount"
+        :loading="pageControl.cancelAccountBtnLoading"
+        >取消核算</el-button
+      >
+      <el-button
         type="danger"
         :disabled="btnCloseStatus"
         @click="close"
         :loading="pageControl.closeBtnLoading"
         >关闭订单</el-button
       >
-      <el-button
-        type="success"
-        :disabled="btnAccountStatus"
-        @click="account"
-        :loading="pageControl.accountBtnLoading"
-        >核算订单</el-button
-      >
-      <el-button
+      <!-- <el-button
         type="success"
         :disabled="btnAccountCostStatus"
         @click="accountCost"
         :loading="pageControl.accountCostBtnLoading"
         >成本核算</el-button
-      >
+      > -->
       <el-button @click="back" style="float: right">返回</el-button>
-       <el-button
+      <el-button
         @click="nextOrder"
         icon="el-icon-caret-right"
         type="primary"
@@ -84,10 +91,7 @@
           @click="printInboundOrder"
           >打印</el-button
         >
-        <el-button
-          type="primary"
-          style="float: right"
-          slot="reference"
+        <el-button type="primary" style="float: right" slot="reference"
           >打印收货单</el-button
         >
       </el-popover>
@@ -244,13 +248,35 @@
               ></el-input>
             </el-form-item>
           </el-col>
-           <el-col :span="6">
+          <el-col :span="6">
             <el-form-item label="总价" prop="totalPrice">
               <el-input
                 v-model="totalPrice"
                 :disabled="true"
                 auto-complete="off"
               ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="入库核算" prop="isCalculated">
+              <el-select
+                :disabled="true"
+                v-model="orderHeader.isCalculated"
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="item in YESORNO"
+                  :key="item.code"
+                  :label="item.name"
+                  :value="item.code"
+                >
+                  <span style="float: left">{{ item.name }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">{{
+                    item.code
+                  }}</span>
+                </el-option>
+              </el-select>
+              <!--<el-input v-model="orderHeader.inboundType" auto-complete="off"></el-input>-->
             </el-form-item>
           </el-col>
         </el-row>
@@ -929,11 +955,12 @@ import {
   cancelAudit,
   close,
   accountByOrderNo,
+  cancelAccountByOrderNo,
   accountCostByOrderNo,
   batchSaveInboundDetail,
   queryHistorySale,
   selectNextOrderNo,
-  selectPreOrderNo
+  selectPreOrderNo,
 } from "../../api/inboundApi";
 import { getFittingSkuListPage } from "../../api/fittingSkuApi";
 var codemaster = require("../../../static/codemaster.json");
@@ -941,7 +968,7 @@ var config = require("../../../static/config.json");
 export default {
   data() {
     return {
-      receiveTime:util.formatDate.format(new Date(),"yyyy-MM-dd hh:mm:ss"),
+      receiveTime: util.formatDate.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
       orderHeader: {
         id: "",
         orderNo: "",
@@ -951,7 +978,7 @@ export default {
         isCostCalculated: "",
         voucherId: 0,
         costVoucherId: 0,
-        orderTime: util.formatDate.format(new Date(),"yyyy-MM-dd hh:mm:ss"),
+        orderTime: util.formatDate.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
         auditOp: "",
         auditStatus: "",
         auditTime: "",
@@ -1032,6 +1059,7 @@ export default {
         cancelRecEditLoading: false,
         closeBtnLoading: false,
         accountBtnLoading: false,
+        cancelAccountBtnLoading: false,
         batchRecEditSubmitLoading: false,
         accountCostBtnLoading: false,
         batchAddPopWinVisiable: false,
@@ -1129,11 +1157,12 @@ export default {
           modelCode: "",
           fittingTypeCode: "",
           supplierCode: "",
-        }
+        },
       },
       inboundStatus: codemaster.WM_INBOUND_STATUS,
       inboundType: codemaster.WM_INBOUND_TYPE,
       auditStatus: codemaster.SYS_AUDIT_STATUS,
+      YESORNO: codemaster.SYS_YES_NO,
     };
   },
   computed: {
@@ -1239,14 +1268,30 @@ export default {
     btnCloseStatus: function () {
       if (this.orderHeader.auditStatus === "00") {
         return true;
-      } else if (this.orderHeader.status === "20") {
+      }
+      if (this.orderHeader.status === "99") {
+          return true;
+        } else if(this.orderHeader.isCalculated === "Y"){
+          return false;
+        }else{
+          return true;
+        }
+      },
+    btnAccountStatus: function () {
+      if (
+        this.orderHeader.isCalculated === "N" &&
+        this.orderHeader.status === "20"
+      ) {
         return false;
       } else {
         return true;
       }
     },
-    btnAccountStatus: function () {
-      if (this.orderHeader.isCalculated === "N") {
+    btnCancelAccountStatus: function () {
+      if (
+        this.orderHeader.isCalculated === "Y" &&
+        this.orderHeader.status === "20"
+      ) {
         return false;
       } else {
         return true;
@@ -1283,7 +1328,7 @@ export default {
   methods: {
     nextOrder() {
       selectNextOrderNo({
-        id:  this.orderHeader.id
+        id: this.orderHeader.id,
       })
         .then((res) => {
           debugger;
@@ -1302,7 +1347,7 @@ export default {
     },
     preOrder() {
       selectPreOrderNo({
-        id:  this.orderHeader.id
+        id: this.orderHeader.id,
       })
         .then((res) => {
           if (res.data === null || res.data === "" || res.data == undefined) {
@@ -1386,7 +1431,7 @@ export default {
     printInboundOrder() {
       let user = JSON.parse(localStorage.getItem("user"));
       window.open(
-        config.reportUrl  +
+        config.reportUrl +
           "inboundOrder?orderNo=" +
           this.orderHeader.orderNo +
           "&companyId=" +
@@ -1395,7 +1440,6 @@ export default {
           user.warehouseId +
           "&inboundTime=" +
           this.receiveTime
-
       );
     },
     addSale: function (row, event) {
@@ -1683,6 +1727,27 @@ export default {
           util.errorCallBack(data, this.$router, this.$message);
         });
     },
+    cancelAccount() {
+      this.pageControl.cancelAccountBtnLoading = true;
+      let para = { orderNo: this.orderHeader.orderNo };
+      cancelAccountByOrderNo(para)
+        .then((res) => {
+          this.pageControl.cancelAccountBtnLoading = false;
+          if (res.data.code == 200) {
+            this.$message({
+              message: res.data.msg,
+              type: "success",
+            });
+            this.getOrder();
+          } else {
+            this.$message.error(res.data.msg);
+          }
+        })
+        .catch((data) => {
+          this.pageControl.cancelAccountBtnLoading = false;
+          util.errorCallBack(data, this.$router, this.$message);
+        });
+    },
     accountCost() {
       this.pageControl.accountCostBtnLoading = true;
       let para = { orderNo: this.orderHeader.orderNo };
@@ -1943,7 +2008,7 @@ export default {
         orderNo: "",
         supplierCode: "",
         status: "00",
-        orderTime: util.formatDate.format(new Date(),"yyyy-MM-dd hh:mm:ss"),
+        orderTime: util.formatDate.format(new Date(), "yyyy-MM-dd hh:mm:ss"),
         auditOp: "",
         auditStatus: "00",
         auditTime: "",

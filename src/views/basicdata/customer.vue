@@ -382,6 +382,42 @@
               </el-col>
             </el-row>
             <el-row :gutter="0">
+              <el-col :span="12">
+                <el-form-item label="收货人" prop="consigneeName">
+                  <el-input
+                    v-model="editForm.consigneeName"
+                    auto-complete="off"
+                  ></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="收货电话" prop="consigneePhone">
+                  <el-input
+                    v-model="editForm.consigneePhone"
+                    auto-complete="off"
+                  ></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+             <el-row :gutter="0">
+              <el-col :span="12">
+                <el-form-item label="收货地址" prop="consigneeAddress">
+                  <el-input
+                    v-model="editForm.consigneeAddress"
+                    auto-complete="off"
+                  ></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="收货单位" prop="consigneeCompany">
+                  <el-input
+                    v-model="editForm.consigneeCompany"
+                    auto-complete="off"
+                  ></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="0">
               <el-col :span="24">
                 <el-form-item label="备注" prop="remark">
                   <el-input
@@ -656,6 +692,10 @@ export default {
         contactName: "",
         contactEmail: "",
         contactTel: "",
+        consigneeName:"",
+        consigneeAddress:"",
+        consigneePhone:"",
+        consigneeCompany:"",
         remark: "",
       },
       courseAuxilaryBalanceFormVisible: false,

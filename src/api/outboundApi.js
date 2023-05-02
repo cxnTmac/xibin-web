@@ -84,16 +84,17 @@ export const showAllClosedOrderOutboundDetail = params => { return axios.get(`/x
 
 export const accountByOrderNo = params => { return axios.get(`/xibin/outbound/accountByOrderNo`, { params: params }); };
 
-export const accountByOrderNos = params => { return axios.post(`/xibin/outbound/accountByOrderNos`,qs.stringify(params),{headers: {
-    'Content-Type': 'application/x-www-form-urlencoded',
-}} ).then(res => res); };
+export const cancelAccountByOrderNo = params => { return axios.get(`/xibin/outbound/cancelAccountByOrderNo`, { params: params }); };
+// export const accountByOrderNos = params => { return axios.post(`/xibin/outbound/accountByOrderNos`,qs.stringify(params),{headers: {
+//     'Content-Type': 'application/x-www-form-urlencoded',
+// }} ).then(res => res); };
 
 
-export const accountCostByOrderNo = params => { return axios.get(`/xibin/outbound/accountCostByOrderNo`, { params: params }); };
+// export const accountCostByOrderNo = params => { return axios.get(`/xibin/outbound/accountCostByOrderNo`, { params: params }); };
 
-export const accountCostByOrderNos = params => { return axios.post(`/xibin/outbound/accountCostByOrderNos`,qs.stringify(params),{headers: {
-    'Content-Type': 'application/x-www-form-urlencoded',
-}} ).then(res => res); };
+// export const accountCostByOrderNos = params => { return axios.post(`/xibin/outbound/accountCostByOrderNos`,qs.stringify(params),{headers: {
+//     'Content-Type': 'application/x-www-form-urlencoded',
+// }} ).then(res => res); };
 
 
 export const importOutboundDetailByExcel = params => { return axios.get(`/xibin/outbound/importOutboundDetailByExcel`, { params: params }); };
@@ -112,6 +113,9 @@ export const selectPreOrderNo = params => { return axios.get(`/xibin/outbound/se
 //
 // export const cancelReceive = params => { return axios.get(`/xibin/outbound/cancelReceive `, { params: params }); };
 // //
+
+
+export const queryForOutboundDaily = params => { return axios.get(`/xibin/outbound/queryForOutboundDaily`, { params: params }); };
 
 
 

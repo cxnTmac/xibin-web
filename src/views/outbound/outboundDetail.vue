@@ -11,8 +11,8 @@
       <el-step title="完成分配（可取消）"></el-step>
       <el-step title="完成拣货（可取消）"></el-step>
       <el-step title="完成发货（可取消）"></el-step>
-      <el-step title="关闭订单"></el-step>
       <el-step title="完成核算"></el-step>
+      <el-step title="关闭订单"></el-step>
     </el-steps>
     <!--工具条-->
     <el-col :span="24" class="toolbar">
@@ -66,13 +66,6 @@
         >取消发货</el-button
       >
       <el-button
-        type="danger"
-        :disabled="btnCloseStatus"
-        @click="close"
-        :loading="pageControl.closeBtnLoading"
-        >关闭订单</el-button
-      >
-      <el-button
         type="success"
         :disabled="btnAccountStatus"
         @click="account"
@@ -81,11 +74,25 @@
       >
       <el-button
         type="success"
+        :disabled="btnCancelAccountStatus"
+        @click="cancelAccount"
+        :loading="pageControl.accountBtnLoading"
+        >取消核算</el-button
+      >
+      <el-button
+        type="danger"
+        :disabled="btnCloseStatus"
+        @click="close"
+        :loading="pageControl.closeBtnLoading"
+        >关闭订单</el-button
+      >
+      <!-- <el-button
+        type="success"
         :disabled="btnAccountCostStatus"
         @click="accountCost"
         :loading="pageControl.accountCostBtnLoading"
         >成本核算</el-button
-      >
+      > -->
       <el-button @click="back" style="float: right">返回</el-button>
       <el-button
         @click="nextOrder"
@@ -169,6 +176,7 @@
             >
               <el-button>导出EXCEL</el-button>
             </download-excel>
+            <el-button @click="openConsigneeDialog">打印收货信息</el-button>
             <el-button
               type="primary"
               style="float: right"
@@ -362,13 +370,48 @@
               ></el-input>
             </el-form-item>
           </el-col>
-          <!-- <el-col :span="6">
-            <el-button
-              @click="alert('还没完成')"
-              :disabled="logisticsInfoStatus"
-              >历史物流信息</el-button
-            >
-          </el-col> -->
+          <el-col :span="6">
+            <el-form-item label="运费类别" prop="freightType">
+              <el-select v-model="orderHeader.freightType" placeholder="请选择">
+                <el-option
+                  v-for="item in freightType"
+                  :key="item.code"
+                  :label="item.name"
+                  :value="item.code"
+                >
+                  <span style="float: left">{{ item.name }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">{{
+                    item.code
+                  }}</span>
+                </el-option>
+              </el-select>
+              <!--<el-input v-model="orderHeader.inboundType" auto-complete="off"></el-input>-->
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="0">
+          <el-col :span="6">
+            <el-form-item label="销售核算" prop="isCalculated">
+              <el-select
+                :disabled="true"
+                v-model="orderHeader.isCalculated"
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="item in YESORNO"
+                  :key="item.code"
+                  :label="item.name"
+                  :value="item.code"
+                >
+                  <span style="float: left">{{ item.name }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">{{
+                    item.code
+                  }}</span>
+                </el-option>
+              </el-select>
+              <!--<el-input v-model="orderHeader.inboundType" auto-complete="off"></el-input>-->
+            </el-form-item>
+          </el-col>
         </el-row>
       </el-card>
       <el-card class="box-card">
@@ -407,12 +450,13 @@
           </el-table-column>
           <!-- <el-table-column prop="outboundNum" label="订货数" width="80">
           </el-table-column> -->
-          <el-table-column prop="outboundNum" label="订货数" width="80">
+          <el-table-column prop="outboundNum"  label="订货数" width="80">
             <template slot-scope="scope">
               <div slot="reference" class="name-wrapper">
                 <el-input
                   :ref="scope.row.id"
                   :disabled="rowEditStatus"
+                  :precision="1"
                   @keyup.enter.native="
                     rowSaveDetail(scope.row, scope.$index, $event)
                   "
@@ -708,6 +752,7 @@
               <el-input-number
                 @change="outboundNumChange"
                 v-model="detailGrid.editForm.outboundNum"
+                :precision="1"
                 :disabled="editFormOutboundNumStatus"
                 auto-complete="off"
               ></el-input-number>
@@ -1020,6 +1065,7 @@
         </el-form-item>
         <el-form-item label="当前数量" prop="currentNum">
           <el-input-number
+          :precision="1"
             v-model="batchAddPopWin.currentNum"
             auto-complete="off"
           ></el-input-number>
@@ -1239,6 +1285,86 @@
         <div class="el-upload__tip" slot="tip">只能上传xls/xlsx文件</div>
       </el-upload>
     </el-dialog>
+    <!--收货信息界面-->
+    <el-dialog
+      title="收货人信息"
+      :visible.sync="pageControl.consigneeInfoFormVisible"
+      :close-on-click-modal="false"
+    >
+      <el-form :model="consigneeInfo" label-width="80px" ref="consigneeInfo">
+        <el-row :gutter="0">
+          <el-col :span="12">
+            <el-form-item label="到站" prop="consigneeStation">
+              <el-input
+                v-model="consigneeInfo.consigneeStation"
+                auto-complete="off"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="收货单位" prop="consigneeCompany">
+              <el-input
+                v-model="consigneeInfo.consigneeCompany"
+                auto-complete="off"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="0">
+          <el-col :span="12">
+            <el-form-item label="收货人" prop="consigneeName">
+              <el-input
+                v-model="consigneeInfo.consigneeName"
+                auto-complete="off"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="电话" prop="consigneePhone">
+              <el-input
+                v-model="consigneeInfo.consigneePhone"
+                auto-complete="off"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="0">
+          <el-col :span="24">
+            <el-form-item label="收货地址" prop="consigneeAddress">
+              <el-input
+                v-model="consigneeInfo.consigneeAddress"
+                auto-complete="off"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="0">
+          <el-col :span="12">
+            <el-form-item label="总件数" prop="consigneeNum">
+              <el-input
+                v-model="consigneeInfo.consigneeNum"
+                auto-complete="off"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="发货日期" prop="outboundDate">
+              <el-date-picker
+                v-model="consigneeInfo.outboundDate"
+                type="date"
+                placeholder="选择日期"
+              >
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click.native="printConsigneeInfo"
+          >打印收货信息</el-button
+        >
+      </div>
+    </el-dialog>
   </section>
 </template>
 
@@ -1289,11 +1415,13 @@ import {
   cancelShipByHeader,
   close,
   accountByOrderNo,
+  cancelAccountByOrderNo,
   accountCostByOrderNo,
   selectNextOrderNo,
   selectPreOrderNo,
 } from "../../api/outboundApi";
 import { queryAvaiableInventorySumBySkuCode } from "../../api/inventoryApi";
+import { getCustomerByCustomerCode } from "../../api/customerApi";
 var codemaster = require("../../../static/codemaster.json");
 var config = require("../../../static/config.json");
 import NP from "number-precision";
@@ -1469,10 +1597,12 @@ export default {
         batchAddPopWinVisiable: false,
         closeBtnLoading: false,
         accountBtnLoading: false,
+        cancelAccountBtnLoading: false,
         accountCostBtnLoading: false,
         preAssembleAllocSubmitLoading: false,
         excelImportPopWinVisible: false,
         currentInvAvaibleNumSumLoading: true,
+        consigneeInfoFormVisible: false,
       },
       detailAllocGrid: {
         editForm: {
@@ -1536,9 +1666,21 @@ export default {
           },
         ],
       },
+      customerInfo: {},
+      consigneeInfo: {
+        consigneeStation: null,
+        consigneeCompany: null,
+        consigneeName: null,
+        consigneePhone: null,
+        consigneeAddress: null,
+        consigneeNum: null,
+        outboundDate: util.formatDate.format(new Date(), "yyyy-MM-dd"),
+      },
       outboundStatus: codemaster.WM_OUTBOUND_STATUS,
       outboundType: codemaster.WM_OUTBOUND_TYPE,
+      YESORNO: codemaster.SYS_YES_NO,
       auditStatus: codemaster.SYS_AUDIT_STATUS,
+      freightType: codemaster.WM_FREIGHT_TYPE,
     };
   },
   computed: {
@@ -1647,11 +1789,7 @@ export default {
         return 4;
       } else if (this.orderHeader.status == "80") {
         return 5;
-      } else if (
-        this.orderHeader.status == "99" &&
-        (this.orderHeader.isCalculated === "N" ||
-          this.orderHeader.isCostCalculated === "N")
-      ) {
+      } else if (this.orderHeader.isCostCalculated === "Y") {
         return 6;
       } else if (this.orderHeader.status == "99") {
         return 7;
@@ -1660,7 +1798,10 @@ export default {
     btnCloseStatus: function () {
       if (this.orderHeader.auditStatus === "00") {
         return true;
-      } else if (this.orderHeader.status === "80") {
+      }
+      if (this.orderHeader.status === "99") {
+        return true;
+      } else if (this.orderHeader.isCalculated === "Y") {
         return false;
       } else {
         return true;
@@ -1669,7 +1810,17 @@ export default {
     btnAccountStatus: function () {
       if (
         this.orderHeader.isCalculated === "N" &&
-        this.orderHeader.status === "99"
+        this.orderHeader.status === "80"
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+    btnCancelAccountStatus: function () {
+      if (
+        this.orderHeader.isCalculated === "Y" &&
+        this.orderHeader.status === "80"
       ) {
         return false;
       } else {
@@ -1960,6 +2111,42 @@ export default {
     },
   },
   methods: {
+    printConsigneeInfo() {
+      window.open(
+        config.reportUrl +
+          "consigneeInfo?consigneeStation=" +
+          (this.consigneeInfo.consigneeStation === null
+            ? ""
+            : this.consigneeInfo.consigneeStation) +
+          "&consigneeCompany=" +
+          (this.consigneeInfo.consigneeCompany === null
+            ? ""
+            : this.consigneeInfo.consigneeCompany) +
+          "&consigneeName=" +
+          (this.consigneeInfo.consigneeName === null
+            ? ""
+            : this.consigneeInfo.consigneeName) +
+          "&consigneePhone=" +
+          (this.consigneeInfo.consigneePhone === null
+            ? ""
+            : this.consigneeInfo.consigneePhone) +
+          "&consigneeAddress=" +
+          (this.consigneeInfo.consigneeAddress === null
+            ? ""
+            : this.consigneeInfo.consigneeAddress) +
+          "&consigneeNum=" +
+          (this.consigneeInfo.consigneeNum === null
+            ? ""
+            : this.consigneeInfo.consigneeNum) +
+          "&outboundDate=" +
+          (this.consigneeInfo.outboundDate === null
+            ? ""
+            : this.consigneeInfo.outboundDate)
+      );
+    },
+    openConsigneeDialog() {
+      this.pageControl.consigneeInfoFormVisible = true;
+    },
     clipboardPickInfo() {
       let _this = this;
       let pickInfo =
@@ -2036,9 +2223,8 @@ export default {
       }
       if (this.detailGrid.excelImportPopWinForm.isQueryRecentPrice) {
         if (this.detailGrid.excelImportPopWinForm.isByBuyerCode) {
-          this.detailGrid.excelImportPopWinForm[
-            "buyerCode"
-          ] = this.orderHeader.buyerCode;
+          this.detailGrid.excelImportPopWinForm["buyerCode"] =
+            this.orderHeader.buyerCode;
         }
       }
       return true;
@@ -2113,6 +2299,7 @@ export default {
       accountByOrderNo(para)
         .then((res) => {
           this.pageControl.accountBtnLoading = false;
+          console.log(res);
           if (res.data.code == 200) {
             this.$message({
               message: res.data.msg,
@@ -2125,6 +2312,27 @@ export default {
         })
         .catch((data) => {
           this.pageControl.accountBtnLoading = false;
+          util.errorCallBack(data, this.$router, this.$message);
+        });
+    },
+    cancelAccount: function () {
+      this.pageControl.cancelAccountBtnLoading = true;
+      let para = { orderNo: this.orderHeader.orderNo };
+      cancelAccountByOrderNo(para)
+        .then((res) => {
+          this.pageControl.cancelAccountBtnLoading = false;
+          if (res.data.code == 200) {
+            this.$message({
+              message: res.data.msg,
+              type: "success",
+            });
+            this.getOrder();
+          } else {
+            this.$message.error(res.data.msg);
+          }
+        })
+        .catch((data) => {
+          this.pageControl.cancelAccountBtnLoading = false;
           util.errorCallBack(data, this.$router, this.$message);
         });
     },
@@ -2983,8 +3191,28 @@ export default {
       getOutboundOrderHeader({ orderNo: this.orderNo })
         .then((res) => {
           this.updateOrderHeader(res.data);
+          this.getConsigneeInfo();
           this.getDetails();
           this.getDetailAllocs();
+        })
+        .catch((data) => {
+          util.errorCallBack(data, this.$router, this.$message);
+        });
+    },
+    getConsigneeInfo() {
+      let para = {
+        customerCode: this.orderHeader.buyerCode,
+      };
+      getCustomerByCustomerCode(para)
+        .then((res) => {
+          this.customerInfo = res.data;
+          this.consigneeInfo.consigneeName = this.customerInfo.consigneeName;
+          this.consigneeInfo.consigneePhone = this.customerInfo.consigneePhone;
+          this.consigneeInfo.consigneeCompany =
+            this.customerInfo.consigneeCompany;
+          this.consigneeInfo.consigneeAddress =
+            this.customerInfo.consigneeAddress;
+          //NProgress.done();
         })
         .catch((data) => {
           util.errorCallBack(data, this.$router, this.$message);

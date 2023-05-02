@@ -54,17 +54,23 @@ export const cancelReceive = params => { return axios.get(`/xibin/inbound/cancel
 //
 export const getInboundOrderHeader = params => { return axios.get(`/xibin/inbound/getInboundHeaderByOderNo`, { params: params }); };
 
+
+
 export const accountByOrderNo = params => { return axios.get(`/xibin/inbound/accountByOrderNo`, { params: params }); };
 
-export const accountCostByOrderNo = params => { return axios.get(`/xibin/inbound/accountCostByOrderNo`, { params: params }); };
+export const cancelAccountByOrderNo = params => { return axios.get(`/xibin/inbound/cancelAccountByOrderNo`, { params: params }); };
 
-export const accountByOrderNos = params => { return axios.post(`/xibin/inbound/accountByOrderNos`,qs.stringify(params),{headers: {
-    'Content-Type': 'application/x-www-form-urlencoded',
-}} ).then(res => res); };
+// export const accountByOrderNo = params => { return axios.get(`/xibin/inbound/accountByOrderNo`, { params: params }); };
 
-export const accountCostByOrderNos = params => { return axios.post(`/xibin/inbound/accountCostByOrderNos`,qs.stringify(params),{headers: {
-    'Content-Type': 'application/x-www-form-urlencoded',
-}} ).then(res => res); };
+// export const accountCostByOrderNo = params => { return axios.get(`/xibin/inbound/accountCostByOrderNo`, { params: params }); };
+
+// export const accountByOrderNos = params => { return axios.post(`/xibin/inbound/accountByOrderNos`,qs.stringify(params),{headers: {
+//     'Content-Type': 'application/x-www-form-urlencoded',
+// }} ).then(res => res); };
+
+// export const accountCostByOrderNos = params => { return axios.post(`/xibin/inbound/accountCostByOrderNos`,qs.stringify(params),{headers: {
+//     'Content-Type': 'application/x-www-form-urlencoded',
+// }} ).then(res => res); };
 
 // export const queryWmInboundDetailByPage = params => { return axios.get(`/xibin/inbound/queryWmInboundDetailByPage`, { params: params }); };
 export const queryWmInboundDetailByPage = params => { return axios.post(`/xibin/inbound/queryWmInboundDetailByPage`,qs.stringify(params),{headers: {

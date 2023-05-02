@@ -14,3 +14,5 @@ export const lineChartAndMapForCurrentAndPreMonthSaleByProvince = params => { re
 export const monthSaleByDate = params => { return axios.get(`/xibin/charts/monthSaleByDate`, { params: params }); };
 
 export const yearSaleByMonth = params => { return axios.get(`/xibin/charts/yearSaleByMonth`, { params: params }); };
+
+export const turnoverRate = params => { return axios.get(`/xibin/charts/turnoverRate`, { params: params }); };
