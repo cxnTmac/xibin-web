@@ -2,6 +2,8 @@ var SIGN_REGEXP = /([yMdhsm])(\1*)/g;
 var DEFAULT_PATTERN = "yyyy-MM-dd";
 // import ElementUI from 'element-ui';
 import Vue from "vue";
+// import html2canvas from "html2canvas";
+// import jsPDF from "jspdf";
 function padding(s, len) {
   var len = len - (s + "").length;
   for (var i = 0; i < len; i++) {
@@ -9,7 +11,6 @@ function padding(s, len) {
   }
   return s;
 }
-
 export default {
   getQueryStringByName: function (name) {
     var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");

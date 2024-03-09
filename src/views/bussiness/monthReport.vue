@@ -10,26 +10,26 @@
         ref="queryForm"
       >
         <el-row :gutter="0">
-          <el-form-item label="客户" prop="customerCode">
+          <!-- <el-form-item label="客户" prop="customerCode">
             <popwin-button
               popKey="POP_CUSTOMER"
               :showName="true"
               v-model="filters.customerCode"
             ></popwin-button>
-          </el-form-item>
-          <el-form-item label="时间从" prop="dateFm">
+          </el-form-item> -->
+          <el-form-item label="起始月份" prop="dateFm">
             <el-date-picker
               v-model="filters.dateFm"
-              type="datetime"
+              type="month"
               placeholder="选择日期时间"
             >
             </el-date-picker>
             <!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
           </el-form-item>
-          <el-form-item label="时间到" prop="dateTo">
+          <el-form-item label="终点月份" prop="dateTo">
             <el-date-picker
               v-model="filters.dateTo"
-              type="datetime"
+              type="month"
               placeholder="选择日期时间"
             >
             </el-date-picker>
@@ -84,6 +84,15 @@
 
     <!--工具条-->
     <el-col :span="24" class="toolbar">
+      <download-excel
+        class="export-excel-wrapper"
+        :data="records"
+        :fields="json_fields"
+        name="导出.xls"
+      >
+        <!-- 上面可以自定义自己的样式，还可以引用其他组件button -->
+        <el-button type="primary" size="small">导出EXCEL</el-button>
+      </download-excel>
     </el-col>
 
     
@@ -101,6 +110,15 @@ var codemaster = require("../../../static/codemaster.json");
 export default {
   data() {
     return {
+      json_fields: {
+        客户: "customer_name", //常规字段
+        期末余额: "balance",
+        总销售额: "salePay",
+        收到货款: "receivePay",
+        差价与折扣: "disPay",
+        退货款: "rePay",
+        应扣运费: "freightPay"
+      },
       showMoreQueryCondition: false,
       filters: {
         customerCode: "",
@@ -167,14 +185,14 @@ export default {
     let nowMonth = now.getMonth(); //当前月
     let nowYear = now.getFullYear(); //当前年
     //本月的开始时间
-    let monthStartDate = new Date(nowYear, nowMonth, 1);
-    //本月的结束时间
-    let monthEndDate = new Date(nowYear, nowMonth + 1, 1);
+    let monthStartDate = nowMonth>1?monthStartDate = new Date(nowYear, nowMonth-1, 1):monthStartDate = new Date(nowYear-1, 12, 1);
+    let monthEndDate = new Date(nowYear, nowMonth, 1);
+    alert(monthStartDate);
     this.filters = this.$store.state.customerRecord.filters;
-    if (this.filters.dateFm === null) {
+    if (this.filters.dateFm === null||this.filters.dateFm === '') {
       this.filters.dateFm = monthStartDate;
     }
-    if (this.filters.dateTo === null) {
+    if (this.filters.dateTo === null||this.filters.dateTo === '') {
       this.filters.dateTo = monthEndDate;
     }
   },

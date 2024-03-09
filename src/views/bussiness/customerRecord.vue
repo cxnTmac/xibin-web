@@ -174,6 +174,7 @@
               <popwin-button
                 popKey="POP_CUSTOMER"
                 :showName="true"
+                @changeValue="editFormCustomerChangeValue"
                 :displayName="editForm.customerName"
                 v-model="editForm.customerCode"
               ></popwin-button>
@@ -227,7 +228,7 @@
           </el-col>
         </el-row>
         <el-row :gutter="0">
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item label="日期" prop="date">
               <el-date-picker
                 v-model="editForm.date"
@@ -236,6 +237,15 @@
                 placeholder="选择日期"
               >
               </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="辅助核算ID" prop="orderNo">
+              <el-input
+                disabled
+                v-model="editForm.auxiId"
+                auto-complete="off"
+              ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -317,6 +327,9 @@ export default {
     }
   },
   methods: {
+    editFormCustomerChangeValue(row) {
+      this.editForm.auxiId = row.auxiId;
+    },
     formatType: function (row, column) {
       return util.getComboNameByValue(
         codemaster.BS_CUSTOMER_RECORD_TYPE,
