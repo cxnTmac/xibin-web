@@ -187,7 +187,21 @@
               </el-checkbox-group>
             </el-form-item>
           </el-col>
+            
         </el-row>
+        <el-row :gutter="0">
+          <el-col :span="12">
+            <el-form-item label="付款类别" prop="paymentCategory">
+              <el-select v-model="addForm.paymentCategory" placeholder="请选择">
+										<el-option v-for="item in BD_CUSTOMER_PAYMENT_CATEGORY" :key="item.code" :label="item.name"
+											:value="item.code">
+											<span style="float: left">{{ item.name }}</span>
+											<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code
+											}}</span>
+										</el-option>
+									</el-select>
+								</el-form-item>
+          </el-col></el-row>
         <el-row :gutter="0">
           <el-col :span="10">
             <el-form-item label="省市区" prop="remark">
@@ -334,12 +348,25 @@
               </el-col>
             </el-row>
             <el-row :gutter="0">
+          <el-col :span="12">
+            <el-form-item label="付款类别" prop="paymentCategory">
+              <el-select v-model="editForm.paymentCategory" placeholder="请选择">
+										<el-option v-for="item in BD_CUSTOMER_PAYMENT_CATEGORY" :key="item.code" :label="item.name"
+											:value="item.code">
+											<span style="float: left">{{ item.name }}</span>
+											<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code
+											}}</span>
+										</el-option>
+									</el-select>
+								</el-form-item>
+          </el-col></el-row>
+            <el-row :gutter="0">
               <el-col :span="10">
                 <el-form-item label="省市区" prop="remark">
                   <el-cascader
                     :options="options"
                     v-model="selectedEditFormLocationOptions"
-                    @change="handleAddFormLocationChange"
+                    @change="handleEditFormLocationChange"
                   >
                   </el-cascader>
                 </el-form-item>
@@ -661,6 +688,7 @@ export default {
         contactName: "",
         contactEmail: "",
         contactTel: "",
+        paymentCategory:"",
         remark: "",
       },
 
@@ -696,6 +724,7 @@ export default {
         consigneeAddress:"",
         consigneePhone:"",
         consigneeCompany:"",
+        paymentCategory:"",
         remark: "",
       },
       courseAuxilaryBalanceFormVisible: false,
@@ -708,6 +737,7 @@ export default {
         balance: 0,
       },
       cusCourse: codemaster.FI_CUS_COURSE,
+      BD_CUSTOMER_PAYMENT_CATEGORY:codemaster.BD_CUSTOMER_PAYMENT_CATEGORY
     };
   },
   watch: {
@@ -761,6 +791,7 @@ export default {
     },
     //显示编辑界面
     handleEdit: function (index, row) {
+      console.log(row);
       let _this = this;
       this.editFormVisible = true;
       this.currentRow = row;
@@ -804,6 +835,8 @@ export default {
         this.selectedEditFormLocationOptions = [
           TextToCode[this.editForm.province].code,
         ];
+      }else{
+        this.selectedEditFormLocationOptions= [];
       }
     },
     handleAddBalance: function (index, row) {

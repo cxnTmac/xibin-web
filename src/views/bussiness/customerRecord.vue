@@ -479,6 +479,9 @@ export default {
       let _this = this;
       let balanceX = _this.balance;
       this.records.forEach((record) => {
+        if(record.pay ===305){
+          debugger;
+        }
         if (
           record.type === "X_SALE" ||
           record.type === "S_SALE" ||
@@ -489,7 +492,7 @@ export default {
           balanceX = NP.plus(balanceX,record.pay);
         } else if (record.type === "FREIGHT_PAID") {
           // 如果是我方付运费，不计入对方账本中
-          balanceX =_this.balanceX;
+          balanceX = balanceX;
         } else {
           //balanceX -= record.pay;
           balanceX = NP.minus(balanceX,record.pay);

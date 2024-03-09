@@ -16,8 +16,9 @@
 						<el-input v-model="filters.fittingSkuCode" placeholder="产品编码"></el-input>
 					</el-form-item>
 					<el-form-item label="车型" prop="modelCode">
-						<el-autocomplete class="inline-input" v-model="filters.modelCode" :fetch-suggestions="querySearch"
-							placeholder="请输入内容" :trigger-on-focus="false" @select="handleSelect"></el-autocomplete>
+						<el-autocomplete class="inline-input" v-model="filters.modelCode"
+							:fetch-suggestions="querySearch" placeholder="请输入内容" :trigger-on-focus="false"
+							@select="handleSelect"></el-autocomplete>
 						<!--<el-input v-model="filters.modelCode" placeholder="车型"></el-input>-->
 					</el-form-item>
 					<el-button type="primary" class="el-icon-caret-bottom"
@@ -33,11 +34,22 @@
 						</el-form-item>
 						<el-form-item label="系列" prop="series">
 							<el-select v-model="filters.series" clearable placeholder="请选择">
-								<el-option v-for="item in series" :key="item.code" :label="item.name" :value="item.code">
+								<el-option v-for="item in series" :key="item.code" :label="item.name"
+									:value="item.code">
 									<span style="float: left">{{ item.name }}</span>
 								</el-option>
 							</el-select>
 							<!--<el-input v-model="orderHeader.auditStatus" auto-complete="off"></el-input>-->
+						</el-form-item>
+						<el-form-item label="发布日期从" prop="releaseDateFm">
+							<el-date-picker v-model="filters.releaseDateFm" type="date" placeholder="选择日期">
+							</el-date-picker>
+							<!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
+						</el-form-item>
+						<el-form-item label="发布日期到" prop="releaseDateTo">
+							<el-date-picker v-model="filters.releaseDateTo" type="date" placeholder="选择日期">
+							</el-date-picker>
+							<!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
 						</el-form-item>
 					</el-row>
 				</transition>
@@ -70,6 +82,8 @@
 			</el-table-column>
 			<el-table-column prop="packageCode" label="包装编码" width="80">
 			</el-table-column>
+			<el-table-column prop="releaseDate" label="发布时间" width="155" :formatter="formatTime">
+			</el-table-column>
 			<el-table-column prop="uomDesc" label="单位" width="80">
 			</el-table-column>
 			<el-table-column prop="type" label="包装类别" width="80" :formatter="formatISPACKED">
@@ -95,6 +109,7 @@
 			<el-table-column prop="def5" label="自定义5" width="80" >
 			</el-table-column> -->
 			<el-table-column label="操作" fixed="right" min-width="430">
+
 				<template slot-scope="scope">
 					<!-- <el-button type="success" size="small" @click="handleSetNew(scope.$index, scope.row)">设置为新品</el-button> -->
 					<el-button type="info" size="small" @click="printLabel(scope.$index, scope.row)">标签打印</el-button>
@@ -113,8 +128,8 @@
 
 			<el-button type="primary" @click="handleAdd"><i class="el-icon-plus el-icon--left"></i>新增</el-button>
 			<el-button type="primary" @click="openExcelImportPopWin">excel导入金蝶编码查询产品编码</el-button>
-			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="size" :total="total"
-				style="float:right;">
+			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="size"
+				:total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
 
@@ -122,9 +137,10 @@
 		<el-dialog title="图片管理" :visible.sync="dialogPicManagerVisible">
 			<el-tabs v-model="activeName" @tab-click="handleClick">
 				<el-tab-pane label="图片上传" name="picUpload">
-					<el-upload ref="upload" class="upload-demo" drag :data="currentRow" :on-success="uploadConnectSuccess"
-						:on-error="uploadConnectFail" action="/xibin/file/uploadFittingSkuPic " :file-list="fileList"
-						multiple list-type="picture" :auto-upload="true">
+					<el-upload ref="upload" class="upload-demo" drag :data="currentRow"
+						:on-success="uploadConnectSuccess" :on-error="uploadConnectFail"
+						action="/xibin/file/uploadFittingSkuPic " :file-list="fileList" multiple list-type="picture"
+						:auto-upload="true">
 						<i class="el-icon-upload"></i>
 						<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
 						<div class="el-upload__tip" slot="tip">只能上传jpg/png文件</div>
@@ -176,7 +192,8 @@
 							</el-col>
 							<el-col :span="8">
 								<el-form-item label="快速编码" prop="quickCode">
-									<el-input v-model="editForm.quickCode" :disabled="true" auto-complete="off"></el-input>
+									<el-input v-model="editForm.quickCode" :disabled="true"
+										auto-complete="off"></el-input>
 								</el-form-item>
 							</el-col>
 							<el-col :span="8">
@@ -232,7 +249,7 @@
 											:value="item.code">
 											<span style="float: left">{{ item.name }}</span>
 											<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code
-											}}</span>
+												}}</span>
 										</el-option>
 									</el-select>
 								</el-form-item>
@@ -248,7 +265,7 @@
 											:value="item.code">
 											<span style="float: left">{{ item.name }}</span>
 											<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code
-											}}</span>
+												}}</span>
 										</el-option>
 									</el-select>
 								</el-form-item>
@@ -260,7 +277,7 @@
 											:value="item.code">
 											<span style="float: left">{{ item.name }}</span>
 											<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code
-											}}</span>
+												}}</span>
 										</el-option>
 									</el-select>
 									<!--<el-input v-model="orderHeader.status" auto-complete="off"></el-input>-->
@@ -274,7 +291,7 @@
 											:value="item.code">
 											<span style="float: left">{{ item.name }}</span>
 											<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code
-											}}</span>
+												}}</span>
 										</el-option>
 									</el-select>
 									<!--<el-input v-model="orderHeader.status" auto-complete="off"></el-input>-->
@@ -293,11 +310,17 @@
 									</el-select>
 								</el-form-item>
 							</el-col>
-							<el-col :span="12">
-								<el-form-item label="通用组" prop="groupCode">
+							<el-col :span="8">
+								<el-form-item label="发布日期" prop="releaseDate">
+									<el-date-picker v-model="editForm.releaseDate" type="date" placeholder="选择日期"
+										value-format="yyyy-MM-dd">
+									</el-date-picker>
+									<!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
+								</el-form-item>
+								<!-- <el-form-item label="通用组" prop="groupCode">
 									<popwin-button popKey="POP_SKU_GROUP" :selectValue="editForm.groupCode"
 										v-model="editForm.groupCode"></popwin-button>
-								</el-form-item>
+								</el-form-item> -->
 							</el-col>
 							<el-col :span="4">
 							</el-col>
@@ -329,12 +352,14 @@
 							<el-col :span="8">
 								<el-form-item label="默认库位" prop="defaultLoc">
 									<popwin-button popKey="POP_LOC" :staticCondition="{ useType: 'RS' }"
-										:displayName="editForm.defaultLoc" v-model="editForm.defaultLoc"></popwin-button>
+										:displayName="editForm.defaultLoc"
+										v-model="editForm.defaultLoc"></popwin-button>
 								</el-form-item>
 							</el-col>
 							<el-col :span="8">
 								<el-form-item label="最低库存数" prop="minInventory">
-									<el-input-number v-model="editForm.minInventory" auto-complete="off"></el-input-number>
+									<el-input-number v-model="editForm.minInventory"
+										auto-complete="off"></el-input-number>
 								</el-form-item>
 							</el-col>
 
@@ -363,6 +388,7 @@
 						<el-table-column prop="id" width="55">
 						</el-table-column>
 						<el-table-column prop="sSkuCode" label="子件编码" width="200">
+
 							<template slot-scope="scope">
 								<div slot="reference" class="name-wrapper">
 									<popwin-button popKey="POP_SKU" :selectValue="scope.row.sskuCode"
@@ -374,6 +400,7 @@
 						<el-table-column prop="sskuName" label="子件名称" width="250">
 						</el-table-column>
 						<el-table-column prop="num" label="数量" width="200">
+
 							<template slot-scope="scope">
 								<div slot="reference" class="name-wrapper">
 									<el-input-number v-model="scope.row.num" auto-complete="off"></el-input-number>
@@ -381,6 +408,7 @@
 							</template>
 						</el-table-column>
 						<el-table-column label="操作" fixed="right" min-width="150">
+
 							<template slot-scope="scope">
 								<!--<el-button size="small"  @click="handleDetailEdit(scope.$index, scope.row)">编辑</el-button>-->
 								<el-button type="danger" size="small"
@@ -443,7 +471,8 @@
 					</el-col>
 					<el-col :span="8">
 						<el-form-item label="配件类别" prop="fittingTypeCode">
-							<popwin-button popKey="POP_FITTINGTYPE" :showName="true" :displayName="addForm.fittingTypeName"
+							<popwin-button popKey="POP_FITTINGTYPE" :showName="true"
+								:displayName="addForm.fittingTypeName"
 								v-model="addForm.fittingTypeCode"></popwin-button>
 						</el-form-item>
 					</el-col>
@@ -469,7 +498,8 @@
 					<el-col :span="8">
 						<el-form-item label="包装类别" prop="type">
 							<el-select v-model="addForm.type" placeholder="请选择">
-								<el-option v-for="item in is_packed" :key="item.code" :label="item.name" :value="item.code">
+								<el-option v-for="item in is_packed" :key="item.code" :label="item.name"
+									:value="item.code">
 									<span style="float: left">{{ item.name }}</span>
 									<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
 								</el-option>
@@ -481,7 +511,8 @@
 					<el-col :span="8">
 						<el-form-item label="状态" prop="fittingSkuStatus">
 							<el-select v-model="addForm.fittingSkuStatus" placeholder="请选择">
-								<el-option v-for="item in stautus" :key="item.code" :label="item.name" :value="item.code">
+								<el-option v-for="item in stautus" :key="item.code" :label="item.name"
+									:value="item.code">
 									<span style="float: left">{{ item.name }}</span>
 									<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
 								</el-option>
@@ -491,7 +522,8 @@
 					<el-col :span="8">
 						<el-form-item label="是否组装" prop="needToAssemble">
 							<el-select v-model="addForm.needToAssemble" placeholder="请选择">
-								<el-option v-for="item in yesOrNo" :key="item.code" :label="item.name" :value="item.code">
+								<el-option v-for="item in yesOrNo" :key="item.code" :label="item.name"
+									:value="item.code">
 									<span style="float: left">{{ item.name }}</span>
 									<span style="float: right; color: #8492a6; font-size: 13px">{{ item.code }}</span>
 								</el-option>
@@ -517,17 +549,24 @@
 					<el-col :span="8">
 						<el-form-item label="系列" prop="type">
 							<el-select v-model="addForm.series" placeholder="请选择">
-								<el-option v-for="item in series" :key="item.code" :label="item.name" :value="item.code">
+								<el-option v-for="item in series" :key="item.code" :label="item.name"
+									:value="item.code">
 									<span style="float: left">{{ item.name }}</span>
 								</el-option>
 							</el-select>
 						</el-form-item>
 					</el-col>
 					<el-col :span="12">
-						<el-form-item label="通用组" prop="groupCode">
+						<el-form-item label="发布日期" prop="releaseDate">
+							<el-date-picker v-model="addForm.releaseDate" type="date" placeholder="选择日期"
+								value-format="yyyy-MM-dd">
+							</el-date-picker>
+							<!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
+						</el-form-item>
+						<!-- <el-form-item label="通用组" prop="groupCode">
 							<popwin-button popKey="POP_SKU_GROUP" :selectValue="addForm.groupCode"
 								v-model="addForm.groupCode"></popwin-button>
-						</el-form-item>
+						</el-form-item> -->
 					</el-col>
 				</el-row>
 				<el-row :gutter="0">
@@ -571,8 +610,8 @@
 
 		<div v-show="imagePreview.show" class="transition-box">
 			<transition name="el-zoom-in-top">
-				<img style="z-index: 9999" v-show="imagePreview.show" :src="imagePreview.src" :width="imagePreview.width"
-					:height="imagePreview.height" @click="imagePreview.show = false">
+				<img style="z-index: 9999" v-show="imagePreview.show" :src="imagePreview.src"
+					:width="imagePreview.width" :height="imagePreview.height" @click="imagePreview.show = false">
 			</transition>
 		</div>
 
@@ -614,49 +653,57 @@
 							<el-input v-model="printLabelForm.qrCode" auto-complete="off"></el-input>
 						</el-form-item>
 					</el-col>
+
+				</el-row>
+				<el-row :gutter="0" class="printLabelDiv">
+					<el-col :span="16">
+						<table>
+							<tr>
+								<td style="font-size: 20px;">产品名称</td>
+								<td style="font-size: 30px;">{{ printLabelForm.fittingSkuName }}</td>
+							</tr>
+							<tr>
+								<td style="font-size: 20px;">适用车型</td>
+								<td style="font-size: 30px;">{{ printLabelForm.modelCode }}</td>
+							</tr>
+							<tr>
+								<td style="font-size: 20px;">产品规格</td>
+								<td style="font-size: 30px;">{{ printLabelForm.specification }}</td>
+							</tr>
+							<tr>
+								<td style="font-size: 20px;">包装数量</td>
+								<td style="font-size: 30px;">{{ printLabelForm.packageNum }}</td>
+							</tr>
+							<tr>
+								<td style="font-size: 20px;">产品代码</td>
+								<td style="font-size: 30px;">{{ printLabelForm.fittingSkuCode }}</td>
+							</tr>
+							<tr>
+								<td style="font-size: 20px;">产品图号</td>
+								<td style="font-size: 30px;">{{ printLabelForm.drawingNo }}</td>
+							</tr>
+						</table>
+					</el-col>
+					<el-col :span="8">
+						<table>
+							<tr>
+								<img @click="copyQrCodePic" ref="qrCodePicImg" id="qrCodePicImg" :src="infoQrCodePic">
+							</tr>
+							<tr>
+								<el-button type="primary" @click.native="copyQrCodePic">复制二维码</el-button>
+								<el-button type="primary" @click.native="printSkuLabelDetail">打印标签</el-button>
+							</tr>
+						</table>
+					</el-col>
 				</el-row>
 			</el-form>
-			<div ref="pdf" class="printLabelDiv" style="width: 600px; ">
-				<table>
-					<tr>
-						<td style="font-size: 20px;">产品名称</td>
-						<td style="font-size: 30px;">{{ printLabelForm.fittingSkuName }}</td>
-					</tr>
-					<tr>
-						<td style="font-size: 20px;">适用车型</td>
-						<td style="font-size: 30px;">{{ printLabelForm.modelCode }}</td>
-					</tr>
-					<tr>
-						<td style="font-size: 20px;">产品规格</td>
-						<td style="font-size: 30px;">{{ printLabelForm.specification }}</td>
-					</tr>
-				</table>
-				<div style="float: left;width:300px">
-					<table>
-						<tr>
-							<td style="font-size: 20px;">包装数量</td>
-							<td style="font-size: 30px;">{{ printLabelForm.packageNum }}</td>
-						</tr>
-						<tr>
-							<td style="font-size: 20px;">产品代码</td>
-							<td style="font-size: 30px;">{{ printLabelForm.fittingSkuCode }}</td>
-						</tr>
-						<tr>
-							<td style="font-size: 20px;">产品图号</td>
-							<td style="font-size: 30px;">{{ printLabelForm.drawingNo }}</td>
-						</tr>
-					</table>
-				</div>
-				<div>
-					<img :src="infoQrCodePic">
-				</div>
-			</div>
+
 		</el-dialog>
 
 		<div v-show="imagePreview.show" class="transition-box">
 			<transition name="el-zoom-in-top">
-				<img style="z-index: 9999" v-show="imagePreview.show" :src="imagePreview.src" :width="imagePreview.width"
-					:height="imagePreview.height" @click="imagePreview.show = false">
+				<img style="z-index: 9999" v-show="imagePreview.show" :src="imagePreview.src"
+					:width="imagePreview.width" :height="imagePreview.height" @click="imagePreview.show = false">
 			</transition>
 		</div>
 		<el-dialog title="excel导入金蝶编码查询产品编码" :visible.sync="excelImportPopWinVisible" :close-on-click-modal="false">
@@ -693,6 +740,7 @@
 <script>
 import util from '../../common/js/util'
 import jrQrcode from 'jr-qrcode'
+import * as clipboard from "clipboard-polyfill"
 import Vue from 'vue'
 import NProgress from 'nprogress'
 import { getSkuGroupQueryItemByGroupCode } from '../../api/skuGroupApi'
@@ -718,6 +766,8 @@ export default {
 			stautus: codemaster.BD_SKU_STATUS,
 			series: codemaster.BS_SKU_SERIES,
 			filters: {
+				releaseDateFm:null,
+				releaseDateTo:null,
 				fittingSkuCode: '',
 				fittingSkuName: '',
 				modelCode: '',
@@ -784,7 +834,8 @@ export default {
 				def4: '',
 				def5: '',
 				assembleType: '',
-				needToAssemble: ''
+				needToAssemble: '',
+				releaseDate: null
 			},
 
 			addFormVisible: false,//新增界面是否显示
@@ -830,7 +881,8 @@ export default {
 				def4: '',
 				def5: '',
 				assembleType: '',
-				needToAssemble: ''
+				needToAssemble: '',
+				releaseDate: null
 			},
 			printLabelFormVisible: false,//打印标签界面是否显示
 			printLabelFormRules: {
@@ -897,6 +949,44 @@ export default {
 		}
 	},
 	methods: {
+		formatTime: function (row, column) {
+			if (row[column.property] !== null) {
+				let unixTimestamp = new Date(row[column.property]);
+				return util.formatDate.format(unixTimestamp, "yyyy-MM-dd hh:mm:ss");
+			}
+		},
+		printSkuLabel() {
+			let user = JSON.parse(localStorage.getItem("user"));
+			window.open(
+				config.reportUrl +
+				"skuLabel?companyId=" +
+				user.companyId +
+				"&skuCodes=" +
+				this.printLabelForm.fittingSkuCode
+			);
+		},
+		printSkuLabelDetail() {
+			let user = JSON.parse(localStorage.getItem("user"));
+			window.open(
+				config.reportUrl +
+				"skuLabelDetail?companyId=" +
+				user.companyId +
+				"&skuCode=" +
+				this.printLabelForm.fittingSkuCode +
+				"&skuName=" +
+				this.printLabelForm.fittingSkuName +
+				"&modelCode=" +
+				this.printLabelForm.modelCode +
+				"&specification=" +
+				this.printLabelForm.specification +
+				"&packageNum=" +
+				this.printLabelForm.packageNum +
+				"&drawingNo=" +
+				this.printLabelForm.drawingNo +
+				"&qrCode=" +
+				this.printLabelForm.qrCode
+			);
+		},
 		printQrCode() {
 			let user = JSON.parse(localStorage.getItem('user'));
 			// window.open(config.reportUrl+"?fittingSkuCode="+this.currentRow.fittingSkuCode+"&companyId="+user.companyId+"&URL="+"http://www.xbjg.org/productDetails.html?skucode=");
@@ -1090,6 +1180,19 @@ export default {
 				foreground: "#000000"
 			}
 			this.infoQrCodePic = jrQrcode.getQrBase64(this.printLabelForm.qrCode, options);
+			let myBlob = util.base64ToBlob(this.infoQrCodePic);
+			const item = new clipboard.ClipboardItem({
+				"image/png": myBlob
+			});
+			clipboard.write([item]);
+		},
+		copyQrCodePic: function () {
+			let myBlob = util.base64ToBlob(this.infoQrCodePic);
+			const item = new clipboard.ClipboardItem({
+				"image/png": myBlob
+			});
+			clipboard.write([item]);
+			// navigator.clipboard.write([new window.ClipboardItem({ [myBlob.type]: myBlob })]);
 		},
 		copy: function (index, row) {
 			this.addFormVisible = true;

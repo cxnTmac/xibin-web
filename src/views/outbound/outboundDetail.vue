@@ -1,11 +1,7 @@
 <template>
   <section>
     <div v-title data-title="出库单详情"></div>
-    <el-steps
-      :active="active"
-      finish-status="success"
-      style="margin-top: 20px; margin-bottom: 20px"
-    >
+    <el-steps :active="active" finish-status="success" style="margin-top: 20px; margin-bottom: 20px">
       <el-step title="创建订单"></el-step>
       <el-step title="完成审核（可取消）"></el-step>
       <el-step title="完成分配（可取消）"></el-step>
@@ -16,76 +12,26 @@
     </el-steps>
     <!--工具条-->
     <el-col :span="24" class="toolbar">
-      <el-button
-        type="primary"
-        :disabled="btnAuditStatus"
-        @click="audit"
-        :loading="pageControl.auditBtnLoading"
-        >审核</el-button
-      >
-      <el-button
-        type="danger"
-        :disabled="btnCancelAuditStatus"
-        @click="cancelAudit"
-        :loading="pageControl.cancelAuditBtnLoading"
-        >取消审核</el-button
-      >
-      <el-button
-        type="primary"
-        :disabled="btnAllocByHeaderStatus"
-        @click="allocByHeaderHandler"
-        :loading="pageControl.allocByHeaderBtnLoading"
-        >自动分配</el-button
-      >
-      <el-button
-        type="danger"
-        :disabled="btnCancelAllocByHeaderStatus"
-        @click="cancelAllocByHeaderHandler"
-        :loading="pageControl.cancelAllocByHeaderBtnLoading"
-        >取消分配</el-button
-      >
-      <el-button
-        type="primary"
-        :disabled="btnPickByHeaderStatus"
-        @click="pickByHeaderHandler"
-        :loading="pageControl.pickByHeaderBtnLoading"
-        >拣货</el-button
-      >
-      <el-button
-        type="primary"
-        :disabled="btnShipByHeaderStatus"
-        @click="shipByHeaderHandler"
-        :loading="pageControl.shipByHeaderBtnLoading"
-        >发货</el-button
-      >
-      <el-button
-        type="danger"
-        :disabled="btnCancelShipByHeaderStatus"
-        @click="cancelShipByHeaderHandler"
-        :loading="pageControl.cancelShipByHeaderBtnLoading"
-        >取消发货</el-button
-      >
-      <el-button
-        type="success"
-        :disabled="btnAccountStatus"
-        @click="account"
-        :loading="pageControl.accountBtnLoading"
-        >销售核算</el-button
-      >
-      <el-button
-        type="success"
-        :disabled="btnCancelAccountStatus"
-        @click="cancelAccount"
-        :loading="pageControl.accountBtnLoading"
-        >取消核算</el-button
-      >
-      <el-button
-        type="danger"
-        :disabled="btnCloseStatus"
-        @click="close"
-        :loading="pageControl.closeBtnLoading"
-        >关闭订单</el-button
-      >
+      <el-button type="primary" :disabled="btnAuditStatus" @click="audit"
+        :loading="pageControl.auditBtnLoading">审核</el-button>
+      <el-button type="danger" :disabled="btnCancelAuditStatus" @click="cancelAudit"
+        :loading="pageControl.cancelAuditBtnLoading">取消审核</el-button>
+      <el-button type="primary" :disabled="btnAllocByHeaderStatus" @click="allocByHeaderHandler"
+        :loading="pageControl.allocByHeaderBtnLoading">自动分配</el-button>
+      <el-button type="danger" :disabled="btnCancelAllocByHeaderStatus" @click="cancelAllocByHeaderHandler"
+        :loading="pageControl.cancelAllocByHeaderBtnLoading">取消分配</el-button>
+      <el-button type="primary" :disabled="btnPickByHeaderStatus" @click="pickByHeaderHandler"
+        :loading="pageControl.pickByHeaderBtnLoading">拣货</el-button>
+      <el-button type="primary" :disabled="btnShipByHeaderStatus" @click="shipByHeaderHandler"
+        :loading="pageControl.shipByHeaderBtnLoading">发货</el-button>
+      <el-button type="danger" :disabled="btnCancelShipByHeaderStatus" @click="cancelShipByHeaderHandler"
+        :loading="pageControl.cancelShipByHeaderBtnLoading">取消发货</el-button>
+      <el-button type="success" :disabled="btnAccountStatus" @click="account"
+        :loading="pageControl.accountBtnLoading">销售核算</el-button>
+      <el-button type="success" :disabled="btnCancelAccountStatus" @click="cancelAccount"
+        :loading="pageControl.accountBtnLoading">取消核算</el-button>
+      <el-button type="danger" :disabled="btnCloseStatus" @click="close"
+        :loading="pageControl.closeBtnLoading">关闭订单</el-button>
       <!-- <el-button
         type="success"
         :disabled="btnAccountCostStatus"
@@ -94,20 +40,8 @@
         >成本核算</el-button
       > -->
       <el-button @click="back" style="float: right">返回</el-button>
-      <el-button
-        @click="nextOrder"
-        icon="el-icon-caret-right"
-        type="primary"
-        style="float: right"
-        circle
-      ></el-button>
-      <el-button
-        @click="preOrder"
-        icon="el-icon-caret-left"
-        type="primary"
-        style="float: right"
-        circle
-      ></el-button>
+      <el-button @click="nextOrder" icon="el-icon-caret-right" type="primary" style="float: right" circle></el-button>
+      <el-button @click="preOrder" icon="el-icon-caret-left" type="primary" style="float: right" circle></el-button>
 
       <!-- <el-button
         type="primary"
@@ -117,110 +51,52 @@
         >打印发货单</el-button
       > -->
       <el-popover placement="bottom" trigger="click">
-        <el-date-picker
-          v-model="shipTime"
-          type="datetime"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          placeholder="选择日期时间"
-        >
+        <el-date-picker v-model="shipTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期时间">
         </el-date-picker>
-        <el-button
-          type="primary"
-          style="float: right"
-          :disabled="btnPrintShipOrderStatus"
-          @click="printShipOrder"
-          >打印</el-button
-        >
-        <el-button
-          type="primary"
-          style="float: right"
-          :disabled="btnPrintShipOrderStatus"
-          slot="reference"
-          >打印发货单</el-button
-        >
+        <el-button type="primary" style="float: right" :disabled="btnPrintShipOrderStatus"
+          @click="printShipOrder">打印</el-button>
+        <el-button type="primary" style="float: right" :disabled="btnPrintShipOrderStatus"
+          slot="reference">打印发货单</el-button>
       </el-popover>
-      <el-button
-        type="primary"
-        style="float: right"
-        :disabled="btnPrintPickUpOrderStatus"
-        @click="printPickUpOrder"
-        >打印拣货单</el-button
-      >
+      <el-button type="primary" style="float: right" :disabled="btnPrintPickUpOrderStatus"
+        @click="printPickUpOrder">打印拣货单</el-button>
     </el-col>
-    <el-form
-      :model="orderHeader"
-      label-width="80px"
-      :rules="orderHeaderRules"
-      ref="orderHeader"
-    >
+    <el-form :model="orderHeader" label-width="80px" :rules="orderHeaderRules" ref="orderHeader">
       <el-card class="box-card">
         <div slot="header" class="clearfix">
           <el-row :gutter="0">
             <span style="line-height: 36px">基本信息</span>
-            <el-popover
-              style="margin-left: 2%"
-              placement="bottom"
-              width="200"
-              trigger="click"
-            >
+            <el-popover style="margin-left: 2%" placement="bottom" width="200" trigger="click">
               <img :src="qrCodeUrl" />
-              <el-button @click="clipboardPickInfo" slot="reference"
-                >出库单二维码</el-button
-              >
+              <el-button @click="clipboardPickInfo" slot="reference">拣货单二维码</el-button>
             </el-popover>
-            <download-excel
-              class="export-excel-wrapper"
-              :data="detailGrid.orderDetail"
-              :fields="json_fields"
-              name="出库明细导出.xls"
-            >
+            <download-excel class="export-excel-wrapper" :data="detailGrid.orderDetail" :fields="json_fields"
+              name="出库明细导出.xls">
               <el-button>导出EXCEL</el-button>
             </download-excel>
             <el-button @click="openConsigneeDialog">打印收货信息</el-button>
-            <el-button
-              type="primary"
-              style="float: right"
-              :disabled="btnSaveHeaderStatus"
-              @click="save"
-              :loading="pageControl.saveBtnLoading"
-              >保存单头</el-button
-            >
+            <el-button type="primary"
+        @click="printPackOrder">打印装箱单</el-button>
+            <el-button type="primary" style="float: right" :disabled="btnSaveHeaderStatus" @click="save"
+              :loading="pageControl.saveBtnLoading">保存单头</el-button>
           </el-row>
         </div>
         <el-row :gutter="0">
           <el-col :span="6">
             <el-form-item label="出库单号" prop="orderNo">
-              <el-input
-                v-model="orderHeader.orderNo"
-                disabled
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="orderHeader.orderNo" disabled auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="客户" prop="buyerCode">
-              <popwin-button
-                popKey="POP_CUSTOMER"
-                :disabled="orderHeader.auditStatus === '00' ? false : true"
-                :showName="true"
-                :displayName="orderHeader.buyerName"
-                v-model="orderHeader.buyerCode"
-              ></popwin-button>
+              <popwin-button popKey="POP_CUSTOMER" :disabled="orderHeader.auditStatus === '00' ? false : true"
+                :showName="true" :displayName="orderHeader.buyerName" v-model="orderHeader.buyerCode"></popwin-button>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="状态" prop="status">
-              <el-select
-                v-model="orderHeader.status"
-                disabled
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="item in outboundStatus"
-                  :key="item.code"
-                  :label="item.name"
-                  :value="item.code"
-                >
+              <el-select v-model="orderHeader.status" disabled placeholder="请选择">
+                <el-option v-for="item in outboundStatus" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
                     item.code
@@ -232,13 +108,8 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="订单时间" prop="orderTime">
-              <el-date-picker
-                :disabled="orderHeader.auditStatus === '00' ? false : true"
-                v-model="orderHeader.orderTime"
-                type="datetime"
-                value-format="yyyy-MM-dd HH:mm:ss"
-                placeholder="选择日期时间"
-              >
+              <el-date-picker :disabled="orderHeader.auditStatus === '00' ? false : true" v-model="orderHeader.orderTime"
+                type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期时间">
               </el-date-picker>
               <!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
             </el-form-item>
@@ -247,17 +118,9 @@
         <el-row :gutter="0">
           <el-col :span="6">
             <el-form-item label="出库类型" prop="outboundType">
-              <el-select
-                :disabled="orderHeader.auditStatus === '00' ? false : true"
-                v-model="orderHeader.outboundType"
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="item in outboundType"
-                  :key="item.code"
-                  :label="item.name"
-                  :value="item.code"
-                >
+              <el-select :disabled="orderHeader.auditStatus === '00' ? false : true" v-model="orderHeader.outboundType"
+                placeholder="请选择">
+                <el-option v-for="item in outboundType" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
                     item.code
@@ -269,17 +132,8 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="审核状态" prop="auditStatus">
-              <el-select
-                v-model="orderHeader.auditStatus"
-                disabled
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="item in auditStatus"
-                  :key="item.code"
-                  :label="item.name"
-                  :value="item.code"
-                >
+              <el-select v-model="orderHeader.auditStatus" disabled placeholder="请选择">
+                <el-option v-for="item in auditStatus" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
                     item.code
@@ -291,94 +145,56 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="审核时间" prop="auditTime">
-              <el-date-picker
-                v-model="orderHeader.auditTime"
-                type="datetime"
-                value-format="yyyy-MM-dd HH:mm:ss"
-                placeholder="选择日期时间"
-                disabled
-              >
+              <el-date-picker v-model="orderHeader.auditTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
+                placeholder="选择日期时间" disabled>
               </el-date-picker>
               <!--<el-input v-model="orderHeader.auditTime" auto-complete="off"></el-input>-->
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="审核人" prop="auditOp">
-              <el-input
-                v-model="orderHeader.auditOp"
-                disabled
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="orderHeader.auditOp" disabled auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="备注" prop="remark">
-              <el-input
-                v-model="orderHeader.remark"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="orderHeader.remark" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="总价" prop="totalPrice">
-              <el-input
-                v-model="totalPrice"
-                :disabled="true"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="totalPrice" :disabled="true" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="成本" prop="totalCost">
-              <el-input
-                v-model="totalCost"
-                :disabled="true"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="totalCost" :disabled="true" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="6">
             <el-form-item label="物流公司" prop="logisticsNo">
-              <popwin-button
-                popKey="POP_CUSTOMER"
-                :staticCondition="{ customerType: '物流公司' }"
-                :showName="true"
-                :displayName="orderHeader.logisticsCompany"
-                v-model="orderHeader.logisticsNo"
-              ></popwin-button>
+              <popwin-button popKey="POP_CUSTOMER" :staticCondition="{ customerType: '物流公司' }" :showName="true"
+                :displayName="orderHeader.logisticsCompany" v-model="orderHeader.logisticsNo"></popwin-button>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="物流单号" prop="trackingNo">
-              <el-input
-                v-model="orderHeader.trackingNo"
-                :disabled="logisticsInfoStatus"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="orderHeader.trackingNo" :disabled="logisticsInfoStatus" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="运费" prop="freight">
-              <el-input
-                v-model="orderHeader.freight"
-                :disabled="logisticsInfoStatus"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="orderHeader.freight" :disabled="logisticsInfoStatus" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="运费类别" prop="freightType">
               <el-select v-model="orderHeader.freightType" placeholder="请选择">
-                <el-option
-                  v-for="item in freightType"
-                  :key="item.code"
-                  :label="item.name"
-                  :value="item.code"
-                >
+                <el-option v-for="item in freightType" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
                     item.code
@@ -392,17 +208,8 @@
         <el-row :gutter="0">
           <el-col :span="6">
             <el-form-item label="销售核算" prop="isCalculated">
-              <el-select
-                :disabled="true"
-                v-model="orderHeader.isCalculated"
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="item in YESORNO"
-                  :key="item.code"
-                  :label="item.name"
-                  :value="item.code"
-                >
+              <el-select :disabled="true" v-model="orderHeader.isCalculated" placeholder="请选择">
+                <el-option v-for="item in YESORNO" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
                     item.code
@@ -412,33 +219,44 @@
               <!--<el-input v-model="orderHeader.inboundType" auto-complete="off"></el-input>-->
             </el-form-item>
           </el-col>
+          <el-col :span="6">
+            <el-form-item label="是否收到现金" prop="isRecievedCash">
+              <el-select v-model="orderHeader.isRecievedCash" placeholder="请选择">
+                <el-option v-for="item in isRecievedCash" :key="item.code" :label="item.name" :value="item.code">
+                  <span style="float: left">{{ item.name }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">{{
+                    item.code
+                  }}</span>
+                </el-option>
+              </el-select>
+              <!--<el-input v-model="orderHeader.inboundType" auto-complete="off"></el-input>-->
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="现金收款数" prop="cash">
+              <el-input v-model="orderHeader.cash" auto-complete="off"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="客户类型" prop="cash">
+              <el-tag :type="getPaymentCategoryType(orderHeader.paymentCategory)">{{formatPaymentCategory(orderHeader.paymentCategory)}}</el-tag>
+            </el-form-item>
+          </el-col>
         </el-row>
       </el-card>
       <el-card class="box-card">
         <div slot="header" class="clearfix">
           <span style="line-height: 15px">出库单明细</span>
         </div>
-        <el-table
-          :data="detailGrid.orderDetail"
-          :row-class-name="tableRowClassName"
-          show-summary
-          :summary-method="getSummaries"
-          border
-          v-loading="detailGrid.listLoading"
-          @selection-change="selsChange"
-          style="width: 100%"
-        >
+        <el-table :data="detailGrid.orderDetail" :row-class-name="tableRowClassName" show-summary
+          :summary-method="getSummaries" border v-loading="detailGrid.listLoading" @selection-change="selsChange"
+          style="width: 100%">
           <el-table-column type="selection" width="55"> </el-table-column>
           <!-- <el-table-column prop="id" label="id" width="50"> 
           </el-table-column>-->
           <el-table-column prop="lineNo" label="行号" width="80">
           </el-table-column>
-          <el-table-column
-            prop="status"
-            label="状态"
-            width="80"
-            :formatter="formatStatus"
-          >
+          <el-table-column prop="status" label="状态" width="80" :formatter="formatStatus">
           </el-table-column>
           <el-table-column prop="skuCode" label="产品编码" width="80">
           </el-table-column>
@@ -450,19 +268,12 @@
           </el-table-column>
           <!-- <el-table-column prop="outboundNum" label="订货数" width="80">
           </el-table-column> -->
-          <el-table-column prop="outboundNum"  label="订货数" width="80">
+          <el-table-column prop="outboundNum" label="订货数" width="80">
             <template slot-scope="scope">
               <div slot="reference" class="name-wrapper">
-                <el-input
-                  :ref="scope.row.id"
-                  :disabled="rowEditStatus"
-                  :precision="1"
-                  @keyup.enter.native="
-                    rowSaveDetail(scope.row, scope.$index, $event)
-                  "
-                  v-model="scope.row.outboundNum"
-                  auto-complete="off"
-                ></el-input>
+                <el-input :ref="scope.row.id" :disabled="rowEditStatus" :precision="1" @keyup.enter.native="
+                  rowSaveDetail(scope.row, scope.$index, $event)
+                  " v-model="scope.row.outboundNum" auto-complete="off"></el-input>
               </div>
             </template>
           </el-table-column>
@@ -475,6 +286,10 @@
           <el-table-column prop="outboundAllocNum" label="分配数" width="80">
           </el-table-column>
           <el-table-column prop="outboundPickNum" label="拣货数" width="80">
+          </el-table-column>
+          <el-table-column prop="packageCode" label="包装" width="80">
+          </el-table-column>
+          <el-table-column prop="uomDesc" label="单位" width="80">
           </el-table-column>
           <el-table-column prop="cost" label="成本" width="80">
           </el-table-column>
@@ -493,61 +308,23 @@
           <el-table-column prop="remark" label="备注"> </el-table-column>
           <el-table-column label="操作" fixed="right" min-width="180">
             <template slot-scope="scope">
-              <el-button
-                size="small"
-                @click="handleDetailEdit(scope.$index, scope.row)"
-                >编辑</el-button
-              >
-              <el-button
-                type="danger"
-                :disabled="btnDetailGridDelStatus"
-                size="small"
-                @click="handleDetailDel(scope.$index, scope.row)"
-                >删除</el-button
-              >
+              <el-button size="small" @click="handleDetailEdit(scope.$index, scope.row)">编辑</el-button>
+              <el-button type="danger" :disabled="btnDetailGridDelStatus" size="small"
+                @click="handleDetailDel(scope.$index, scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
         <!--工具条-->
         <el-col :span="24" class="toolbar">
-          <el-button
-            type="primary"
-            :disabled="btnDetailGridAdd"
-            @click="addDetailHandler"
-            >新增</el-button
-          >
-          <el-button
-            type="danger"
-            :disabled="btnDetailGridAdd"
-            @click="handelBatchDel"
-            >批量删除</el-button
-          >
-          <el-button
-            type="danger"
-            :disabled="btnDetailGridAdd"
-            @click="handelBatchDelAndCreateNew"
-            >批量删除并生成新的出库单</el-button
-          >
-          <el-button
-            type="primary"
-            :disabled="btnDetailGridAdd"
-            @click="openBatchAddPopWin"
-            >快速新增</el-button
-          >
-          <el-button
-            type="primary"
-            :disabled="btnDetailGridAdd"
-            @click="openExcelImportPopWin"
-            >EXCEL导入</el-button
-          >
+          <el-button type="primary" :disabled="btnDetailGridAdd" @click="addDetailHandler">新增</el-button>
+          <el-button type="danger" :disabled="btnDetailGridAdd" @click="handelBatchDel">批量删除</el-button>
+          <el-button type="danger" :disabled="btnDetailGridAdd"
+            @click="handelBatchDelAndCreateNew">批量删除并生成新的出库单</el-button>
+          <el-button type="primary" :disabled="btnDetailGridAdd" @click="openBatchAddPopWin">快速新增</el-button>
+          <el-button type="primary" :disabled="btnDetailGridAdd" @click="openExcelImportPopWin">EXCEL导入</el-button>
           <!--<el-button type="danger"  @click="batchRemove" :disabled="this.detailGrid.sels.length===0">批量删除</el-button>-->
-          <el-pagination
-            layout="prev, pager, next"
-            @current-change="handleCurrentDetailChange"
-            :page-size="detailGrid.size"
-            :total="detailGrid.total"
-            style="float: right"
-          >
+          <el-pagination layout="prev, pager, next" @current-change="handleCurrentDetailChange"
+            :page-size="detailGrid.size" :total="detailGrid.total" style="float: right">
           </el-pagination>
         </el-col>
       </el-card>
@@ -556,28 +333,20 @@
         <div slot="header" class="clearfix">
           <span style="line-height: 15px">出库单分配明细</span>
         </div>
-        <el-table
-          :data="detailAllocGrid.orderDetailAlloc"
-          border
-          highlight-current-row
-          v-loading="detailAllocGrid.listLoading"
-          @selection-change="allocSelsChange"
-          stripe
-          style="width: 100%"
-        >
+        <el-table :data="detailAllocGrid.orderDetailAlloc" border highlight-current-row
+          v-loading="detailAllocGrid.listLoading" @selection-change="allocSelsChange" stripe style="width: 100%">
           <el-table-column type="selection" width="55"> </el-table-column>
           <!-- <el-table-column prop="id" label="id" width="50" sortable>
           </el-table-column> -->
           <el-table-column prop="lineNo" label="行号" width="80">
           </el-table-column>
+          <el-table-column prop="packageNo" label="箱号 " width="80">
+          </el-table-column>
+          <el-table-column prop="packageNum" label="件数 " width="80">
+          </el-table-column>
           <el-table-column prop="allocId" label="分配ID" width="100">
           </el-table-column>
-          <el-table-column
-            prop="status"
-            label="状态"
-            width="80"
-            :formatter="formatStatus"
-          >
+          <el-table-column prop="status" label="状态" width="80" :formatter="formatStatus">
           </el-table-column>
           <el-table-column prop="skuCode" label="产品编码" width="80">
           </el-table-column>
@@ -594,12 +363,8 @@
           <el-table-column prop="cost" label="成本" width="200">
             <template slot-scope="scope">
               <div slot="reference" class="name-wrapper">
-                <el-input-number
-                  :disabled="allocCostEditStatus"
-                  @keyup.enter.native="rowSaveDetailAlloc(scope.row)"
-                  v-model="scope.row.cost"
-                  auto-complete="off"
-                ></el-input-number>
+                <el-input-number :disabled="allocCostEditStatus" @keyup.enter.native="rowSaveDetailAlloc(scope.row)"
+                  v-model="scope.row.cost" auto-complete="off"></el-input-number>
               </div>
             </template>
           </el-table-column>
@@ -607,21 +372,11 @@
           </el-table-column>
           <el-table-column prop="toLocCode" label="发货库位" width="80">
           </el-table-column>
-          <el-table-column
-            prop="pickTime"
-            label="拣货时间"
-            width="155"
-            :formatter="formatTime"
-          >
+          <el-table-column prop="pickTime" label="拣货时间" width="155" :formatter="formatTime">
           </el-table-column>
           <el-table-column prop="pickOp" label="拣货人" width="80">
           </el-table-column>
-          <el-table-column
-            prop="shipTime"
-            label="发货时间"
-            width="155"
-            :formatter="formatTime"
-          >
+          <el-table-column prop="shipTime" label="发货时间" width="155" :formatter="formatTime">
           </el-table-column>
           <el-table-column prop="shipOp" label="发货人" width="80">
           </el-table-column>
@@ -634,11 +389,7 @@
           <el-table-column prop="remark" label="备注"> </el-table-column>
           <el-table-column label="操作" fixed="right" min-width="80">
             <template slot-scope="scope">
-              <el-button
-                size="small"
-                @click="handleAllocDetailEdit(scope.$index, scope.row)"
-                >查看</el-button
-              >
+              <el-button size="small" @click="handleAllocDetailEdit(scope.$index, scope.row)">查看</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -646,97 +397,53 @@
         <el-col :span="24" class="toolbar">
           <!--<el-button type="primary" @click="recDetailConfirm">收货确认</el-button>-->
           <!--<el-button type="danger" @click="recDetailCancel" :disabled="this.detailGrid.sels.length===0">取消收货</el-button>-->
-          <el-pagination
-            layout="prev, pager, next"
-            @current-change="handleCurrentAllocDetailChange"
-            :page-size="detailAllocGrid.size"
-            :total="detailAllocGrid.total"
-            style="float: right"
-          >
+          <el-pagination layout="prev, pager, next" @current-change="handleCurrentAllocDetailChange"
+            :page-size="detailAllocGrid.size" :total="detailAllocGrid.total" style="float: right">
           </el-pagination>
         </el-col>
       </el-card>
     </el-form>
 
     <!--编辑界面-->
-    <el-dialog
-      title="编辑"
-      :visible.sync="pageControl.editFormVisible"
-      :close-on-click-modal="false"
-    >
-      <el-form
-        :model="detailGrid.editForm"
-        label-width="80px"
-        :rules="detailGrid.editFormRules"
-        ref="editForm"
-      >
+    <el-dialog title="编辑" :visible.sync="pageControl.editFormVisible" :close-on-click-modal="false">
+      <el-form :model="detailGrid.editForm" label-width="80px" :rules="detailGrid.editFormRules" ref="editForm">
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="客户" prop="buyerCode">
-              <popwin-button
-                popKey="POP_CUSTOMER"
-                :disabled="true"
-                :showName="true"
-                :displayName="detailGrid.editForm.buyerName"
-                v-model="detailGrid.editForm.buyerCode"
-              ></popwin-button>
+              <popwin-button popKey="POP_CUSTOMER" :disabled="true" :showName="true"
+                :displayName="detailGrid.editForm.buyerName" v-model="detailGrid.editForm.buyerCode"></popwin-button>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="产品" prop="skuCode">
-              <popwin-button
-                popKey="POP_SKU"
-                :disabled="editFormSkuCodeStatus"
-                @changeValue="editFormSkuChangeValue"
-                v-model="detailGrid.editForm.skuCode"
-              ></popwin-button>
+              <popwin-button popKey="POP_SKU" :disabled="editFormSkuCodeStatus" @changeValue="editFormSkuChangeValue"
+                v-model="detailGrid.editForm.skuCode"></popwin-button>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="产品名称" prop="fittingSkuName">
-              <el-input
-                v-model="detailGrid.editForm.skuName"
-                :disabled="true"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="detailGrid.editForm.skuName" :disabled="true" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="车型" prop="modelCode">
-              <el-input
-                v-model="detailGrid.editForm.modelCode"
-                :disabled="true"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="detailGrid.editForm.modelCode" :disabled="true" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="计划发货库位" prop="planShipLoc">
-              <popwin-button
-                popKey="POP_LOC"
-                :staticCondition="{ useType: 'SS' }"
-                :selectValue="detailGrid.editForm.planShipLoc"
-                v-model="detailGrid.editForm.planShipLoc"
-              ></popwin-button>
+              <popwin-button popKey="POP_LOC" :staticCondition="{ useType: 'SS' }"
+                :selectValue="detailGrid.editForm.planShipLoc" v-model="detailGrid.editForm.planShipLoc"></popwin-button>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="状态" prop="status">
-              <el-select
-                v-model="detailGrid.editForm.status"
-                :disabled="true"
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="item in outboundStatus"
-                  :key="item.code"
-                  :label="item.name"
-                  :value="item.code"
-                >
+              <el-select v-model="detailGrid.editForm.status" :disabled="true" placeholder="请选择">
+                <el-option v-for="item in outboundStatus" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
                     item.code
@@ -749,22 +456,14 @@
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="订货数" prop="outboundNum">
-              <el-input-number
-                @change="outboundNumChange"
-                v-model="detailGrid.editForm.outboundNum"
-                :precision="1"
-                :disabled="editFormOutboundNumStatus"
-                auto-complete="off"
-              ></el-input-number>
+              <el-input-number @change="outboundNumChange" v-model="detailGrid.editForm.outboundNum" :precision="1"
+                :disabled="editFormOutboundNumStatus" auto-complete="off"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="源单数" prop="outboundOriginNum">
-              <el-input-number
-                v-model="detailGrid.editForm.outboundOriginNum"
-                :disabled="editFormOutboundOriginNumStatus"
-                auto-complete="off"
-              ></el-input-number>
+              <el-input-number v-model="detailGrid.editForm.outboundOriginNum" :disabled="editFormOutboundOriginNumStatus"
+                auto-complete="off"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -772,160 +471,96 @@
           <el-col :span="12">
             <el-form-item label="发货价格" prop="outboundPrice">
               <!--<el-autocomplete popper-class="my-autocomplete" custom-item="my-priceitem-zh"  :fetch-suggestions="queryHistoryPrice" @select="handlePriceSelect" v-model.number="detailGrid.editForm.outboundPrice" auto-complete="off"></el-autocomplete>-->
-              <el-input-number
-                v-model.number="detailGrid.editForm.outboundPrice"
-                :disabled="editFormOutboundPriceStatus"
-                auto-complete="off"
-                @keyup.enter.native="editSubmit"
-              ></el-input-number>
+              <el-input-number v-model.number="detailGrid.editForm.outboundPrice" :disabled="editFormOutboundPriceStatus"
+                auto-complete="off" @keyup.enter.native="editSubmit"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="分配数" prop="outboundAllocNum">
-              <el-input-number
-                v-model="detailGrid.editForm.outboundAllocNum"
-                :disabled="true"
-                auto-complete="off"
-              ></el-input-number>
+              <el-input-number v-model="detailGrid.editForm.outboundAllocNum" :disabled="true"
+                auto-complete="off"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="拣货数" prop="outboundPickNum">
-              <el-input-number
-                v-model="detailGrid.editForm.outboundPickNum"
-                :disabled="true"
-                auto-complete="off"
-              ></el-input-number>
+              <el-input-number v-model="detailGrid.editForm.outboundPickNum" :disabled="true"
+                auto-complete="off"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="发货数" prop="outboundShipNum">
-              <el-input-number
-                v-model="detailGrid.editForm.outboundShipNum"
-                :disabled="true"
-                auto-complete="off"
-              ></el-input-number>
+              <el-input-number v-model="detailGrid.editForm.outboundShipNum" :disabled="true"
+                auto-complete="off"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="24">
             <el-form-item label="备注">
-              <el-input
-                v-model="detailGrid.editForm.remark"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="detailGrid.editForm.remark" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
 
       <div slot="footer" class="dialog-footer">
-        <el-button @click.native="pageControl.editFormVisible = false"
-          >取消</el-button
-        >
-        <el-button
-          type="primary"
-          :disabled="btnEditSubmitStatus"
-          @click.native="editSubmit"
-          :loading="pageControl.editLoading"
-          >提交</el-button
-        >
-        <el-button
-          type="primary"
-          :disabled="btnAllocSubmitStatus"
-          @click.native="allocSubmit"
-          :loading="pageControl.allocSubmitLoading"
-          >自动分配</el-button
-        >
-        <el-button
+        <el-button @click.native="pageControl.editFormVisible = false">取消</el-button>
+        <el-button type="primary" :disabled="btnEditSubmitStatus" @click.native="editSubmit"
+          :loading="pageControl.editLoading">提交</el-button>
+        <el-button type="primary" :disabled="btnAllocSubmitStatus" @click.native="allocSubmit"
+          :loading="pageControl.allocSubmitLoading">自动分配</el-button>
+        <el-button type="primary" :disabled="btnAllocSubmitStatus" @click.native="virtualAllocSubmit"
+          :loading="pageControl.allocSubmitLoading">虚拟分配</el-button>
+        <!-- <el-button
           type="primary"
           :disabled="btnPreAssembleAllocSubmitStatus"
           @click.native="preAssembleAllocSubmit"
           :loading="pageControl.preAssembleAllocSubmitLoading"
           >组装预分配</el-button
-        >
-        <el-button
-          type="danger"
-          :disabled="btnCancelAllocSubmitStatus"
-          @click.native="cancelAllocSubmit"
-          :loading="pageControl.cancelAllocSubmitLoading"
-          >取消分配</el-button
-        >
+        > -->
+        <el-button type="danger" :disabled="btnCancelAllocSubmitStatus" @click.native="cancelAllocSubmit"
+          :loading="pageControl.cancelAllocSubmitLoading">取消分配</el-button>
       </div>
     </el-dialog>
 
     <!--编辑界面-->
-    <el-dialog
-      title="编辑"
-      :visible.sync="pageControl.allocEditFormVisible"
-      :close-on-click-modal="false"
-    >
-      <el-form
-        :model="detailAllocGrid.editForm"
-        label-width="80px"
-        :rules="detailAllocGrid.editFormRules"
-        ref="allocEditForm"
-      >
+    <el-dialog title="编辑" :visible.sync="pageControl.allocEditFormVisible" :close-on-click-modal="false">
+      <el-form :model="detailAllocGrid.editForm" label-width="80px" :rules="detailAllocGrid.editFormRules"
+        ref="allocEditForm">
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="客户" prop="supplierCode">
-              <popwin-button
-                popKey="POP_CUSTOMER"
-                :disabled="true"
-                :showName="true"
+              <popwin-button popKey="POP_CUSTOMER" :disabled="true" :showName="true"
                 :displayName="detailAllocGrid.editForm.buyerName"
-                v-model="detailAllocGrid.editForm.buyerCode"
-              ></popwin-button>
+                v-model="detailAllocGrid.editForm.buyerCode"></popwin-button>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="产品" prop="skuCode">
-              <popwin-button
-                popKey="POP_SKU"
-                :disabled="true"
-                @changeValue="allocEditFormSkuChangeValue"
-                v-model="detailAllocGrid.editForm.skuCode"
-              ></popwin-button>
+              <popwin-button popKey="POP_SKU" :disabled="true" @changeValue="allocEditFormSkuChangeValue"
+                v-model="detailAllocGrid.editForm.skuCode"></popwin-button>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="产品名称" prop="fittingSkuName">
-              <el-input
-                v-model="detailAllocGrid.editForm.skuName"
-                :disabled="true"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="detailAllocGrid.editForm.skuName" :disabled="true" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="车型" prop="modelCode">
-              <el-input
-                v-model="detailAllocGrid.editForm.modelCode"
-                :disabled="true"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="detailAllocGrid.editForm.modelCode" :disabled="true" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="状态" prop="status">
-              <el-select
-                v-model="detailAllocGrid.editForm.status"
-                :disabled="true"
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="item in outboundStatus"
-                  :key="item.code"
-                  :label="item.name"
-                  :value="item.code"
-                >
+              <el-select v-model="detailAllocGrid.editForm.status" :disabled="true" placeholder="请选择">
+                <el-option v-for="item in outboundStatus" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
                     item.code
@@ -936,53 +571,36 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="发货价格" prop="outboundPrice">
-              <el-input-number
-                v-model="detailAllocGrid.editForm.outboundPrice"
-                disabled
-                auto-complete="off"
-              ></el-input-number>
+              <el-input-number v-model="detailAllocGrid.editForm.outboundPrice" disabled
+                auto-complete="off"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="分配数" prop="outboundNum">
-              <el-input
-                v-model="detailAllocGrid.editForm.outboundNum"
-                disabled
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="detailAllocGrid.editForm.outboundNum" disabled auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="拣货数" prop="pickNum">
-              <el-input-number
-                v-model="detailAllocGrid.editForm.pickNum"
-                auto-complete="off"
-              ></el-input-number>
+              <el-input-number v-model="detailAllocGrid.editForm.pickNum" auto-complete="off"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="分配库位" prop="allocLocCode">
-              <popwin-button
-                popKey="POP_LOC"
-                :selectValue="detailAllocGrid.editForm.allocLocCode"
-                :disabled="true"
-                v-model="detailAllocGrid.editForm.allocLocCode"
-              ></popwin-button>
+              <popwin-button popKey="POP_LOC" :selectValue="detailAllocGrid.editForm.allocLocCode" :disabled="true"
+                v-model="detailAllocGrid.editForm.allocLocCode"></popwin-button>
               <!--<el-input v-model="detailGrid.editForm.planLoc" auto-complete="off"></el-input>-->
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="发货库位" prop="toLocCode">
-              <popwin-button
-                popKey="POP_LOC"
-                :staticCondition="{ useType: 'SS' }"
+              <popwin-button popKey="POP_LOC" :staticCondition="{ useType: 'SS' }"
                 :selectValue="detailAllocGrid.editForm.toLocCode"
-                v-model="detailAllocGrid.editForm.toLocCode"
-              ></popwin-button>
+                v-model="detailAllocGrid.editForm.toLocCode"></popwin-button>
               <!--<el-input v-model="detailGrid.editForm.planLoc" auto-complete="off"></el-input>-->
             </el-form-item>
           </el-col>
@@ -990,61 +608,29 @@
         <el-row :gutter="0">
           <el-col :span="24">
             <el-form-item label="备注">
-              <el-input
-                v-model="detailAllocGrid.editForm.remark"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="detailAllocGrid.editForm.remark" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click.native="pageControl.allocEditFormVisible = false"
-          >取消</el-button
-        >
-        <el-button
-          type="primary"
-          @click.native="pickAllocSubmit"
-          :disabled="btnPickAllocStatus"
-          :loading="pageControl.pickAllocLoading"
-          >拣货</el-button
-        >
-        <el-button
-          type="danger"
-          @click.native="cancelPickAllocSubmit"
-          :disabled="btnCancelPickAllocStatus"
-          :loading="pageControl.cancelPickAllocLoading"
-          >取消拣货</el-button
-        >
-        <el-button
-          type="primary"
-          @click.native="shipAllocSubmit"
-          :disabled="btnShipAllocStatus"
-          :loading="pageControl.shipAllocLoading"
-          >发货</el-button
-        >
-        <el-button
-          type="danger"
-          @click.native="cancelShipAllocSubmit"
-          :disabled="btnCancelShipAllocStatus"
-          :loading="pageControl.cancelShipAllocLoading"
-          >取消发货</el-button
-        >
+        <el-button @click.native="pageControl.allocEditFormVisible = false">取消</el-button>
+        <el-button type="primary" @click.native="pickAllocSubmit" :disabled="btnPickAllocStatus"
+          :loading="pageControl.pickAllocLoading">拣货</el-button>
+        <el-button type="danger" @click.native="cancelPickAllocSubmit" :disabled="btnCancelPickAllocStatus"
+          :loading="pageControl.cancelPickAllocLoading">取消拣货</el-button>
+        <el-button type="primary" @click.native="shipAllocSubmit" :disabled="btnShipAllocStatus"
+          :loading="pageControl.shipAllocLoading">发货</el-button>
+        <el-button type="danger" @click.native="cancelShipAllocSubmit" :disabled="btnCancelShipAllocStatus"
+          :loading="pageControl.cancelShipAllocLoading">取消发货</el-button>
       </div>
     </el-dialog>
 
-    <el-dialog
-      title="快速新增"
-      border
-      :visible.sync="pageControl.batchAddPopWinVisiable"
-    >
+    <el-dialog title="快速新增" style="width: 100%;" border :visible.sync="pageControl.batchAddPopWinVisiable" :close-on-click-modal="false">
       <el-form :inline="true" :model="batchAddPopWin.filters">
         <el-form-item label="配件类型" prop="fittingTypeCode">
-          <popwin-button
-            popKey="POP_FITTINGTYPE"
-            :selectValue="batchAddPopWin.filters.fittingTypeCode"
-            v-model="batchAddPopWin.filters.fittingTypeCode"
-          ></popwin-button>
+          <popwin-button popKey="POP_FITTINGTYPE" :selectValue="batchAddPopWin.filters.fittingTypeCode"
+            v-model="batchAddPopWin.filters.fittingTypeCode"></popwin-button>
         </el-form-item>
         <el-form-item label="编码" prop="fittingSkuCode">
           <el-input v-model="batchAddPopWin.filters.fittingSkuCode"></el-input>
@@ -1056,313 +642,166 @@
           <el-input v-model="batchAddPopWin.filters.modelCode"></el-input>
         </el-form-item>
         <el-form-item label="客户" prop="buyerCode">
-          <popwin-button
-            popKey="POP_CUSTOMER"
-            :selectValue="batchAddPopWin.filters.buyerCode"
-            v-model="batchAddPopWin.filters.buyerCode"
-          ></popwin-button>
+          <popwin-button popKey="POP_CUSTOMER" :selectValue="batchAddPopWin.filters.buyerCode"
+            v-model="batchAddPopWin.filters.buyerCode"></popwin-button>
           <!--<el-input v-model="orderHeader.supplierCode" auto-complete="off"></el-input>-->
         </el-form-item>
         <el-form-item label="当前数量" prop="currentNum">
-          <el-input-number
-          :precision="1"
-            v-model="batchAddPopWin.currentNum"
-            auto-complete="off"
-          ></el-input-number>
+          <el-input-number :precision="1" v-model="batchAddPopWin.currentNum" auto-complete="off"></el-input-number>
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" v-on:click="batchAddPopWinQuery"
-            >查询</el-button
-          >
+          <el-button type="primary" v-on:click="batchAddPopWinQuery">查询</el-button>
         </el-form-item>
       </el-form>
-      <el-tabs v-model="batchAddPopWin.batchAddPopWinActiveName">
+      <el-tabs @tab-click="batchAddTabClick" v-model="batchAddPopWin.batchAddPopWinActiveName">
         <el-tab-pane label="销售历史" name="sale">
-          <el-table
-            max-height="500"
-            border
-            :data="batchAddPopWin.saleList"
-            @row-dblclick="addSale"
-            @row-click="queryInvAvaiableForSale"
-            v-loading="batchAddPopWin.saleListLoading"
-            @selection-change="batchAddSaleSelsChange"
-          >
+          <el-table max-height="500" border :data="batchAddPopWin.saleList" @row-dblclick="addSale"
+            @row-click="queryInvAvaiableForSale" v-loading="batchAddPopWin.saleListLoading"
+            @selection-change="batchAddSaleSelsChange">
             <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column
-              property="skuCode"
-              label="商品编码"
-              width="80"
-            ></el-table-column>
-            <el-table-column
-              property="fittingSkuName"
-              label="商品名称"
-              width="200"
-            ></el-table-column>
-            <el-table-column
-              property="customerName"
-              label="客户名称"
-              width="200"
-            ></el-table-column>
-            <el-table-column
-              property="modelCode"
-              label="车型"
-            ></el-table-column>
-            <el-table-column
-              property="outboundPrice"
-              label="发货价格"
-            ></el-table-column>
-            <el-table-column
-              property="packageCode"
-              label="包装"
-            ></el-table-column>
-            <el-table-column
-              property="modifyTime"
-              label="发货时间"
-              :formatter="formatTime"
-            ></el-table-column>
+            <el-table-column property="skuCode" label="商品编码" width="80"></el-table-column>
+            <el-table-column property="fittingSkuName" label="商品名称" width="200"></el-table-column>
+            <el-table-column property="customerName" label="客户名称" width="200"></el-table-column>
+            <el-table-column property="modelCode" label="车型"></el-table-column>
+            <el-table-column property="outboundPrice" label="发货价格"></el-table-column>
+            <el-table-column property="packageCode" label="包装"></el-table-column>
+            <el-table-column property="modifyTime" label="发货时间" :formatter="formatTime"></el-table-column>
           </el-table>
           <el-col :span="24" class="toolbar">
             <el-button type="primary" v-on:click="batchAdd">批量新增</el-button>
-            <el-button
-              type="success"
-              :loading="pageControl.currentInvAvaibleNumSumLoading"
-              plain
-              >当前库存可用数{{ currentInvAvaibleNumSum }}</el-button
-            >
-            <el-pagination
-              layout="prev, pager, next"
-              @current-change="handleBatchSaleAddCurrentChange"
-              :page-size="batchAddPopWin.saleSize"
-              :total="batchAddPopWin.saleTotal"
-              style="float: right"
-            >
+            <el-button type="success" :loading="pageControl.currentInvAvaibleNumSumLoading" plain>当前库存可用数{{
+              currentInvAvaibleNumSum }}</el-button>
+            <el-pagination layout="prev, pager, next" @current-change="handleBatchSaleAddCurrentChange"
+              :page-size="batchAddPopWin.saleSize" :total="batchAddPopWin.saleTotal" style="float: right">
             </el-pagination>
           </el-col>
         </el-tab-pane>
         <el-tab-pane label="产品信息" name="sku">
-          <el-table
-            max-height="500"
-            border
-            :data="batchAddPopWin.skuList"
-            v-loading="batchAddPopWin.listLoading"
-            @row-dblclick="addSku"
-            @row-click="queryInvAvaiableForSku"
-            @selection-change="batchAddSelsChange"
-          >
+          <el-table max-height="500" border :data="batchAddPopWin.skuList" v-loading="batchAddPopWin.listLoading"
+            @row-dblclick="addSku" @row-click="queryInvAvaiableForSku" @selection-change="batchAddSelsChange">
             <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column
-              property="fittingSkuCode"
-              label="商品编码"
-              width="80"
-            ></el-table-column>
-            <el-table-column
-              property="fittingSkuName"
-              label="商品名称"
-              width="200"
-            ></el-table-column>
-            <el-table-column
-              property="modelCode"
-              label="车型"
-              width="180"
-            ></el-table-column>
-            <el-table-column
-              property="price"
-              label="参考价格"
-              width="80"
-            ></el-table-column>
-            <el-table-column
-              property="packageCode"
-              label="包装"
-            ></el-table-column>
+            <el-table-column property="fittingSkuCode" label="商品编码" width="80"></el-table-column>
+            <el-table-column property="fittingSkuName" label="商品名称" width="200"></el-table-column>
+            <el-table-column property="modelCode" label="车型" width="180"></el-table-column>
+            <el-table-column property="price" label="参考价格" width="80"></el-table-column>
+            <el-table-column property="packageCode" label="包装"></el-table-column>
           </el-table>
           <el-col :span="24" class="toolbar">
             <el-button type="primary" v-on:click="batchAdd">批量新增</el-button>
-            <el-button
-              type="success"
-              :loading="pageControl.currentInvAvaibleNumSumLoading"
-              plain
-              >当前库存可用数{{ currentInvAvaibleNumSum }}</el-button
-            >
-            <el-pagination
-              layout="prev, pager, next"
-              @current-change="handleBatchAddCurrentChange"
-              :page-size="batchAddPopWin.size"
-              :total="batchAddPopWin.total"
-              style="float: right"
-            >
+            <el-button type="success" :loading="pageControl.currentInvAvaibleNumSumLoading" plain>当前库存可用数{{
+              currentInvAvaibleNumSum }}</el-button>
+            <el-pagination layout="prev, pager, next" @current-change="handleBatchAddCurrentChange"
+              :page-size="batchAddPopWin.size" :total="batchAddPopWin.total" style="float: right">
             </el-pagination>
           </el-col>
         </el-tab-pane>
       </el-tabs>
     </el-dialog>
 
-    <el-dialog
-      title="excel导入出库单明细"
-      :visible.sync="pageControl.excelImportPopWinVisible"
-      :close-on-click-modal="false"
-    >
-      <el-form
-        :model="detailGrid.excelImportPopWinForm"
-        label-width="80px"
-        ref="excelImportPopWinForm"
-      >
+    <el-dialog title="excel导入出库单明细" :visible.sync="pageControl.excelImportPopWinVisible" :close-on-click-modal="false">
+      <el-form :model="detailGrid.excelImportPopWinForm" label-width="80px" ref="excelImportPopWinForm">
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="订单号" prop="orderNo">
-              <el-input
-                v-model="detailGrid.excelImportPopWinForm.orderNo"
-                disabled
-              ></el-input>
+              <el-input v-model="detailGrid.excelImportPopWinForm.orderNo" disabled></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="发货库位" prop="loc">
-              <popwin-button
-                popKey="POP_LOC"
-                :staticCondition="{ useType: 'SS' }"
+              <popwin-button popKey="POP_LOC" :staticCondition="{ useType: 'SS' }"
                 :selectValue="detailGrid.excelImportPopWinForm.loc"
-                v-model="detailGrid.excelImportPopWinForm.loc"
-              ></popwin-button>
+                v-model="detailGrid.excelImportPopWinForm.loc"></popwin-button>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="编码列名" prop="skuCodeColumnName">
-              <el-input
-                v-model="detailGrid.excelImportPopWinForm.skuCodeColumnName"
-              ></el-input>
+              <el-input v-model="detailGrid.excelImportPopWinForm.skuCodeColumnName"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="价格列名" prop="priceColumnName">
-              <el-input
-                v-model="detailGrid.excelImportPopWinForm.priceColumnName"
-              ></el-input>
+              <el-input v-model="detailGrid.excelImportPopWinForm.priceColumnName"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="订货数列名" prop="numColumnName">
-              <el-input
-                v-model="detailGrid.excelImportPopWinForm.numColumnName"
-              ></el-input>
+              <el-input v-model="detailGrid.excelImportPopWinForm.numColumnName"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12"> </el-col>
         </el-row>
         <el-row :gutter="0">
-          <el-switch
-            v-model="detailGrid.excelImportPopWinForm.isQueryRecentPrice"
-            active-text="自动查询最近售价"
-          >
+          <el-switch v-model="detailGrid.excelImportPopWinForm.isQueryRecentPrice" active-text="自动查询最近售价">
           </el-switch>
-          <el-switch
-            v-model="detailGrid.excelImportPopWinForm.isByBuyerCode"
-            active-text="是否同货主售价"
-          >
+          <el-switch v-model="detailGrid.excelImportPopWinForm.isByBuyerCode" active-text="是否同货主售价">
           </el-switch>
         </el-row>
       </el-form>
-      <el-upload
-        ref="upload"
-        class="upload-demo"
-        drag
-        :data="detailGrid.excelImportPopWinForm"
-        :on-success="uploadConnectSuccess"
-        :on-error="uploadConnectFail"
-        :before-upload="beforeExcelUplaod"
-        action="/xibin/outbound/importOutboundDetailByExcel "
-        :file-list="detailGrid.excelFileList"
-        multiple
-        list-type="text"
-        :auto-upload="true"
-      >
+      <el-upload ref="upload" class="upload-demo" drag :data="detailGrid.excelImportPopWinForm"
+        :on-success="uploadConnectSuccess" :on-error="uploadConnectFail" :before-upload="beforeExcelUplaod"
+        action="/xibin/outbound/importOutboundDetailByExcel " :file-list="detailGrid.excelFileList" multiple
+        list-type="text" :auto-upload="true">
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip" slot="tip">只能上传xls/xlsx文件</div>
       </el-upload>
     </el-dialog>
     <!--收货信息界面-->
-    <el-dialog
-      title="收货人信息"
-      :visible.sync="pageControl.consigneeInfoFormVisible"
-      :close-on-click-modal="false"
-    >
+    <el-dialog title="收货人信息" :visible.sync="pageControl.consigneeInfoFormVisible" :close-on-click-modal="false">
       <el-form :model="consigneeInfo" label-width="80px" ref="consigneeInfo">
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="到站" prop="consigneeStation">
-              <el-input
-                v-model="consigneeInfo.consigneeStation"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="consigneeInfo.consigneeStation" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="收货单位" prop="consigneeCompany">
-              <el-input
-                v-model="consigneeInfo.consigneeCompany"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="consigneeInfo.consigneeCompany" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="收货人" prop="consigneeName">
-              <el-input
-                v-model="consigneeInfo.consigneeName"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="consigneeInfo.consigneeName" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="电话" prop="consigneePhone">
-              <el-input
-                v-model="consigneeInfo.consigneePhone"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="consigneeInfo.consigneePhone" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="24">
             <el-form-item label="收货地址" prop="consigneeAddress">
-              <el-input
-                v-model="consigneeInfo.consigneeAddress"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="consigneeInfo.consigneeAddress" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="总件数" prop="consigneeNum">
-              <el-input
-                v-model="consigneeInfo.consigneeNum"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="consigneeInfo.consigneeNum" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="发货日期" prop="outboundDate">
-              <el-date-picker
-                v-model="consigneeInfo.outboundDate"
-                type="date"
-                placeholder="选择日期"
-              >
+              <el-date-picker v-model="consigneeInfo.outboundDate" type="date" placeholder="选择日期">
               </el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click.native="printConsigneeInfo"
-          >打印收货信息</el-button
-        >
+        <el-button type="primary" @click.native="getTotalPackageNum">自动计算总件数</el-button>
+        <el-button type="primary" @click.native="printConsigneeInfo">打印收货信息</el-button>
       </div>
     </el-dialog>
   </section>
@@ -1407,6 +846,7 @@ import {
   audit,
   cancelAudit,
   alloc,
+  virtualAlloc,
   cancelAlloc,
   pick,
   cancelPick,
@@ -1419,6 +859,7 @@ import {
   accountCostByOrderNo,
   selectNextOrderNo,
   selectPreOrderNo,
+  getTotalPackageNumByOrderNo
 } from "../../api/outboundApi";
 import { queryAvaiableInventorySumBySkuCode } from "../../api/inventoryApi";
 import { getCustomerByCustomerCode } from "../../api/customerApi";
@@ -1439,8 +880,8 @@ export default {
       if (value === "") {
         callback(new Error("请输入拣货数"));
       } else {
-        if (this.detailAllocGrid.editForm.outboundNum > value) {
-          callback(new Error("拣货数不能小于分配数"));
+        if (this.detailAllocGrid.editForm.outboundNum < value) {
+          callback(new Error("拣货数不能大于分配数"));
         }
         callback();
       }
@@ -1501,6 +942,7 @@ export default {
         isCostCaculated: "N",
         voucherId: 0,
         costVoucherId: 0,
+        cash:0,
         remark: "",
         creator: "",
         createTime: "",
@@ -1679,6 +1121,7 @@ export default {
       outboundStatus: codemaster.WM_OUTBOUND_STATUS,
       outboundType: codemaster.WM_OUTBOUND_TYPE,
       YESORNO: codemaster.SYS_YES_NO,
+      isRecievedCash: codemaster.WM_IS_RECIEVED_CASH,
       auditStatus: codemaster.SYS_AUDIT_STATUS,
       freightType: codemaster.WM_FREIGHT_TYPE,
     };
@@ -2111,37 +1554,49 @@ export default {
     },
   },
   methods: {
+    batchAddTabClick(){
+      this.batchAddPopWinQuery();
+    },
+    getTotalPackageNum() {
+      let para = { orderNo: this.orderHeader.orderNo };
+      getTotalPackageNumByOrderNo(para)
+        .then((res) => {
+          this.consigneeInfo.consigneeNum = res.data.data;
+        }).catch((data) => {
+          util.errorCallBack(data, this.$router, this.$message);
+        });;
+    },
     printConsigneeInfo() {
       window.open(
         config.reportUrl +
-          "consigneeInfo?consigneeStation=" +
-          (this.consigneeInfo.consigneeStation === null
-            ? ""
-            : this.consigneeInfo.consigneeStation) +
-          "&consigneeCompany=" +
-          (this.consigneeInfo.consigneeCompany === null
-            ? ""
-            : this.consigneeInfo.consigneeCompany) +
-          "&consigneeName=" +
-          (this.consigneeInfo.consigneeName === null
-            ? ""
-            : this.consigneeInfo.consigneeName) +
-          "&consigneePhone=" +
-          (this.consigneeInfo.consigneePhone === null
-            ? ""
-            : this.consigneeInfo.consigneePhone) +
-          "&consigneeAddress=" +
-          (this.consigneeInfo.consigneeAddress === null
-            ? ""
-            : this.consigneeInfo.consigneeAddress) +
-          "&consigneeNum=" +
-          (this.consigneeInfo.consigneeNum === null
-            ? ""
-            : this.consigneeInfo.consigneeNum) +
-          "&outboundDate=" +
-          (this.consigneeInfo.outboundDate === null
-            ? ""
-            : this.consigneeInfo.outboundDate)
+        "consigneeInfo?consigneeStation=" +
+        (this.consigneeInfo.consigneeStation === null
+          ? ""
+          : this.consigneeInfo.consigneeStation) +
+        "&consigneeCompany=" +
+        (this.consigneeInfo.consigneeCompany === null
+          ? ""
+          : this.consigneeInfo.consigneeCompany) +
+        "&consigneeName=" +
+        (this.consigneeInfo.consigneeName === null
+          ? ""
+          : this.consigneeInfo.consigneeName) +
+        "&consigneePhone=" +
+        (this.consigneeInfo.consigneePhone === null
+          ? ""
+          : this.consigneeInfo.consigneePhone) +
+        "&consigneeAddress=" +
+        (this.consigneeInfo.consigneeAddress === null
+          ? ""
+          : this.consigneeInfo.consigneeAddress) +
+        "&consigneeNum=" +
+        (this.consigneeInfo.consigneeNum === null
+          ? ""
+          : this.consigneeInfo.consigneeNum) +
+        "&outboundDate=" +
+        (this.consigneeInfo.outboundDate === null
+          ? ""
+          : this.consigneeInfo.outboundDate)
       );
     },
     openConsigneeDialog() {
@@ -2150,7 +1605,7 @@ export default {
     clipboardPickInfo() {
       let _this = this;
       let pickInfo =
-        "http://www.xbjg.org/xibin-mobile/#/outboundPick2?orderNo=" +
+        "http://www.jjxbjg.com/xibin-mobile/#/outboundPick2?orderNo=" +
         this.orderHeader.orderNo;
       this.$copyText(pickInfo).then(
         function (e) {
@@ -2253,44 +1708,59 @@ export default {
       this.orderHeader = Object.assign({}, data);
       this.orderHeader.orderTime = data.orderTime
         ? util.formatDate.format(
-            new Date(data.orderTime),
-            "yyyy-MM-dd hh:mm:ss"
-          )
+          new Date(data.orderTime),
+          "yyyy-MM-dd hh:mm:ss"
+        )
         : "";
       this.orderHeader.auditTime = data.auditTime
         ? util.formatDate.format(
-            new Date(data.auditTime),
-            "yyyy-MM-dd hh:mm:ss"
-          )
+          new Date(data.auditTime),
+          "yyyy-MM-dd hh:mm:ss"
+        )
         : "";
     },
     printPickUpOrder() {
       let user = JSON.parse(localStorage.getItem("user"));
       window.open(
         config.reportUrl +
-          "pickUp?orderNo=" +
-          this.orderHeader.orderNo +
-          "&companyId=" +
-          user.companyId +
-          "&warehouseId=" +
-          user.warehouseId +
-          "&mobileUrl=" +
-          config.mobileUrl +
-          "outboundPick?orderNo="
+        "pickUp?orderNo=" +
+        this.orderHeader.orderNo +
+        "&companyId=" +
+        user.companyId +
+        "&warehouseId=" +
+        user.warehouseId +
+        "&mobileUrl=" +
+        config.mobileUrl +
+        "outboundPick?orderNo="
+      );
+    },
+    printPackOrder() {
+      let user = JSON.parse(localStorage.getItem("user"));
+      window.open(
+        config.reportUrl +
+        "pack?orderNo=" +
+        this.orderHeader.orderNo +
+        "&companyId=" +
+        user.companyId +
+        "&warehouseId=" +
+        user.warehouseId +
+        "&mobileUrl=" +
+        config.mobileUrl +
+        "outboundPick?orderNo="
       );
     },
     printShipOrder() {
       let user = JSON.parse(localStorage.getItem("user"));
       window.open(
         config.reportUrl +
-          "shipOrder?orderNo=" +
-          this.orderHeader.orderNo +
-          "&companyId=" +
-          user.companyId +
-          "&warehouseId=" +
-          user.warehouseId +
-          "&shipTime=" +
-          this.shipTime
+        "shipOrder?orderNo=" +
+        this.orderHeader.orderNo +
+        "&companyId=" +
+        user.companyId +
+        "&warehouseId=" +
+        user.warehouseId +
+        "&shipTime=" +
+        this.shipTime
       );
     },
     account: function () {
@@ -2369,6 +1839,20 @@ export default {
         row.status
       );
     },
+    formatPaymentCategory: function (paymentCategory) {
+			return util.getComboNameByValue(codemaster.BD_CUSTOMER_PAYMENT_CATEGORY, paymentCategory);
+		},
+    getPaymentCategoryType: function (paymentCategory) {
+			if (paymentCategory === 'CASH') {
+				return 'danger'
+			}
+			if (paymentCategory === 'PERIOD') {
+				return 'success'
+			}
+			if (paymentCategory === 'CASH') {
+				return 'warning'
+			}
+		},
     selsChange: function (sels) {
       this.detailGrid.sels = sels;
     },
@@ -2578,7 +2062,7 @@ export default {
       para.orderNo = this.orderHeader.orderNo;
       para.planShipLoc = "SORTATION";
       para.outboundNum = this.batchAddPopWin.currentNum;
-      para.outboundOriginNum = 0;
+      para.outboundOriginNum = this.batchAddPopWin.currentNum;
       para.outboundAllocNum = 0;
       para.outboundPickNum = 0;
       para.outboundShipNum = 0;
@@ -2694,6 +2178,14 @@ export default {
       this.detailGrid.editForm.outboundPrice = item.price;
     },
     save() {
+      if (this.orderHeader.id === '') {
+        // 依据客户付款类型处理
+        if (this.orderHeader.paymentCategory === 'PERIOD') {
+          this.orderHeader.isRecievedCash = 'NO_CASH'
+        } else {
+          this.orderHeader.isRecievedCash = 'N'
+        }
+      }
       this.$refs.orderHeader.validate((valid) => {
         if (valid) {
           this.pageControl.saveBtnLoading = true;
@@ -2784,6 +2276,36 @@ export default {
       };
       let _this = this;
       alloc(para)
+        .then((res) => {
+          this.pageControl.allocSubmitLoading = false;
+          //NProgress.done();
+          if (res.data.code == 200) {
+            this.$message({
+              message: res.data.msg,
+              type: "success",
+            });
+          } else {
+            this.$message.error(res.data.msg);
+          }
+          _this.$refs["editForm"].resetFields();
+          this.pageControl.editFormVisible = false;
+          this.getOrder();
+        })
+        .catch((data) => {
+          this.pageControl.allocSubmitLoading = false;
+          util.errorCallBack(data, this.$router, this.$message);
+        });
+    },
+    virtualAllocSubmit() {
+      this.pageControl.allocSubmitLoading = true;
+      //NProgress.start();
+      let para = {
+        orderNo: this.orderHeader.orderNo,
+        lineNo: this.detailGrid.editForm.lineNo,
+        type: "VIRTUAL",
+      };
+      let _this = this;
+      virtualAlloc(para)
         .then((res) => {
           this.pageControl.allocSubmitLoading = false;
           //NProgress.done();
@@ -3572,6 +3094,7 @@ export default {
         trackingNo: null,
         logisticsNo: null,
         freight: 0,
+        cash:0,
         remark: "",
         creator: "",
         createTime: "",
@@ -3590,12 +3113,15 @@ export default {
 .el-table .un-alloc-row {
   background: #f6ab00;
 }
+
 .el-table .part-row {
   background: #f5da81;
 }
+
 .el-table .picksuccess-row {
   background: #4eb319;
 }
+
 .export-excel-wrapper {
   display: inline;
 }

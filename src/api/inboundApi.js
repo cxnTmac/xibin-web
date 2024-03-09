@@ -82,10 +82,13 @@ export const batchSaveInboundDetail = params => { return axios.post(`/xibin/inbo
 }} ).then(res => res); };
 
 
-export const queryHistorySale = params => { return axios.get(`/xibin/inbound/queryHistorySale`, { params: params }); };
+export const queryHistoryProcure = params => { return axios.get(`/xibin/inbound/queryHistorySale`, { params: params }); };
 // export const removeFittingSkuPic = params => { return axios.get(`/xibin/fittingSku/removeFittingSkuPic `, { params: params }); };
+export const queryHistorySale = params => { return axios.get(`/xibin/outbound/queryHistorySale`, { params: params }); };
 
 export const selectNextOrderNo = params => { return axios.get(`/xibin/inbound/selectNextOrderNo`, { params: params }); };
 
 export const selectPreOrderNo = params => { return axios.get(`/xibin/inbound/selectPreOrderNo`, { params: params }); };
+
+export const getMaxInventoryBySkuCode = params => { return axios.get(`/xibin/inventory/getMaxInventoryBySkuCode`, { params: params }); };
 

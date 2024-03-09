@@ -441,6 +441,7 @@
               <popwin-button
                 popKey="POP_SKU"
                 :staticCondition="fSkuCondtion"
+                @changeValue="editFormSkuChangeValue"
                 :selectValue="fDetailGrid.editForm.fittingSkuCode"
                 v-model="fDetailGrid.editForm.fittingSkuCode"
               ></popwin-button>
@@ -578,6 +579,9 @@ import {
   allocByOrderNoAndLineNos,
   pickByAllocIds,
 } from "../../api/assembleApi";
+import {
+  getMaxInventoryBySkuCode
+} from "../../api/inboundApi";
 var codemaster = require("../../../static/codemaster.json");
 export default {
   data() {
@@ -1205,7 +1209,6 @@ export default {
     },
     cancelCreateSDetail() {
       this.cancelCreateSDetailBtnLoading = true;
-      debugger;
       if(this.sDetailAllocGrid.sDetailAlloc.size>0){
         this.$message.error("请取消所有分配后再取消生成子件！");
         return;
@@ -1297,6 +1300,20 @@ export default {
         .catch((data) => {
           this.allocGrid.listLoading = false;
           util.errorCallBack(data, this.$router, this.$message);
+        });
+    },
+    editFormSkuChangeValue(row) {
+      this.autoGetPlanLocCodeBySkuCode(row.fittingSkuCode);
+    },
+    autoGetPlanLocCodeBySkuCode(code) {
+      let para = { skuCode: code };
+      getMaxInventoryBySkuCode(para)
+        .then((res) => {
+          if (res.data !== '') {
+            this.fDetailGrid.editForm.toLoc = res.data.loc_code;
+          } else {
+            this.$message.error("产品[" + row.fittingSkuCode + "]当前没有库存，请手动指定一个成品库存库位！");
+          }
         });
     },
     back() {

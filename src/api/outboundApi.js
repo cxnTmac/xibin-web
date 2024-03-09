@@ -37,7 +37,9 @@ export const cancelAudit = params => { return axios.post(`/xibin/outbound/cancel
 export const alloc = params => { return axios.post(`/xibin/outbound/alloc`,qs.stringify(params),{headers: {
     'Content-Type': 'application/x-www-form-urlencoded',
 }} ).then(res => res); };
-
+export const virtualAlloc = params => { return axios.post(`/xibin/outbound/virtualAlloc`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
 export const cancelAlloc = params => { return axios.post(`/xibin/outbound/cancelAlloc`,qs.stringify(params),{headers: {
     'Content-Type': 'application/x-www-form-urlencoded',
 }} ).then(res => res); };
@@ -116,6 +118,17 @@ export const selectPreOrderNo = params => { return axios.get(`/xibin/outbound/se
 
 
 export const queryForOutboundDaily = params => { return axios.get(`/xibin/outbound/queryForOutboundDaily`, { params: params }); };
+
+export const getTotalPackageNumByOrderNo = params => { return axios.get(`/xibin/outbound/getTotalPackageNumByOrderNo`, { params: params }); }
+
+// export const selectForReAlloc = params => { return axios.get(`/xibin/outbound/selectForReAlloc`, { params: params }); };
+
+export const selectForReAlloc = params => { return axios.post(`/xibin/outbound/selectForReAlloc`,qs.stringify(params),{headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+}} ).then(res => res); };
+
+export const reAllocByAllocId = params => { return axios.get(`/xibin/outbound/reAllocByAllocId`, { params: params }); };
+
 
 
 

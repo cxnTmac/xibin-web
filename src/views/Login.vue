@@ -114,7 +114,7 @@ export default {
                 localStorage.removeItem("inputUserName");
                 localStorage.removeItem("inputPassword");
               }
-              let overTime = new Date().getTime() + 100000000000;
+              let overTime = new Date().getTime() + 28800000;
               localStorage.setItem("overTime", overTime);
               let _this = this;
               getAllRoleFunctions()

@@ -1,11 +1,7 @@
 <template>
   <section>
     <div v-title data-title="入库单详情"></div>
-    <el-steps
-      :active="active"
-      finish-status="success"
-      style="margin-top: 20px; margin-bottom: 20px"
-    >
+    <el-steps :active="active" finish-status="success" style="margin-top: 20px; margin-bottom: 20px">
       <el-step title="创建订单"></el-step>
       <el-step title="完成审核（可取消）"></el-step>
       <el-step title="完成收货（可取消）"></el-step>
@@ -14,41 +10,16 @@
     </el-steps>
     <!--工具条-->
     <el-col :span="24" class="toolbar">
-      <el-button
-        type="primary"
-        :disabled="btnAuditStatus"
-        @click="audit"
-        :loading="pageControl.auditBtnLoading"
-        >审核</el-button
-      >
-      <el-button
-        type="primary"
-        :disabled="btnCancelAuditStatus"
-        @click="cancelAudit"
-        :loading="pageControl.cancelAuditBtnLoading"
-        >取消审核</el-button
-      >
-      <el-button
-        type="success"
-        :disabled="btnAccountStatus"
-        @click="account"
-        :loading="pageControl.accountBtnLoading"
-        >入库核算</el-button
-      >
-      <el-button
-        type="success"
-        :disabled="btnCancelAccountStatus"
-        @click="cancelAccount"
-        :loading="pageControl.cancelAccountBtnLoading"
-        >取消核算</el-button
-      >
-      <el-button
-        type="danger"
-        :disabled="btnCloseStatus"
-        @click="close"
-        :loading="pageControl.closeBtnLoading"
-        >关闭订单</el-button
-      >
+      <el-button type="primary" :disabled="btnAuditStatus" @click="audit"
+        :loading="pageControl.auditBtnLoading">审核</el-button>
+      <el-button type="primary" :disabled="btnCancelAuditStatus" @click="cancelAudit"
+        :loading="pageControl.cancelAuditBtnLoading">取消审核</el-button>
+      <el-button type="success" :disabled="btnAccountStatus" @click="account"
+        :loading="pageControl.accountBtnLoading">入库核算</el-button>
+      <el-button type="success" :disabled="btnCancelAccountStatus" @click="cancelAccount"
+        :loading="pageControl.cancelAccountBtnLoading">取消核算</el-button>
+      <el-button type="danger" :disabled="btnCloseStatus" @click="close"
+        :loading="pageControl.closeBtnLoading">关闭订单</el-button>
       <!-- <el-button
         type="success"
         :disabled="btnAccountCostStatus"
@@ -57,20 +28,8 @@
         >成本核算</el-button
       > -->
       <el-button @click="back" style="float: right">返回</el-button>
-      <el-button
-        @click="nextOrder"
-        icon="el-icon-caret-right"
-        type="primary"
-        style="float: right"
-        circle
-      ></el-button>
-      <el-button
-        @click="preOrder"
-        icon="el-icon-caret-left"
-        type="primary"
-        style="float: right"
-        circle
-      ></el-button>
+      <el-button @click="nextOrder" icon="el-icon-caret-right" type="primary" style="float: right" circle></el-button>
+      <el-button @click="preOrder" icon="el-icon-caret-left" type="primary" style="float: right" circle></el-button>
       <!-- <el-button
         type="primary"
         style="float: right"
@@ -78,81 +37,40 @@
         >打印收货单</el-button
       > -->
       <el-popover placement="bottom" trigger="click">
-        <el-date-picker
-          v-model="receiveTime"
-          type="datetime"
-          value-format="yyyy-MM-dd HH:mm:ss"
-          placeholder="选择日期时间"
-        >
+        <el-date-picker v-model="receiveTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期时间">
         </el-date-picker>
-        <el-button
-          type="primary"
-          style="float: right"
-          @click="printInboundOrder"
-          >打印</el-button
-        >
-        <el-button type="primary" style="float: right" slot="reference"
-          >打印收货单</el-button
-        >
+        <el-button type="primary" style="float: right" @click="printInboundOrder">打印</el-button>
+        <el-button type="primary" style="float: right" slot="reference">打印收货单</el-button>
       </el-popover>
     </el-col>
 
-    <el-form
-      :model="orderHeader"
-      label-width="80px"
-      :rules="orderHeaderRules"
-      ref="orderHeader"
-    >
+    <el-form :model="orderHeader" label-width="80px" :rules="orderHeaderRules" ref="orderHeader">
       <el-card class="box-card">
         <div slot="header" class="clearfix">
           <el-row :gutter="0">
             <span style="line-height: 36px">基本信息</span>
 
-            <el-button
-              type="primary"
-              style="float: right"
-              :disabled="btnSaveHeaderStatus"
-              @click="save"
-              :loading="pageControl.saveBtnLoading"
-              >保存单头</el-button
-            >
+            <el-button type="primary" style="float: right" :disabled="btnSaveHeaderStatus" @click="save"
+              :loading="pageControl.saveBtnLoading">保存单头</el-button>
           </el-row>
         </div>
         <el-row :gutter="0">
           <el-col :span="6">
             <el-form-item label="入库单号" prop="orderNo">
-              <el-input
-                v-model="orderHeader.orderNo"
-                disabled
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="orderHeader.orderNo" disabled auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="货主" prop="supplierCode">
-              <popwin-button
-                popKey="POP_CUSTOMER"
-                :showName="true"
-                :displayName="orderHeader.supplierName"
-                @changeValue="headerSupplierChangeValue"
-                v-model="orderHeader.supplierCode"
-              ></popwin-button>
+              <popwin-button popKey="POP_CUSTOMER" :showName="true" :displayName="orderHeader.supplierName"
+                @changeValue="headerSupplierChangeValue" v-model="orderHeader.supplierCode"></popwin-button>
               <!--<el-input v-model="orderHeader.supplierCode" auto-complete="off"></el-input>-->
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="状态" prop="status">
-              <el-select
-                v-model="orderHeader.status"
-                disabled
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="item in inboundStatus"
-                  :key="item.code"
-                  :label="item.name"
-                  :value="item.code"
-                >
+              <el-select v-model="orderHeader.status" disabled placeholder="请选择">
+                <el-option v-for="item in inboundStatus" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
                     item.code
@@ -164,12 +82,8 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="订单时间" prop="orderTime">
-              <el-date-picker
-                v-model="orderHeader.orderTime"
-                type="datetime"
-                value-format="yyyy-MM-dd HH:mm:ss"
-                placeholder="选择日期时间"
-              >
+              <el-date-picker v-model="orderHeader.orderTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
+                placeholder="选择日期时间">
               </el-date-picker>
               <!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
             </el-form-item>
@@ -179,12 +93,7 @@
           <el-col :span="6">
             <el-form-item label="入库类型" prop="inboundType">
               <el-select v-model="orderHeader.inboundType" placeholder="请选择">
-                <el-option
-                  v-for="item in inboundType"
-                  :key="item.code"
-                  :label="item.name"
-                  :value="item.code"
-                >
+                <el-option v-for="item in inboundType" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
                     item.code
@@ -196,17 +105,8 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="审核状态" prop="auditStatus">
-              <el-select
-                v-model="orderHeader.auditStatus"
-                disabled
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="item in auditStatus"
-                  :key="item.code"
-                  :label="item.name"
-                  :value="item.code"
-                >
+              <el-select v-model="orderHeader.auditStatus" disabled placeholder="请选择">
+                <el-option v-for="item in auditStatus" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
                     item.code
@@ -218,58 +118,33 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="审核时间" prop="auditTime">
-              <el-date-picker
-                v-model="orderHeader.auditTime"
-                type="datetime"
-                value-format="yyyy-MM-dd HH:mm:ss"
-                placeholder="选择日期时间"
-                disabled
-              >
+              <el-date-picker v-model="orderHeader.auditTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
+                placeholder="选择日期时间" disabled>
               </el-date-picker>
               <!--<el-input v-model="orderHeader.auditTime" auto-complete="off"></el-input>-->
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="审核人" prop="auditOp">
-              <el-input
-                v-model="orderHeader.auditOp"
-                disabled
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="orderHeader.auditOp" disabled auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="备注" prop="remark">
-              <el-input
-                v-model="orderHeader.remark"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="orderHeader.remark" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="总价" prop="totalPrice">
-              <el-input
-                v-model="totalPrice"
-                :disabled="true"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="totalPrice" :disabled="true" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="入库核算" prop="isCalculated">
-              <el-select
-                :disabled="true"
-                v-model="orderHeader.isCalculated"
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="item in YESORNO"
-                  :key="item.code"
-                  :label="item.name"
-                  :value="item.code"
-                >
+              <el-select :disabled="true" v-model="orderHeader.isCalculated" placeholder="请选择">
+                <el-option v-for="item in YESORNO" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
                     item.code
@@ -285,24 +160,12 @@
         <div slot="header" class="clearfix">
           <span style="line-height: 15px">入库单明细</span>
         </div>
-        <el-table
-          :data="detailGrid.orderDetail"
-          border
-          highlight-current-row
-          v-loading="detailGrid.listLoading"
-          @selection-change="selsChange"
-          stripe
-          style="width: 100%"
-        >
+        <el-table :data="detailGrid.orderDetail" border highlight-current-row v-loading="detailGrid.listLoading"
+          @selection-change="selsChange" stripe style="width: 100%">
           <el-table-column type="selection" width="55"> </el-table-column>
           <el-table-column prop="lineNo" label="行号" width="80" sortable>
           </el-table-column>
-          <el-table-column
-            prop="status"
-            label="状态"
-            width="80"
-            :formatter="formatStatus"
-          >
+          <el-table-column prop="status" label="状态" width="80" :formatter="formatStatus">
           </el-table-column>
           <el-table-column prop="skuCode" label="产品编码" width="100">
           </el-table-column>
@@ -329,11 +192,7 @@
           </el-table-column>
           <el-table-column prop="planLoc" label="计划库位" width="200">
           </el-table-column>
-          <el-table-column
-            prop="isCreatedVoucher"
-            label="是否已生成凭证"
-            width="200"
-          >
+          <el-table-column prop="isCreatedVoucher" label="是否已生成凭证" width="200">
           </el-table-column>
           <el-table-column prop="voucherNo" label="凭证号" width="200">
           </el-table-column>
@@ -343,44 +202,20 @@
 
           <el-table-column label="操作" fixed="right" min-width="180">
             <template slot-scope="scope">
-              <el-button
-                size="small"
-                @click="handleDetailEdit(scope.$index, scope.row)"
-                >编辑</el-button
-              >
-              <el-button
-                type="danger"
-                :disabled="btnDetailGridDelStatus"
-                size="small"
-                @click="handleDetailDel(scope.$index, scope.row)"
-                >删除</el-button
-              >
+              <el-button size="small" @click="handleDetailEdit(scope.$index, scope.row)">编辑</el-button>
+              <el-button type="danger" :disabled="btnDetailGridDelStatus" size="small"
+                @click="handleDetailDel(scope.$index, scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
         <!--工具条-->
         <el-col :span="24" class="toolbar">
-          <el-button
-            type="primary"
-            :disabled="btnDetailGridAddStatus"
-            @click="addDetailHandler"
-            >新增</el-button
-          >
+          <el-button type="primary" :disabled="btnDetailGridAddStatus" @click="addDetailHandler">新增</el-button>
 
-          <el-button
-            type="primary"
-            :disabled="btnDetailGridAddStatus"
-            @click="openBatchAddPopWin"
-            >快速新增</el-button
-          >
+          <el-button type="primary" :disabled="btnDetailGridAddStatus" @click="openBatchAddPopWin">快速新增</el-button>
           <!--<el-button type="danger"  @click="batchRemove" :disabled="this.detailGrid.sels.length===0">批量删除</el-button>-->
-          <el-pagination
-            layout="prev, pager, next"
-            @current-change="handleCurrentDetailChange"
-            :page-size="detailGrid.size"
-            :total="detailGrid.total"
-            style="float: right"
-          >
+          <el-pagination layout="prev, pager, next" @current-change="handleCurrentDetailChange"
+            :page-size="detailGrid.size" :total="detailGrid.total" style="float: right">
           </el-pagination>
         </el-col>
       </el-card>
@@ -389,31 +224,14 @@
         <div slot="header" class="clearfix">
           <span style="line-height: 15px">入库单收货明细</span>
         </div>
-        <el-table
-          :data="detailReceiveGrid.orderDetailReceive"
-          border
-          highlight-current-row
-          v-loading="detailReceiveGrid.listLoading"
-          @selection-change="recSelsChange"
-          stripe
-          style="width: 100%"
-        >
+        <el-table :data="detailReceiveGrid.orderDetailReceive" border highlight-current-row
+          v-loading="detailReceiveGrid.listLoading" @selection-change="recSelsChange" stripe style="width: 100%">
           <el-table-column type="selection" width="55"> </el-table-column>
           <el-table-column prop="lineNo" label="行号" width="80" sortable>
           </el-table-column>
-          <el-table-column
-            prop="recLineNo"
-            label="收货明细行号"
-            width="80"
-            sortable
-          >
+          <el-table-column prop="recLineNo" label="收货明细行号" width="80" sortable>
           </el-table-column>
-          <el-table-column
-            prop="status"
-            label="状态"
-            width="80"
-            :formatter="formatStatus"
-          >
+          <el-table-column prop="status" label="状态" width="80" :formatter="formatStatus">
           </el-table-column>
           <el-table-column prop="skuCode" label="产品编码" width="80">
           </el-table-column>
@@ -427,12 +245,7 @@
           </el-table-column>
           <el-table-column prop="inboundPrice" label="收货价格" width="80">
           </el-table-column>
-          <el-table-column
-            prop="recTime"
-            label="收货时间"
-            width="155"
-            :formatter="formatTime"
-          >
+          <el-table-column prop="recTime" label="收货时间" width="155" :formatter="formatTime">
           </el-table-column>
           <el-table-column prop="inboundLocCode" label="收货库位" width="80">
           </el-table-column>
@@ -450,105 +263,58 @@
 
           <el-table-column label="操作" fixed="right" min-width="80">
             <template slot-scope="scope">
-              <el-button
-                size="small"
-                @click="handleRecDetailEdit(scope.$index, scope.row)"
-                >查看</el-button
-              >
+              <el-button size="small" @click="handleRecDetailEdit(scope.$index, scope.row)">查看</el-button>
             </template>
           </el-table-column>
         </el-table>
         <!--工具条-->
         <el-col :span="24" class="toolbar">
-          <el-button
-            type="primary"
-            @click="batchRecEditSubmit"
-            :loading="pageControl.batchRecEditSubmitLoading"
-            :disabled="this.detailReceiveGrid.sels.length === 0"
-            >批量收货</el-button
-          >
+          <el-button type="primary" @click="batchRecEditSubmit" :loading="pageControl.batchRecEditSubmitLoading"
+            :disabled="this.detailReceiveGrid.sels.length === 0">批量收货</el-button>
           <!--<el-button type="primary" @click="recDetailConfirm">收货确认</el-button>-->
           <!--<el-button type="danger" @click="recDetailCancel" :disabled="this.detailGrid.sels.length===0">取消收货</el-button>-->
-          <el-pagination
-            layout="prev, pager, next"
-            @current-change="handleCurrentReceivesDetailChange"
-            :page-size="detailReceiveGrid.size"
-            :total="detailReceiveGrid.total"
-            style="float: right"
-          >
+          <el-pagination layout="prev, pager, next" @current-change="handleCurrentReceivesDetailChange"
+            :page-size="detailReceiveGrid.size" :total="detailReceiveGrid.total" style="float: right">
           </el-pagination>
         </el-col>
       </el-card>
     </el-form>
 
     <!--编辑界面-->
-    <el-dialog
-      title="编辑"
-      :visible.sync="pageControl.editFormVisible"
-      :close-on-click-modal="false"
-    >
-      <el-form
-        :model="detailGrid.editForm"
-        label-width="80px"
-        :rules="detailGrid.editFormRules"
-        ref="editForm"
-      >
+    <el-dialog title="编辑" :visible.sync="pageControl.editFormVisible" :close-on-click-modal="false">
+      <el-form :model="detailGrid.editForm" label-width="80px" :rules="detailGrid.editFormRules" ref="editForm">
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="货主" prop="supplierCode">
-              <popwin-button
-                popKey="POP_CUSTOMER"
-                :disabled="true"
-                :showName="true"
+              <popwin-button popKey="POP_CUSTOMER" :disabled="true" :showName="true"
                 :displayName="detailGrid.editForm.supplierName"
-                v-model="detailGrid.editForm.supplierCode"
-              ></popwin-button>
+                v-model="detailGrid.editForm.supplierCode"></popwin-button>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="产品" prop="skuCode">
-              <popwin-button
-                popKey="POP_SKU"
-                @changeValue="editFormSkuChangeValue"
-                v-model="detailGrid.editForm.skuCode"
-              ></popwin-button>
+              <popwin-button popKey="POP_SKU" @changeValue="editFormSkuChangeValue"
+                v-model="detailGrid.editForm.skuCode"></popwin-button>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="产品名称" prop="fittingSkuName">
-              <el-input
-                v-model="detailGrid.editForm.fittingSkuName"
-                :disabled="true"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="detailGrid.editForm.fittingSkuName" :disabled="true" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="车型" prop="modelCode">
-              <el-input
-                v-model="detailGrid.editForm.modelCode"
-                :disabled="true"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="detailGrid.editForm.modelCode" :disabled="true" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="状态" prop="status">
-              <el-select
-                v-model="detailGrid.editForm.status"
-                :disabled="true"
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="item in inboundStatus"
-                  :key="item.code"
-                  :label="item.name"
-                  :value="item.code"
-                >
+              <el-select v-model="detailGrid.editForm.status" :disabled="true" placeholder="请选择">
+                <el-option v-for="item in inboundStatus" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
                     item.code
@@ -559,146 +325,88 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="收货价格" prop="inboundPrice">
-              <el-input-number
-                v-model="detailGrid.editForm.inboundPrice"
-                auto-complete="off"
-              ></el-input-number>
+              <el-input-number v-model="detailGrid.editForm.inboundPrice" auto-complete="off"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="预收数" prop="inboundPreNum">
-              <el-input-number
-                v-model="detailGrid.editForm.inboundPreNum"
-                auto-complete="off"
-              ></el-input-number>
+              <el-input-number v-model="detailGrid.editForm.inboundPreNum" auto-complete="off"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="实收数" prop="inboundNum">
-              <el-input-number
-                v-model="detailGrid.editForm.inboundNum"
-                :disabled="true"
-                auto-complete="off"
-              ></el-input-number>
+              <el-input-number v-model="detailGrid.editForm.inboundNum" :disabled="true"
+                auto-complete="off"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="计划库位" prop="planLoc">
-              <popwin-button
-                popKey="POP_LOC"
-                :staticCondition="{ useType: 'RS' }"
-                :selectValue="detailGrid.editForm.planLoc"
-                v-model="detailGrid.editForm.planLoc"
-              ></popwin-button>
+              <popwin-button popKey="POP_LOC" :staticCondition="{ useType: 'RS' }"
+                :selectValue="detailGrid.editForm.planLoc" v-model="detailGrid.editForm.planLoc"></popwin-button>
               <!--<el-input v-model="detailGrid.editForm.planLoc" auto-complete="off"></el-input>-->
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="成本" prop="cost">
-              <el-input-number
-                v-model="detailGrid.editForm.cost"
-                auto-complete="off"
-              ></el-input-number>
+              <el-input-number v-model="detailGrid.editForm.cost" auto-complete="off"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="24">
             <el-form-item label="备注">
-              <el-input
-                v-model="detailGrid.editForm.remark"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="detailGrid.editForm.remark" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click.native="pageControl.editFormVisible = false"
-          >取消</el-button
-        >
-        <el-button
-          type="primary"
-          :disabled="btnEditSubmitStatus"
-          @click.native="editSubmit"
-          :loading="pageControl.editLoading"
-          >提交</el-button
-        >
+        <el-button @click.native="pageControl.editFormVisible = false">取消</el-button>
+        <el-button type="primary" :disabled="btnEditSubmitStatus" @click.native="editSubmit"
+          :loading="pageControl.editLoading">提交</el-button>
       </div>
     </el-dialog>
 
     <!--编辑界面-->
-    <el-dialog
-      title="编辑"
-      :visible.sync="pageControl.recEditFormVisible"
-      :close-on-click-modal="false"
-    >
-      <el-form
-        :model="detailReceiveGrid.editForm"
-        label-width="80px"
-        :rules="detailReceiveGrid.editFormRules"
-        ref="recEditForm"
-      >
+    <el-dialog title="编辑" :visible.sync="pageControl.recEditFormVisible" :close-on-click-modal="false">
+      <el-form :model="detailReceiveGrid.editForm" label-width="80px" :rules="detailReceiveGrid.editFormRules"
+        ref="recEditForm">
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="货主" prop="supplierCode">
-              <popwin-button
-                popKey="POP_CUSTOMER"
-                :disabled="true"
-                :selectValue="detailReceiveGrid.editForm.supplierCode"
-                v-model="detailReceiveGrid.editForm.supplierCode"
-              ></popwin-button>
+              <popwin-button popKey="POP_CUSTOMER" :disabled="true" :selectValue="detailReceiveGrid.editForm.supplierCode"
+                v-model="detailReceiveGrid.editForm.supplierCode"></popwin-button>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="产品" prop="skuCode">
-              <popwin-button
-                popKey="POP_SKU"
-                :selectValue="detailReceiveGrid.editForm.skuCode"
-                :disabled="true"
-                v-model="detailReceiveGrid.editForm.skuCode"
-              ></popwin-button>
+              <popwin-button popKey="POP_SKU" :selectValue="detailReceiveGrid.editForm.skuCode" :disabled="true"
+                v-model="detailReceiveGrid.editForm.skuCode"></popwin-button>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="产品名称" prop="fittingSkuName">
-              <el-input
-                v-model="detailReceiveGrid.editForm.fittingSkuName"
-                :disabled="true"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="detailReceiveGrid.editForm.fittingSkuName" :disabled="true"
+                auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="车型" prop="modelCode">
-              <el-input
-                v-model="detailReceiveGrid.editForm.modelCode"
-                :disabled="true"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="detailReceiveGrid.editForm.modelCode" :disabled="true" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="状态" prop="status">
-              <el-select
-                v-model="detailReceiveGrid.editForm.status"
-                :disabled="true"
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="item in inboundStatus"
-                  :key="item.code"
-                  :label="item.name"
-                  :value="item.code"
-                >
+              <el-select v-model="detailReceiveGrid.editForm.status" :disabled="true" placeholder="请选择">
+                <el-option v-for="item in inboundStatus" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
                     item.code
@@ -709,63 +417,44 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="收货价格" prop="inboundPrice">
-              <el-input-number
-                v-model="detailReceiveGrid.editForm.inboundPrice"
-                auto-complete="off"
-              ></el-input-number>
+              <el-input-number v-model="detailReceiveGrid.editForm.inboundPrice" auto-complete="off"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="预收数" prop="inboundPreNum">
-              <el-input-number
-                v-model="detailReceiveGrid.editForm.inboundPreNum"
-                disabled
-                auto-complete="off"
-              ></el-input-number>
+              <el-input-number v-model="detailReceiveGrid.editForm.inboundPreNum" disabled
+                auto-complete="off"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="实收数" prop="inboundNum">
-              <el-input-number
-                v-model="detailReceiveGrid.editForm.inboundNum"
-                auto-complete="off"
-              ></el-input-number>
+              <el-input-number v-model="detailReceiveGrid.editForm.inboundNum" auto-complete="off"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="计划库位" prop="planLoc">
-              <popwin-button
-                popKey="POP_LOC"
-                :staticCondition="{ useType: 'RS' }"
-                :selectValue="detailReceiveGrid.editForm.planLoc"
-                :disabled="true"
-                v-model="detailReceiveGrid.editForm.planLoc"
-              ></popwin-button>
+              <popwin-button popKey="POP_LOC" :staticCondition="{ useType: 'RS' }"
+                :selectValue="detailReceiveGrid.editForm.planLoc" :disabled="true"
+                v-model="detailReceiveGrid.editForm.planLoc"></popwin-button>
               <!--<el-input v-model="detailGrid.editForm.planLoc" auto-complete="off"></el-input>-->
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="成本" prop="cost">
-              <el-input-number
-                v-model="detailReceiveGrid.editForm.cost"
-                auto-complete="off"
-              ></el-input-number>
+              <el-input-number v-model="detailReceiveGrid.editForm.cost" auto-complete="off"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="0">
           <el-col :span="12">
             <el-form-item label="实际库位" prop="inboundLocCode">
-              <popwin-button
-                popKey="POP_LOC"
-                :staticCondition="{ useType: 'RS' }"
+              <popwin-button popKey="POP_LOC" :staticCondition="{ useType: 'RS' }"
                 :selectValue="detailReceiveGrid.editForm.inboundLocCode"
-                v-model="detailReceiveGrid.editForm.inboundLocCode"
-              ></popwin-button>
+                v-model="detailReceiveGrid.editForm.inboundLocCode"></popwin-button>
               <!--<el-input v-model="detailGrid.editForm.planLoc" auto-complete="off"></el-input>-->
             </el-form-item>
           </el-col>
@@ -773,46 +462,24 @@
         <el-row :gutter="0">
           <el-col :span="24">
             <el-form-item label="备注">
-              <el-input
-                v-model="detailReceiveGrid.editForm.remark"
-                auto-complete="off"
-              ></el-input>
+              <el-input v-model="detailReceiveGrid.editForm.remark" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click.native="pageControl.recEditFormVisible = false"
-          >取消</el-button
-        >
-        <el-button
-          type="primary"
-          @click.native="recEditSubmit"
-          :disabled="btnRecEditStatus"
-          :loading="pageControl.recEditLoading"
-          >收货确认</el-button
-        >
-        <el-button
-          type="danger"
-          @click.native="cancleRecEditSubmit"
-          :disabled="btnCancelRecEditStatus"
-          :loading="pageControl.cancelRecEditLoading"
-          >取消收货</el-button
-        >
+        <el-button @click.native="pageControl.recEditFormVisible = false">取消</el-button>
+        <el-button type="primary" @click.native="recEditSubmit" :disabled="btnRecEditStatus"
+          :loading="pageControl.recEditLoading">收货确认</el-button>
+        <el-button type="danger" @click.native="cancleRecEditSubmit" :disabled="btnCancelRecEditStatus"
+          :loading="pageControl.cancelRecEditLoading">取消收货</el-button>
       </div>
     </el-dialog>
-    <el-dialog
-      title="快速新增"
-      border
-      :visible.sync="pageControl.batchAddPopWinVisiable"
-    >
+    <el-dialog title="快速新增" border :visible.sync="pageControl.batchAddPopWinVisiable">
       <el-form :inline="true" :model="batchAddPopWin.filters">
         <el-form-item label="配件类型" prop="fittingTypeCode">
-          <popwin-button
-            popKey="POP_FITTINGTYPE"
-            :selectValue="batchAddPopWin.filters.fittingTypeCode"
-            v-model="batchAddPopWin.filters.fittingTypeCode"
-          ></popwin-button>
+          <popwin-button popKey="POP_FITTINGTYPE" :selectValue="batchAddPopWin.filters.fittingTypeCode"
+            v-model="batchAddPopWin.filters.fittingTypeCode"></popwin-button>
         </el-form-item>
         <el-form-item label="编码" prop="fittingSkuCode">
           <el-input v-model="batchAddPopWin.filters.fittingSkuCode"></el-input>
@@ -824,110 +491,80 @@
           <el-input v-model="batchAddPopWin.filters.modelCode"></el-input>
         </el-form-item>
         <el-form-item label="供应商" prop="supplierCode">
-          <popwin-button
-            popKey="POP_CUSTOMER"
-            :selectValue="batchAddPopWin.filters.supplierCode"
-            v-model="batchAddPopWin.filters.supplierCode"
-          ></popwin-button>
+          <popwin-button popKey="POP_CUSTOMER" :selectValue="batchAddPopWin.filters.supplierCode"
+            v-model="batchAddPopWin.filters.supplierCode"></popwin-button>
           <!--<el-input v-model="orderHeader.supplierCode" auto-complete="off"></el-input>-->
         </el-form-item>
+        <el-form-item label="客户" prop="buyerCode">
+          <popwin-button popKey="POP_CUSTOMER" :selectValue="batchAddPopWin.filters.buyerCode"
+            v-model="batchAddPopWin.filters.buyerCode"></popwin-button>
+          <!--<el-input v-model="orderHeader.supplierCode" auto-complete="off"></el-input>-->
+        </el-form-item>
+        <el-form-item label="当前数量" prop="currentNum">
+          <el-input-number :precision="1" :min="0.5" v-model="batchAddPopWin.currentNum"
+            auto-complete="off"></el-input-number>
+        </el-form-item>
+        <el-form-item label="收货价格" prop="inboundPrice">
+          <el-input-number v-model="batchAddPopWin.inboundPrice" auto-complete="off"></el-input-number>
+        </el-form-item>
+        <el-form-item label="退货成本" prop="cost">
+          <el-input-number v-model="batchAddPopWin.cost" auto-complete="off"></el-input-number>
+        </el-form-item>
         <el-form-item>
-          <el-button type="primary" v-on:click="batchAddPopWinQuery"
-            >查询</el-button
-          >
+          <el-button type="primary" v-on:click="batchAddPopWinQuery">查询</el-button>
         </el-form-item>
       </el-form>
       <el-tabs v-model="batchAddPopWin.batchAddPopWinActiveName">
-        <el-tab-pane label="采购历史" name="sale">
-          <el-table
-            max-height="500"
-            border
-            :data="batchAddPopWin.saleList"
-            @row-dblclick="addSale"
-            v-loading="batchAddPopWin.saleListLoading"
-            @selection-change="batchAddSaleSelsChange"
-          >
+        <el-tab-pane label="采购历史" name="procure">
+          <el-table max-height="500" border :data="batchAddPopWin.procureList" @row-dblclick="addProcure"
+            v-loading="batchAddPopWin.procureListLoading" @selection-change="batchAddProcureSelsChange">
             <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column
-              property="skuCode"
-              label="商品编码"
-              width="150"
-            ></el-table-column>
-            <el-table-column
-              property="fittingSkuName"
-              label="商品名称"
-              width="200"
-            ></el-table-column>
-            <el-table-column
-              property="customerName"
-              label="供应商名称"
-              width="200"
-            ></el-table-column>
-            <el-table-column
-              property="modelCode"
-              label="车型"
-            ></el-table-column>
-            <el-table-column
-              property="inboundPrice"
-              label="入库价格"
-            ></el-table-column>
-            <el-table-column
-              property="modifyTime"
-              label="入库时间"
-              :formatter="formatTime"
-            ></el-table-column>
+            <el-table-column property="skuCode" label="商品编码" width="150"></el-table-column>
+            <el-table-column property="fittingSkuName" label="商品名称" width="200"></el-table-column>
+            <el-table-column property="customerName" label="供应商名称" width="200"></el-table-column>
+            <el-table-column property="modelCode" label="车型"></el-table-column>
+            <el-table-column property="inboundPrice" label="入库价格"></el-table-column>
+            <el-table-column property="modifyTime" label="入库时间" :formatter="formatTime"></el-table-column>
           </el-table>
           <el-col :span="24" class="toolbar">
             <el-button type="primary" v-on:click="batchAdd">批量新增</el-button>
-            <el-pagination
-              layout="prev, pager, next"
-              @current-change="handleBatchSaleAddCurrentChange"
-              :page-size="batchAddPopWin.saleSize"
-              :total="batchAddPopWin.saleTotal"
-              style="float: right"
-            >
+            <el-pagination layout="prev, pager, next" @current-change="handleBatchProcureAddCurrentChange"
+              :page-size="batchAddPopWin.procureSize" :total="batchAddPopWin.procureTotal" style="float: right">
             </el-pagination>
           </el-col>
         </el-tab-pane>
         <el-tab-pane label="产品信息" name="sku">
-          <el-table
-            max-height="500"
-            border
-            :data="batchAddPopWin.skuList"
-            v-loading="batchAddPopWin.listLoading"
-            @row-dblclick="addSku"
-            @selection-change="batchAddSelsChange"
-          >
+          <el-table max-height="500" border :data="batchAddPopWin.skuList" v-loading="batchAddPopWin.listLoading"
+            @row-dblclick="addSku" @selection-change="batchAddSelsChange">
             <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column
-              property="fittingSkuCode"
-              label="商品编码"
-              width="150"
-            ></el-table-column>
-            <el-table-column
-              property="fittingSkuName"
-              label="商品名称"
-              width="200"
-            ></el-table-column>
-            <el-table-column
-              property="modelCode"
-              label="车型"
-            ></el-table-column>
-            <el-table-column
-              property="price"
-              label="参考价格"
-              width="200"
-            ></el-table-column>
+            <el-table-column property="fittingSkuCode" label="商品编码" width="150"></el-table-column>
+            <el-table-column property="fittingSkuName" label="商品名称" width="200"></el-table-column>
+            <el-table-column property="modelCode" label="车型"></el-table-column>
+            <el-table-column property="price" label="参考价格" width="200"></el-table-column>
           </el-table>
           <el-col :span="24" class="toolbar">
             <el-button type="primary" v-on:click="batchAdd">批量新增</el-button>
-            <el-pagination
-              layout="prev, pager, next"
-              @current-change="handleBatchAddCurrentChange"
-              :page-size="batchAddPopWin.size"
-              :total="batchAddPopWin.total"
-              style="float: right"
-            >
+            <el-pagination layout="prev, pager, next" @current-change="handleBatchAddCurrentChange"
+              :page-size="batchAddPopWin.size" :total="batchAddPopWin.total" style="float: right">
+            </el-pagination>
+          </el-col>
+        </el-tab-pane>
+        <el-tab-pane label="销售历史" name="sale">
+          <el-table max-height="500" border :data="batchAddPopWin.saleList" @row-dblclick="addSale"
+            v-loading="batchAddPopWin.saleListLoading" @selection-change="batchAddSaleSelsChange">
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column property="skuCode" label="商品编码" width="80"></el-table-column>
+            <el-table-column property="fittingSkuName" label="商品名称" width="200"></el-table-column>
+            <el-table-column property="customerName" label="客户名称" width="200"></el-table-column>
+            <el-table-column property="modelCode" label="车型"></el-table-column>
+            <el-table-column property="outboundPrice" label="价格"></el-table-column>
+            <el-table-column property="cost" label="成本"></el-table-column>
+            <el-table-column property="packageCode" label="包装"></el-table-column>
+            <el-table-column property="modifyTime" label="发货时间" :formatter="formatTime"></el-table-column>
+          </el-table>
+          <el-col :span="24" class="toolbar">
+            <el-pagination layout="prev, pager, next" @current-change="handleBatchSaleAddCurrentChange"
+              :page-size="batchAddPopWin.saleSize" :total="batchAddPopWin.saleTotal" style="float: right">
             </el-pagination>
           </el-col>
         </el-tab-pane>
@@ -958,9 +595,11 @@ import {
   cancelAccountByOrderNo,
   accountCostByOrderNo,
   batchSaveInboundDetail,
+  queryHistoryProcure,
   queryHistorySale,
   selectNextOrderNo,
   selectPreOrderNo,
+  getMaxInventoryBySkuCode
 } from "../../api/inboundApi";
 import { getFittingSkuListPage } from "../../api/fittingSkuApi";
 var codemaster = require("../../../static/codemaster.json");
@@ -1134,7 +773,13 @@ export default {
         ],
       },
       batchAddPopWin: {
-        batchAddPopWinActiveName: "sale",
+        batchAddPopWinActiveName: "procure",
+        procureList: [],
+        procurePage: 1,
+        procureSize: 10,
+        procureTotal: 0,
+        procureListLoading: false,
+        procureSels: [],
         saleList: [],
         salePage: 1,
         saleSize: 10,
@@ -1158,6 +803,9 @@ export default {
           fittingTypeCode: "",
           supplierCode: "",
         },
+        currentNum: 0,
+        inboundPrice: 0.0,
+        cost: 0.0
       },
       inboundStatus: codemaster.WM_INBOUND_STATUS,
       inboundType: codemaster.WM_INBOUND_TYPE,
@@ -1270,13 +918,13 @@ export default {
         return true;
       }
       if (this.orderHeader.status === "99") {
-          return true;
-        } else if(this.orderHeader.isCalculated === "Y"){
-          return false;
-        }else{
-          return true;
-        }
-      },
+        return true;
+      } else if (this.orderHeader.isCalculated === "Y") {
+        return false;
+      } else {
+        return true;
+      }
+    },
     btnAccountStatus: function () {
       if (
         this.orderHeader.isCalculated === "N" &&
@@ -1331,7 +979,6 @@ export default {
         id: this.orderHeader.id,
       })
         .then((res) => {
-          debugger;
           if (res.data === null || res.data === "" || res.data == undefined) {
             this.$message.error("已经是最后一个订单");
           } else {
@@ -1366,6 +1013,10 @@ export default {
     openBatchAddPopWin: function () {
       this.pageControl.batchAddPopWinVisiable = true;
     },
+    handleBatchProcureAddCurrentChange(val) {
+      this.batchAddPopWin.procurePage = val;
+      this.getProcureData();
+    },
     handleBatchSaleAddCurrentChange(val) {
       this.batchAddPopWin.salePage = val;
       this.getSaleData();
@@ -1374,6 +1025,9 @@ export default {
       this.batchAddPopWin.page = val;
       this.getSkuData();
     },
+    batchAddProcureSelsChange: function (sels) {
+      this.batchAddPopWin.procureSels = sels;
+    },
     batchAddSaleSelsChange: function (sels) {
       this.batchAddPopWin.saleSels = sels;
     },
@@ -1381,17 +1035,19 @@ export default {
       this.batchAddPopWin.sels = sels;
     },
     batchAddPopWinQuery: function () {
-      if (this.batchAddPopWin.batchAddPopWinActiveName === "sale") {
-        this.getSaleData();
+      if (this.batchAddPopWin.batchAddPopWinActiveName === "procure") {
+        this.getProcureData();
       } else if (this.batchAddPopWin.batchAddPopWinActiveName === "sku") {
         this.getSkuData();
+      } else if (this.batchAddPopWin.batchAddPopWinActiveName === "sale") {
+        this.getSaleData();
       }
     },
-    // 获取历史入库记录
+    // 获取历史销售记录
     getSaleData: function () {
       let para = {
-        page: this.batchAddPopWin.page,
-        size: this.batchAddPopWin.size,
+        page: this.batchAddPopWin.salePage,
+        size: this.batchAddPopWin.saleSize,
         conditions: JSON.stringify(this.batchAddPopWin.filters),
       };
       this.batchAddPopWin.saleListLoading = true;
@@ -1405,6 +1061,27 @@ export default {
         })
         .catch((data) => {
           this.batchAddPopWin.saleListLoading = false;
+          util.errorCallBack(data, this.$router, this.$message);
+        });
+    },
+    // 获取历史入库记录
+    getProcureData: function () {
+      let para = {
+        page: this.batchAddPopWin.procurePage,
+        size: this.batchAddPopWin.procureSize,
+        conditions: JSON.stringify(this.batchAddPopWin.filters),
+      };
+      this.batchAddPopWin.procureListLoading = true;
+      //NProgress.start();
+      queryHistoryProcure(para)
+        .then((res) => {
+          this.batchAddPopWin.procureTotal = res.data.size;
+          this.batchAddPopWin.procureList = res.data.list;
+          this.batchAddPopWin.procureListLoading = false;
+          //NProgress.done();
+        })
+        .catch((data) => {
+          this.batchAddPopWin.procureListLoading = false;
           util.errorCallBack(data, this.$router, this.$message);
         });
     },
@@ -1432,15 +1109,60 @@ export default {
       let user = JSON.parse(localStorage.getItem("user"));
       window.open(
         config.reportUrl +
-          "inboundOrder?orderNo=" +
-          this.orderHeader.orderNo +
-          "&companyId=" +
-          user.companyId +
-          "&warehouseId=" +
-          user.warehouseId +
-          "&inboundTime=" +
-          this.receiveTime
+        "inboundOrder?orderNo=" +
+        this.orderHeader.orderNo +
+        "&companyId=" +
+        user.companyId +
+        "&warehouseId=" +
+        user.warehouseId +
+        "&inboundTime=" +
+        this.receiveTime
       );
+    },
+    addProcure: function (row, event) {
+      let para = {};
+      para.supplierCode = this.orderHeader.supplierCode;
+      para.status = "00";
+      para.skuCode = row.skuCode;
+      para.orderNo = this.orderHeader.orderNo;
+      getMaxInventoryBySkuCode({ skuCode: row.skuCode })
+        .then((res) => {
+          if (res.data !== '') {
+            para.planLoc = res.data.loc_code;
+          } else {
+            this.$message.error("产品[" + row.skuCode + "]当前没有库存，计划收货库位默认指定为[F3]");
+            para.planLoc = "F3";
+          }
+          para.inboundPreNum = this.batchAddPopWin.currentNum;
+          para.inboundNum = 0;
+          para.inboundPrice = row.inboundPrice;
+          if (this.orderHeader.inboundType === "RI") {
+            para.cost = row.inboundPrice;
+            if (this.batchAddPopWin.inboundPrice <= 0) {
+              this.$message.error("客户退货价格不能为0，请手动填写再双击！");
+              return;
+            } else {
+              para.inboundPrice = this.batchAddPopWin.inboundPrice;
+            }
+          }
+          saveInboundDetail({ detail: JSON.stringify(para) })
+            .then((res) => {
+              //NProgress.done();
+              if (res.data.code == 200) {
+                this.$message({
+                  message: res.data.msg,
+                  type: "success",
+                });
+              } else {
+                this.$message.error(res.data.msg);
+              }
+              this.getDetails();
+              this.getDetailReceives();
+            })
+            .catch((data) => {
+              util.errorCallBack(data, this.$router, this.$message);
+            });
+        });
     },
     addSale: function (row, event) {
       let para = {};
@@ -1448,27 +1170,41 @@ export default {
       para.status = "00";
       para.skuCode = row.skuCode;
       para.orderNo = this.orderHeader.orderNo;
-      para.planLoc = "F3";
-      para.inboundPreNum = 0;
-      para.inboundNum = 0;
-      para.inboundPrice = row.inboundPrice;
-      saveInboundDetail({ detail: JSON.stringify(para) })
+      getMaxInventoryBySkuCode({ skuCode: row.skuCode })
         .then((res) => {
-          //NProgress.done();
-          if (res.data.code == 200) {
-            this.$message({
-              message: res.data.msg,
-              type: "success",
-            });
+          if (res.data !== '') {
+            para.planLoc = res.data.loc_code;
           } else {
-            this.$message.error(res.data.msg);
+            this.$message.error("产品[" + row.skuCode + "]当前没有库存，计划收货库位默认指定为[F3]");
+            para.planLoc = "F3";
           }
-          this.getDetails();
-          this.getDetailReceives();
-        })
-        .catch((data) => {
-          util.errorCallBack(data, this.$router, this.$message);
-        });
+          para.inboundPreNum = this.batchAddPopWin.currentNum;
+          para.inboundNum = 0;
+          para.inboundPrice = this.batchAddPopWin.inboundPrice;
+          if (this.orderHeader.inboundType === "RI") {
+            para.inboundPrice = row.outboundPrice;
+            para.cost = row.cost;
+          }
+          saveInboundDetail({ detail: JSON.stringify(para) })
+            .then((res) => {
+              //NProgress.done();
+              if (res.data.code == 200) {
+                this.$message({
+                  message: res.data.msg,
+                  type: "success",
+                });
+              } else {
+                this.$message.error(res.data.msg);
+              }
+              this.getDetails();
+              this.getDetailReceives();
+            })
+            .catch((data) => {
+              util.errorCallBack(data, this.$router, this.$message);
+            });
+        }
+        );
+
     },
     addSku: function (row, event) {
       let para = {};
@@ -1476,27 +1212,44 @@ export default {
       para.status = "00";
       para.skuCode = row.fittingSkuCode;
       para.orderNo = this.orderHeader.orderNo;
-      para.planLoc = "F3";
-      para.inboundPreNum = 0;
-      para.inboundNum = 0;
-      para.inboundPrice = row.price === null ? 0 : row.price;
-      saveInboundDetail({ detail: JSON.stringify(para) })
+      getMaxInventoryBySkuCode({ skuCode: row.fittingSkuCode })
         .then((res) => {
-          //NProgress.done();
-          if (res.data.code == 200) {
-            this.$message({
-              message: res.data.msg,
-              type: "success",
-            });
+          if (res.data !== '') {
+            para.planLoc = res.data.loc_code;
           } else {
-            this.$message.error(res.data.msg);
+            this.$message.error("产品[" + row.fittingSkuCode + "]当前没有库存，计划收货库位默认指定为[F3]");
+            para.planLoc = "F3";
           }
-          this.getDetails();
-          this.getDetailReceives();
-        })
-        .catch((data) => {
-          util.errorCallBack(data, this.$router, this.$message);
+          para.inboundPreNum = this.batchAddPopWin.currentNum;
+          para.inboundNum = 0;
+          para.inboundPrice = this.batchAddPopWin.inboundPrice > 0 ? this.batchAddPopWin.inboundPrice : row.price === null ? 0 : row.price;
+          if (this.orderHeader.inboundType === "RI") {
+            if (this.batchAddPopWin.cost <= 0) {
+              this.$message.error("退货入库的入库成本不能为0,请手动填写！");
+              return;
+            } else {
+              para.cost = this.batchAddPopWin.cost;
+            }
+          }
+          saveInboundDetail({ detail: JSON.stringify(para) })
+            .then((res) => {
+              //NProgress.done();
+              if (res.data.code == 200) {
+                this.$message({
+                  message: res.data.msg,
+                  type: "success",
+                });
+              } else {
+                this.$message.error(res.data.msg);
+              }
+              this.getDetails();
+              this.getDetailReceives();
+            })
+            .catch((data) => {
+              util.errorCallBack(data, this.$router, this.$message);
+            });
         });
+
     },
     batchAdd: function () {
       let skuCodeArray = [];
@@ -1551,9 +1304,21 @@ export default {
     headerSupplierChangeValue(row) {
       this.orderHeader.supplierName = row.customerName;
     },
+    autoGetPlanLocCodeBySkuCode(code) {
+      let para = { skuCode: code };
+      getMaxInventoryBySkuCode(para)
+        .then((res) => {
+          if (res.data !== '') {
+            this.detailGrid.editForm.planLoc = res.data.loc_code;
+          } else {
+            this.$message.error("产品[" + row.fittingSkuCode + "]当前没有库存，请手动指定一个计划库位！");
+          }
+        });
+    },
     editFormSkuChangeValue(row) {
       this.detailGrid.editForm.fittingSkuName = row.fittingSkuName;
       this.detailGrid.editForm.modelCode = row.modelCode;
+      this.autoGetPlanLocCodeBySkuCode(row.fittingSkuCode);
     },
     recEditFormSkuChangeValue(row) {
       this.detailReceiveGrid.editForm.fittingSkuName = row.fittingSkuName;

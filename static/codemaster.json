@@ -24,7 +24,8 @@
   "WM_LOC_TYPE":[
     {"code":"01","name":"平面地堆库位"},
     {"code":"02","name":"货架仓库位"},
-    {"code":"03","name":"高架仓库位"}
+    {"code":"03","name":"高架仓库位"},
+    {"code":"04","name":"虚拟仓库位"}
   ],
   "WM_USE_TYPE":[
     {"code":"RS","name":"存储库位"},
@@ -34,7 +35,8 @@
     {"code":"ST","name":"过渡库位"},
     {"code":"SS","name":"理货站"},
     {"code":"KT","name":"加工台"},
-    {"code":"CD","name":"越库库位"}
+    {"code":"CD","name":"越库库位"},
+    {"code":"VI","name":"虚拟库位"}
   ],
   "WM_INBOUND_TYPE":[
     {"code":"CI","name":"赊购入库"},
@@ -93,6 +95,8 @@
   ],
   "WM_ALLOC_TYPE":[
     {"code":"AUTO","name":"自动分配"},
+    {"code":"VIRTUAL","name":"虚拟分配"},
+    {"code":"GENERIC","name":"通用分配"},
     {"code":"ASS","name":"预加工分配"}
   ],
   "WM_ASSEMBLE_TYPE":[
@@ -115,6 +119,11 @@
   "WM_FREIGHT_TYPE":[
     {"code":"PAID","name":"已付"},
     {"code":"COLLECT","name":"到付"}
+  ],
+  "WM_IS_RECIEVED_CASH":[
+    {"code":"Y","name":"已收"},
+    {"code":"N","name":"未收"},
+    {"code":"NO_CASH","name":"非现金"}
   ],
   "BD_SKU_STATUS":[
     {"code":"NEW","name":"新品"},
@@ -217,5 +226,10 @@
     {"code":"一汽红塔","name":"一汽红塔"},
     {"code":"长安","name":"长安"},
     {"code":"北汽黑豹","name":"北汽黑豹"}
+  ],
+  "BD_CUSTOMER_PAYMENT_CATEGORY":[
+    {"code":"CASH","name":"现金"},
+    {"code":"ON_DElLIVERY","name":"货到付款"},
+    {"code":"PERIOD","name":"账期"}
   ]
 }

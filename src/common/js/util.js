@@ -12,6 +12,17 @@ function padding(s, len) {
   return s;
 }
 export default {
+  base64ToBlob(dataurl) {
+    var arr = dataurl.split(','),
+      mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]),
+      n = bstr.length,
+      u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], { type: mime });
+  },
   getQueryStringByName: function (name) {
     var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
     var r = window.location.search.substr(1).match(reg);
@@ -100,10 +111,10 @@ export default {
     let s2 = arg2.toString();
     try {
       m += s1.split(".")[1].length;
-    } catch (e) {}
+    } catch (e) { }
     try {
       m += s2.split(".")[1].length;
-    } catch (e) {}
+    } catch (e) { }
     return (
       (Number(s1.replace(".", "")) * Number(s2.replace(".", ""))) /
       Math.pow(10, m)
@@ -117,10 +128,10 @@ export default {
     let r2;
     try {
       t1 = arg1.toString().split(".")[1].length;
-    } catch (e) {}
+    } catch (e) { }
     try {
       t2 = arg2.toString().split(".")[1].length;
-    } catch (e) {}
+    } catch (e) { }
     r1 = Number(arg1.toString().replace(".", ""));
     r2 = Number(arg2.toString().replace(".", ""));
     let intDiv = r1 / r2;
@@ -160,8 +171,8 @@ export default {
     parse: function (dateString, pattern) {
       var matchs1 = pattern.match(SIGN_REGEXP);
       var matchs2 = dateString.match(/(\d)+/g);
-      if(matchs2.length>6){
-        matchs2.splice(6,matchs2.length-1);
+      if (matchs2.length > 6) {
+        matchs2.splice(6, matchs2.length - 1);
       }
       if (matchs1.length == matchs2.length) {
         var _date = new Date(1970, 0, 1);

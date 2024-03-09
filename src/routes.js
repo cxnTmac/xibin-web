@@ -15,6 +15,7 @@ import inbound from "./views/inbound/inbound.vue";
 import inboundDetail from "./views/inbound/inboundDetail.vue";
 import inboundSkuQuery from "./views/inbound/inboundSkuQuery.vue";
 import outbound from "./views/outbound/outbound.vue";
+import reAllocForVirtual from "./views/outbound/reAllocForVirtual.vue";
 import outboundDetail from "./views/outbound/outboundDetail.vue";
 import outboundSkuQuery from "./views/outbound/outboundSkuQuery.vue";
 import inventory from "./views/inventory/inventory.vue";
@@ -94,7 +95,8 @@ export const pages = {
   customerRecord:customerRecord,
   outboundDaily:outboundDaily,
   customerRecordListPage:customerRecordListPage,
-  monthReport:monthReport
+  monthReport:monthReport,
+  reAllocForVirtual:reAllocForVirtual
 };
 export const convertRole2FunctionForBtnAndColumn = function (role2Functions) {
   // 获取到所有的页面权限
