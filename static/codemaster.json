@@ -118,7 +118,11 @@
   ],
   "WM_FREIGHT_TYPE":[
     {"code":"PAID","name":"已付"},
-    {"code":"COLLECT","name":"到付"}
+    {"code":"COLLECT","name":"到付"},
+    {"code":"UNCONFIRMED","name":"未确认"},
+    {"code":"CUSTOMER_PAID","name":"客户付款"},
+    {"code":"CASH_PAID","name":"现金付款"},
+    {"code":"DEBIT_ON_ACCOUNT","name":"账上扣款"}
   ],
   "WM_IS_RECIEVED_CASH":[
     {"code":"Y","name":"已收"},
@@ -197,6 +201,7 @@
     {"code":"S_PURCHASE","name":"奢购"},
     {"code":"RECEIVE","name":"收到货款"},
     {"code":"RECEIVE_CASH","name":"收到现金"},
+    {"code":"BANK_TRANSFER","name":"银行转账"},
     {"code":"PAY","name":"付款"},
     {"code":"ABSENCE_PAY","name":"现销少付款"},
     {"code":"DISCOUNT","name":"下浮"},
@@ -207,6 +212,8 @@
     {"code":"RETURN_OUTBOUND","name":"退货出库"},
     {"code":"FREIGHT_PAID","name":"运费-已付"},
     {"code":"FREIGHT_COLLECT","name":"运费-到付"},
+    {"code":"FREIGHT_CASH_PAID","name":"运费-现金付款"},
+    {"code":"FREIGHT_DEBIT_ON_ACCOUNT","name":"运费-账上扣款"},
     {"code":"SURPLUS","name":"盘盈"},
     {"code":"LOSS","name":"盘亏"}
   ],
@@ -229,7 +236,7 @@
   ],
   "BD_CUSTOMER_PAYMENT_CATEGORY":[
     {"code":"CASH","name":"现金"},
-    {"code":"ON_DElLIVERY","name":"货到付款"},
+    {"code":"ON_DELIVERY","name":"货到付款"},
     {"code":"PERIOD","name":"账期"}
   ]
 }

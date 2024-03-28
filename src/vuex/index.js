@@ -6,6 +6,7 @@ import inboundDetail from './modules/inboundDetail/inboundDetail'
 import inbound from './modules/inbound/inbound'
 import outboundDetail from './modules/outboundDetail/outboundDetail'
 import outbound from './modules/outbound/outbound'
+import outboundForPayment from './modules/outboundForPayment/outboundForPayment'
 import outboundSkuQuery from './modules/outboundSkuQuery/outboundSkuQuery'
 import voucherDetail from './modules/voucherDetail/voucherDetail'
 import assembleDetail from './modules/assembleDetail/assembleDetail'
@@ -30,6 +31,7 @@ export default new Vuex.Store({
         'outboundSkuQuery':outboundSkuQuery,
         'outboundDaily':outboundDaily,
         'customerRecord':customerRecord,
-        'customerRecordListPage':customerRecordListPage
+        'customerRecordListPage':customerRecordListPage,
+        'outboundForPayment':outboundForPayment
     }
 })

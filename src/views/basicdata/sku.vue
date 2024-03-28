@@ -656,7 +656,7 @@
 
 				</el-row>
 				<el-row :gutter="0" class="printLabelDiv">
-					<el-col :span="16">
+					<!-- <el-col :span="16">
 						<table>
 							<tr>
 								<td style="font-size: 20px;">产品名称</td>
@@ -683,14 +683,14 @@
 								<td style="font-size: 30px;">{{ printLabelForm.drawingNo }}</td>
 							</tr>
 						</table>
-					</el-col>
+					</el-col> -->
 					<el-col :span="8">
 						<table>
 							<tr>
 								<img @click="copyQrCodePic" ref="qrCodePicImg" id="qrCodePicImg" :src="infoQrCodePic">
 							</tr>
 							<tr>
-								<el-button type="primary" @click.native="copyQrCodePic">复制二维码</el-button>
+								<el-button type="primary" @click.native="copyQrCodePic">保存当前方案</el-button>
 								<el-button type="primary" @click.native="printSkuLabelDetail">打印标签</el-button>
 							</tr>
 						</table>
@@ -766,8 +766,8 @@ export default {
 			stautus: codemaster.BD_SKU_STATUS,
 			series: codemaster.BS_SKU_SERIES,
 			filters: {
-				releaseDateFm:null,
-				releaseDateTo:null,
+				releaseDateFm: null,
+				releaseDateTo: null,
 				fittingSkuCode: '',
 				fittingSkuName: '',
 				modelCode: '',
@@ -1169,7 +1169,18 @@ export default {
 		},
 		printLabel: function (index, row) {
 			this.printLabelFormVisible = true;
-			this.printLabelForm = Object.assign({}, row);
+			this.currentRow = Object.assign({}, row);
+			if (null == row.labelSkuName) {
+				// 若标签产品名为空，则说明未设置过标签字段
+				this.printLabelForm = Object.assign({}, row);
+			} else {
+				this.printLabelForm.fittingSkuName = row.labelSkuName;
+				this.printLabelForm.modelCode = row.labelModelCode;
+				this.printLabelForm.specification = row.labelSpecification;
+				this.printLabelForm.drawingNo = row.labelDrawingNo;
+				this.printLabelForm.packageNum = row.labelPackageNum;
+				this.printLabelForm.fittingSkuCode = row.fittingSkuCode;
+			}
 			this.printLabelForm.qrCode = config.wxMiniUrl + "?skuCode=" + row.fittingSkuCode;
 			var options = {
 				padding: 0,
@@ -1187,11 +1198,32 @@ export default {
 			clipboard.write([item]);
 		},
 		copyQrCodePic: function () {
-			let myBlob = util.base64ToBlob(this.infoQrCodePic);
-			const item = new clipboard.ClipboardItem({
-				"image/png": myBlob
+			// let myBlob = util.base64ToBlob(this.infoQrCodePic);
+			// const item = new clipboard.ClipboardItem({
+			// 	"image/png": myBlob
+			// });
+			// clipboard.write([item]);
+			let para = Object.assign({}, this.currentRow);
+			para.labelSkuName = this.printLabelForm.fittingSkuName;
+			para.labelModelCode = this.printLabelForm.modelCode;
+			para.labelSpecification = this.printLabelForm.specification;
+			para.labelDrawingNo = this.printLabelForm.drawingNo;
+			para.labelPackageNum = this.printLabelForm.packageNum;
+			saveFittingSku({ fittingSku: JSON.stringify(para) }).then((res) => {
+				if (res.data.code == 200) {
+					this.$message({
+						message: res.data.msg,
+						type: 'success'
+					});
+				} else {
+					this.$message.error(res.data.msg);
+				}
+				this.printLabelFormVisible = false;
+				this.getSkus();
+			}).catch((data) => {
+				this.editLoading = false;
+				util.errorCallBack(data, this.$router, this.$message);
 			});
-			clipboard.write([item]);
 			// navigator.clipboard.write([new window.ClipboardItem({ [myBlob.type]: myBlob })]);
 		},
 		copy: function (index, row) {

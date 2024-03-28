@@ -47,6 +47,7 @@ import customerRecord from "./views/bussiness/customerRecord.vue";
 import customerRecordListPage from "./views/bussiness/customerRecordListPage.vue";
 import monthReport from "./views/bussiness/monthReport.vue";
 import outboundDaily from "./views/outbound/outboundDaily.vue";
+import outboundForPayment from "./views/outbound/outboundForPayment.vue";
 export const pages = {
   login: Login,
   NotFound: NotFound,
@@ -96,7 +97,8 @@ export const pages = {
   outboundDaily:outboundDaily,
   customerRecordListPage:customerRecordListPage,
   monthReport:monthReport,
-  reAllocForVirtual:reAllocForVirtual
+  reAllocForVirtual:reAllocForVirtual,
+  outboundForPayment:outboundForPayment
 };
 export const convertRole2FunctionForBtnAndColumn = function (role2Functions) {
   // 获取到所有的页面权限

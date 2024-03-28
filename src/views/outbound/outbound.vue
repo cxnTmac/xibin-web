@@ -258,7 +258,6 @@ export default {
 		},
 		//获取用户列表
 		getOrders() {
-			debugger;
 			let para = {
 				page: this.page,
 				size: this.size,

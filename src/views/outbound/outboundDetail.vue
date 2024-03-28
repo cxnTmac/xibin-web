@@ -75,8 +75,22 @@
               <el-button>导出EXCEL</el-button>
             </download-excel>
             <el-button @click="openConsigneeDialog">打印收货信息</el-button>
-            <el-button type="primary"
-        @click="printPackOrder">打印装箱单</el-button>
+            <el-button type="info" @click="printCustomerLabel">客户标签打印</el-button>
+            <el-button type="primary" @click="printPackOrder">打印装箱单</el-button>
+
+            <el-popover placement="bottom" trigger="click">
+              <img :src=orderHeader.paymentPicUrl height="300px">
+              <el-upload ref="upload" class="upload-demo" drag :data="orderHeader"
+                :on-success="uploadPaymentConnectSuccess" :on-error="uploadConnectFail"
+                action="/xibin/file/uploadOutboundPaymentPic" :file-list="fileList" :multiple="false"
+                list-type="picture" :auto-upload="true">
+                <i class="el-icon-upload"></i>
+                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                <div class="el-upload__tip" slot="tip">只能上传jpg/png文件</div>
+              </el-upload>
+              <el-button type="primary" :disabled="btnPrintShipOrderStatus" slot="reference"
+                @click="openNewPaymentPicUrl(orderHeader.paymentPicUrl)">上传收款凭证</el-button>
+            </el-popover>
             <el-button type="primary" style="float: right" :disabled="btnSaveHeaderStatus" @click="save"
               :loading="pageControl.saveBtnLoading">保存单头</el-button>
           </el-row>
@@ -90,7 +104,8 @@
           <el-col :span="6">
             <el-form-item label="客户" prop="buyerCode">
               <popwin-button popKey="POP_CUSTOMER" :disabled="orderHeader.auditStatus === '00' ? false : true"
-                :showName="true" :displayName="orderHeader.buyerName" v-model="orderHeader.buyerCode"></popwin-button>
+                @changeValue="orderHeaderCustomerChangeValue" :showName="true" :displayName="orderHeader.buyerName"
+                v-model="orderHeader.buyerCode"></popwin-button>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -99,8 +114,8 @@
                 <el-option v-for="item in outboundStatus" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
-                    item.code
-                  }}</span>
+      item.code
+    }}</span>
                 </el-option>
               </el-select>
               <!--<el-input v-model="orderHeader.status" auto-complete="off"></el-input>-->
@@ -108,8 +123,8 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="订单时间" prop="orderTime">
-              <el-date-picker :disabled="orderHeader.auditStatus === '00' ? false : true" v-model="orderHeader.orderTime"
-                type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期时间">
+              <el-date-picker :disabled="orderHeader.auditStatus === '00' ? false : true"
+                v-model="orderHeader.orderTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期时间">
               </el-date-picker>
               <!--<el-input v-model="orderHeader.orderTime" auto-complete="off"></el-input>-->
             </el-form-item>
@@ -123,8 +138,8 @@
                 <el-option v-for="item in outboundType" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
-                    item.code
-                  }}</span>
+      item.code
+    }}</span>
                 </el-option>
               </el-select>
               <!--<el-input v-model="orderHeader.inboundType" auto-complete="off"></el-input>-->
@@ -136,8 +151,8 @@
                 <el-option v-for="item in auditStatus" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
-                    item.code
-                  }}</span>
+      item.code
+    }}</span>
                 </el-option>
               </el-select>
               <!--<el-input v-model="orderHeader.auditStatus" auto-complete="off"></el-input>-->
@@ -197,8 +212,8 @@
                 <el-option v-for="item in freightType" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
-                    item.code
-                  }}</span>
+      item.code
+    }}</span>
                 </el-option>
               </el-select>
               <!--<el-input v-model="orderHeader.inboundType" auto-complete="off"></el-input>-->
@@ -207,26 +222,13 @@
         </el-row>
         <el-row :gutter="0">
           <el-col :span="6">
-            <el-form-item label="销售核算" prop="isCalculated">
-              <el-select :disabled="true" v-model="orderHeader.isCalculated" placeholder="请选择">
-                <el-option v-for="item in YESORNO" :key="item.code" :label="item.name" :value="item.code">
-                  <span style="float: left">{{ item.name }}</span>
-                  <span style="float: right; color: #8492a6; font-size: 13px">{{
-                    item.code
-                  }}</span>
-                </el-option>
-              </el-select>
-              <!--<el-input v-model="orderHeader.inboundType" auto-complete="off"></el-input>-->
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
             <el-form-item label="是否收到现金" prop="isRecievedCash">
               <el-select v-model="orderHeader.isRecievedCash" placeholder="请选择">
                 <el-option v-for="item in isRecievedCash" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
-                    item.code
-                  }}</span>
+      item.code
+    }}</span>
                 </el-option>
               </el-select>
               <!--<el-input v-model="orderHeader.inboundType" auto-complete="off"></el-input>-->
@@ -234,15 +236,49 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="现金收款数" prop="cash">
-              <el-input v-model="orderHeader.cash" auto-complete="off"></el-input>
+              <el-row :gutter="0">
+                <el-col :span="18">
+                  <el-input v-model="orderHeader.cash" auto-complete="off"></el-input></el-col>
+                <el-col :span="6">
+                  <el-button type="primary" @click="computPricedifferent">计算差价</el-button></el-col>
+              </el-row>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="客户类型" prop="cash">
-              <el-tag :type="getPaymentCategoryType(orderHeader.paymentCategory)">{{formatPaymentCategory(orderHeader.paymentCategory)}}</el-tag>
+            <el-form-item label="实际差价" prop="priceDifferent">
+              <el-input v-model="orderHeader.priceDifferent" auto-complete="off"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="收款时间" prop="cash">
+              <el-date-picker v-model="orderHeader.paymentTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
+                placeholder="选择日期时间">
+              </el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row :gutter="0">
+          <el-col :span="6">
+            <el-form-item label="客户类型" prop="paymentCategory">
+              <el-tag :type="getPaymentCategoryType(orderHeader.paymentCategory)">{{
+      formatPaymentCategory(orderHeader.paymentCategory) }}</el-tag>
+            </el-form-item>
+
+
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="销售核算" prop="isCalculated">
+              <el-select :disabled="true" v-model="orderHeader.isCalculated" placeholder="请选择">
+                <el-option v-for="item in YESORNO" :key="item.code" :label="item.name" :value="item.code">
+                  <span style="float: left">{{ item.name }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">{{
+      item.code
+    }}</span>
+                </el-option>
+              </el-select>
+              <!--<el-input v-model="orderHeader.inboundType" auto-complete="off"></el-input>-->
+            </el-form-item>
+          </el-col></el-row>
       </el-card>
       <el-card class="box-card">
         <div slot="header" class="clearfix">
@@ -272,8 +308,8 @@
             <template slot-scope="scope">
               <div slot="reference" class="name-wrapper">
                 <el-input :ref="scope.row.id" :disabled="rowEditStatus" :precision="1" @keyup.enter.native="
-                  rowSaveDetail(scope.row, scope.$index, $event)
-                  " v-model="scope.row.outboundNum" auto-complete="off"></el-input>
+      rowSaveDetail(scope.row, scope.$index, $event)
+      " v-model="scope.row.outboundNum" auto-complete="off"></el-input>
               </div>
             </template>
           </el-table-column>
@@ -437,7 +473,8 @@
           <el-col :span="12">
             <el-form-item label="计划发货库位" prop="planShipLoc">
               <popwin-button popKey="POP_LOC" :staticCondition="{ useType: 'SS' }"
-                :selectValue="detailGrid.editForm.planShipLoc" v-model="detailGrid.editForm.planShipLoc"></popwin-button>
+                :selectValue="detailGrid.editForm.planShipLoc"
+                v-model="detailGrid.editForm.planShipLoc"></popwin-button>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -446,8 +483,8 @@
                 <el-option v-for="item in outboundStatus" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
-                    item.code
-                  }}</span>
+      item.code
+    }}</span>
                 </el-option>
               </el-select>
             </el-form-item>
@@ -462,8 +499,8 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="源单数" prop="outboundOriginNum">
-              <el-input-number v-model="detailGrid.editForm.outboundOriginNum" :disabled="editFormOutboundOriginNumStatus"
-                auto-complete="off"></el-input-number>
+              <el-input-number v-model="detailGrid.editForm.outboundOriginNum"
+                :disabled="editFormOutboundOriginNumStatus" auto-complete="off"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -471,8 +508,9 @@
           <el-col :span="12">
             <el-form-item label="发货价格" prop="outboundPrice">
               <!--<el-autocomplete popper-class="my-autocomplete" custom-item="my-priceitem-zh"  :fetch-suggestions="queryHistoryPrice" @select="handlePriceSelect" v-model.number="detailGrid.editForm.outboundPrice" auto-complete="off"></el-autocomplete>-->
-              <el-input-number v-model.number="detailGrid.editForm.outboundPrice" :disabled="editFormOutboundPriceStatus"
-                auto-complete="off" @keyup.enter.native="editSubmit"></el-input-number>
+              <el-input-number v-model.number="detailGrid.editForm.outboundPrice"
+                :disabled="editFormOutboundPriceStatus" auto-complete="off"
+                @keyup.enter.native="editSubmit"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -563,8 +601,8 @@
                 <el-option v-for="item in outboundStatus" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
-                    item.code
-                  }}</span>
+      item.code
+    }}</span>
                 </el-option>
               </el-select>
             </el-form-item>
@@ -619,14 +657,15 @@
           :loading="pageControl.pickAllocLoading">拣货</el-button>
         <el-button type="danger" @click.native="cancelPickAllocSubmit" :disabled="btnCancelPickAllocStatus"
           :loading="pageControl.cancelPickAllocLoading">取消拣货</el-button>
-        <el-button type="primary" @click.native="shipAllocSubmit" :disabled="btnShipAllocStatus"
+        <!-- <el-button type="primary" @click.native="shipAllocSubmit" :disabled="btnShipAllocStatus"
           :loading="pageControl.shipAllocLoading">发货</el-button>
         <el-button type="danger" @click.native="cancelShipAllocSubmit" :disabled="btnCancelShipAllocStatus"
-          :loading="pageControl.cancelShipAllocLoading">取消发货</el-button>
+          :loading="pageControl.cancelShipAllocLoading">取消发货</el-button> -->
       </div>
     </el-dialog>
 
-    <el-dialog title="快速新增" style="width: 100%;" border :visible.sync="pageControl.batchAddPopWinVisiable" :close-on-click-modal="false">
+    <el-dialog title="快速新增" style="width: 100%;" border :visible.sync="pageControl.batchAddPopWinVisiable"
+      :close-on-click-modal="false">
       <el-form :inline="true" :model="batchAddPopWin.filters">
         <el-form-item label="配件类型" prop="fittingTypeCode">
           <popwin-button popKey="POP_FITTINGTYPE" :selectValue="batchAddPopWin.filters.fittingTypeCode"
@@ -671,7 +710,7 @@
           <el-col :span="24" class="toolbar">
             <el-button type="primary" v-on:click="batchAdd">批量新增</el-button>
             <el-button type="success" :loading="pageControl.currentInvAvaibleNumSumLoading" plain>当前库存可用数{{
-              currentInvAvaibleNumSum }}</el-button>
+      currentInvAvaibleNumSum }}</el-button>
             <el-pagination layout="prev, pager, next" @current-change="handleBatchSaleAddCurrentChange"
               :page-size="batchAddPopWin.saleSize" :total="batchAddPopWin.saleTotal" style="float: right">
             </el-pagination>
@@ -690,7 +729,7 @@
           <el-col :span="24" class="toolbar">
             <el-button type="primary" v-on:click="batchAdd">批量新增</el-button>
             <el-button type="success" :loading="pageControl.currentInvAvaibleNumSumLoading" plain>当前库存可用数{{
-              currentInvAvaibleNumSum }}</el-button>
+      currentInvAvaibleNumSum }}</el-button>
             <el-pagination layout="prev, pager, next" @current-change="handleBatchAddCurrentChange"
               :page-size="batchAddPopWin.size" :total="batchAddPopWin.total" style="float: right">
             </el-pagination>
@@ -859,7 +898,8 @@ import {
   accountCostByOrderNo,
   selectNextOrderNo,
   selectPreOrderNo,
-  getTotalPackageNumByOrderNo
+  getTotalPackageNumByOrderNo,
+  selectRecentOrderHeaderByBuyerCode
 } from "../../api/outboundApi";
 import { queryAvaiableInventorySumBySkuCode } from "../../api/inventoryApi";
 import { getCustomerByCustomerCode } from "../../api/customerApi";
@@ -942,7 +982,10 @@ export default {
         isCostCaculated: "N",
         voucherId: 0,
         costVoucherId: 0,
+        cash: 0,
+        totalPrice:0,
         cash:0,
+        priceDifferent:0,
         remark: "",
         creator: "",
         createTime: "",
@@ -1118,6 +1161,7 @@ export default {
         consigneeNum: null,
         outboundDate: util.formatDate.format(new Date(), "yyyy-MM-dd"),
       },
+      fileList: [],
       outboundStatus: codemaster.WM_OUTBOUND_STATUS,
       outboundType: codemaster.WM_OUTBOUND_TYPE,
       YESORNO: codemaster.SYS_YES_NO,
@@ -1554,7 +1598,10 @@ export default {
     },
   },
   methods: {
-    batchAddTabClick(){
+    computPricedifferent(){
+      this.orderHeader.priceDifferent = this.orderHeader.totalPrice - this.orderHeader.cash;
+    },
+    batchAddTabClick() {
       this.batchAddPopWinQuery();
     },
     getTotalPackageNum() {
@@ -1564,7 +1611,7 @@ export default {
           this.consigneeInfo.consigneeNum = res.data.data;
         }).catch((data) => {
           util.errorCallBack(data, this.$router, this.$message);
-        });;
+        });
     },
     printConsigneeInfo() {
       window.open(
@@ -1658,6 +1705,25 @@ export default {
       this.detailGrid.editForm.skuName = row.fittingSkuName;
       this.detailGrid.editForm.modelCode = row.modelCode;
     },
+    orderHeaderCustomerChangeValue(row) {
+      this.orderHeader.paymentCategory = row.paymentCategory;
+      if (row.paymentCategory === 'PERIOD') {
+        this.orderHeader.isRecievedCash = 'NO_CASH';
+      } else {
+        this.orderHeader.isRecievedCash = 'N';
+      }
+      selectRecentOrderHeaderByBuyerCode({ buyerCode: row.customerCode })
+        .then((res) => {
+          this.orderHeader.outboundType = res.data.outbound_type;
+          this.orderHeader.logisticsNo = res.data.logistics_no;
+          this.orderHeader.logisticsCompany = res.data.logistics_company;
+        })
+        .catch((data) => {
+          this.pageControl.accountBtnLoading = false;
+          util.errorCallBack(data, this.$router, this.$message);
+        });
+      // 查询最近订单
+    },
     tableRowClassName({ row, rowIndex }) {
       if (row.status === "00" || row.status === "30") {
         return "un-alloc-row";
@@ -1684,6 +1750,18 @@ export default {
       }
       return true;
     },
+    uploadPaymentConnectSuccess: function (response, file, fileList) {
+      if (response.code == 0) {
+        this.$message.error(response.msg);
+
+      } else if (response.code == 200) {
+        this.getOrder();
+        this.$message({
+          message: "上传成功",
+          type: "success",
+        });
+      }
+    },
     uploadConnectSuccess: function (response, file, fileList) {
       if (response.code == 0) {
         // this.$message.error(res.data.msg);
@@ -1695,10 +1773,6 @@ export default {
         this.$alert(response.msg, "导入结果", {
           confirmButtonText: "确定",
         });
-        // this.$message({
-        //   message: response.msg,
-        //   type: "success",
-        // });
       }
     },
     uploadConnectFail: function (err, file, fileList) {
@@ -1732,6 +1806,16 @@ export default {
         "&mobileUrl=" +
         config.mobileUrl +
         "outboundPick?orderNo="
+      );
+    },
+    printCustomerLabel() {
+      let user = JSON.parse(localStorage.getItem("user"));
+      window.open(
+        config.reportUrl +
+        "customerLabelForOrder?customerCode=" +
+        this.orderHeader.buyerCode +
+        "&companyId=" +
+        user.companyId
       );
     },
     printPackOrder() {
@@ -1840,19 +1924,19 @@ export default {
       );
     },
     formatPaymentCategory: function (paymentCategory) {
-			return util.getComboNameByValue(codemaster.BD_CUSTOMER_PAYMENT_CATEGORY, paymentCategory);
-		},
+      return util.getComboNameByValue(codemaster.BD_CUSTOMER_PAYMENT_CATEGORY, paymentCategory);
+    },
     getPaymentCategoryType: function (paymentCategory) {
-			if (paymentCategory === 'CASH') {
-				return 'danger'
-			}
-			if (paymentCategory === 'PERIOD') {
-				return 'success'
-			}
-			if (paymentCategory === 'CASH') {
-				return 'warning'
-			}
-		},
+      if (paymentCategory === 'CASH') {
+        return 'danger'
+      }
+      if (paymentCategory === 'PERIOD') {
+        return 'success'
+      }
+      if (paymentCategory === 'CASH') {
+        return 'warning'
+      }
+    },
     selsChange: function (sels) {
       this.detailGrid.sels = sels;
     },
@@ -2794,7 +2878,8 @@ export default {
     },
     nextOrder() {
       selectNextOrderNo({
-        id: this.orderHeader.id,
+        // id: this.orderHeader.id,
+        orderTime: this.orderHeader.orderTime
       })
         .then((res) => {
           if (res.data === null || res.data === "" || res.data == undefined) {
@@ -2812,7 +2897,8 @@ export default {
     },
     preOrder() {
       selectPreOrderNo({
-        id: this.orderHeader.id,
+        // id: this.orderHeader.id,
+        orderTime: this.orderHeader.orderTime
       })
         .then((res) => {
           if (res.data === null || res.data === "" || res.data == undefined) {
@@ -3093,8 +3179,10 @@ export default {
         costVoucherId: 0,
         trackingNo: null,
         logisticsNo: null,
+        totalPrice:0,
+        priceDifferent:0,
         freight: 0,
-        cash:0,
+        cash: 0,
         remark: "",
         creator: "",
         createTime: "",

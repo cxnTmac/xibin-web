@@ -111,6 +111,8 @@ export const queryWmOutboundDetailByPage = params => { return axios.post(`/xibin
 export const selectNextOrderNo = params => { return axios.get(`/xibin/outbound/selectNextOrderNo`, { params: params }); };
 
 export const selectPreOrderNo = params => { return axios.get(`/xibin/outbound/selectPreOrderNo`, { params: params }); };
+
+export const selectRecentOrderHeaderByBuyerCode = params => { return axios.get(`/xibin/outbound/selectRecentOrderHeaderByBuyerCode`, { params: params }); };
 // export const receive = params => { return axios.get(`/xibin/outbound/receive `, { params: params }); };
 //
 // export const cancelReceive = params => { return axios.get(`/xibin/outbound/cancelReceive `, { params: params }); };
