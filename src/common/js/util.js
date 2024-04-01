@@ -64,7 +64,7 @@ export default {
         Vue.loginPopWin();
       }
     } else {
-      alert(data.message);
+      alert("["+data.response.status+"]"+data.response.statusText);
     }
   },
 
