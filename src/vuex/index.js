@@ -9,6 +9,8 @@ import outbound from './modules/outbound/outbound'
 import outboundForPayment from './modules/outboundForPayment/outboundForPayment'
 import outboundSkuQuery from './modules/outboundSkuQuery/outboundSkuQuery'
 import voucherDetail from './modules/voucherDetail/voucherDetail'
+import voucher from './modules/voucher/voucher'
+import carryForward from './modules/carryForward/carryForward'
 import assembleDetail from './modules/assembleDetail/assembleDetail'
 import roleFunctions from './modules/roleFunctions/roleFunctions'
 import outboundDaily from './modules/outboundDaily/outboundDaily'
@@ -26,12 +28,14 @@ export default new Vuex.Store({
         'outboundDetail': outboundDetail,
         'outbound': outbound,
         'voucherDetail': voucherDetail,
+        'voucher': voucher,
         'assembleDetail': assembleDetail,
         'roleFunctions':roleFunctions,
         'outboundSkuQuery':outboundSkuQuery,
         'outboundDaily':outboundDaily,
         'customerRecord':customerRecord,
         'customerRecordListPage':customerRecordListPage,
-        'outboundForPayment':outboundForPayment
+        'outboundForPayment':outboundForPayment,
+        'carryForward':carryForward
     }
 })

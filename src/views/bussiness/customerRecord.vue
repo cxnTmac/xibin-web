@@ -14,8 +14,8 @@
               <el-option v-for="item in type" :key="item.code" :label="item.name" :value="item.code">
                 <span style="float: left">{{ item.name }}</span>
                 <span style="float: right; color: #8492a6; font-size: 13px">{{
-      item.code
-    }}</span>
+                  item.code
+                  }}</span>
               </el-option>
             </el-select>
           </el-form-item>
@@ -57,16 +57,16 @@
       <el-table-column prop="orderNo" label="关联单据号" width="150">
         <template slot-scope="scope">
           <a href="javascript:void(0)" @click="orderDetail(scope.$index, scope.row)" style="margin-left: 10px">{{
-      scope.row.orderNo }}</a>
+            scope.row.orderNo }}</a>
         </template>
       </el-table-column>
       <el-table-column prop="pay" label="金额" width="100">
         <template slot-scope="scope">
           <div v-if="scope.row.type == 'X_SALE' ||
-      scope.row.type == 'S_SALE' ||
-      scope.row.type == 'X_PURCHASE' ||
-      scope.row.type == 'S_PURCHASE'
-      " style="color: green">
+            scope.row.type == 'S_SALE' ||
+            scope.row.type == 'X_PURCHASE' ||
+            scope.row.type == 'S_PURCHASE'
+          " style="color: green">
             {{ scope.row.pay }}
           </div>
           <div v-else style="color: red">{{ scope.row.pay }}</div>
@@ -76,7 +76,11 @@
       </el-table-column>
       <el-table-column prop="balance" :label="getBalanceLabel" width="150">
       </el-table-column>
-      <el-table-column prop="voucherId" label="关联凭证ID" width="50">
+      <el-table-column prop="voucherId" label="关联凭证ID" width="60">
+        <template slot-scope="scope">
+          <a href="javascript:void(0)" @click="handleVoucher(scope.$index, scope.row)" style="margin-left: 10px">{{
+            scope.row.voucherId }}</a>
+        </template>
       </el-table-column>
       <!-- <el-table-column prop="remark" label="备注" width="100">
       </el-table-column> -->
@@ -137,8 +141,8 @@
                 <el-option v-for="item in type" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
-      item.code
-    }}</span>
+                    item.code
+                    }}</span>
                 </el-option>
               </el-select>
             </el-form-item>
@@ -156,7 +160,14 @@
               <el-input disabled v-model="editForm.auxiId" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
+          <el-col :span="8">
+            <el-form-item label="回填订单数据" prop="resetOrderChecked">
+              <el-radio v-model="resetOrderChecked" label="Y">是</el-radio>
+              <el-radio v-model="resetOrderChecked" label="N">否</el-radio>
+            </el-form-item>
+          </el-col>
         </el-row>
+        <!-- <el-row :gutter="0"></el-row> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click.native="editFormVisible = false">取消</el-button>
@@ -222,6 +233,7 @@ export default {
         date: util.formatDate.format(new Date(), "yyyy-MM-dd"),
         remark: "",
       },
+      resetOrderChecked: "Y"
     };
   },
   computed: {
@@ -253,6 +265,14 @@ export default {
     handleCurrentChange(val) {
       this.page = val;
       this.getRecords();
+    },
+    handleVoucher: function (index, row) {
+      this.$store.commit('changeVoucherID', row.voucherId);
+      this.$store.commit('changeVoucherStatus', 'EDIT');
+      this.$store.commit('changeVoucherFromPath', '/customerRecord');
+      this.$store.commit('changeCustomerRecordFilters', this.filters);
+      this.$store.commit('changePage', this.page);
+      this.$router.push({ path: '/voucherDetail' });
     },
     //显示编辑界面
     handleEdit: function (index, row) {
@@ -314,7 +334,7 @@ export default {
             this.editLoading = true;
             //NProgress.start();
             let para = Object.assign({}, this.editForm);
-            saveCustomerRecord({ customerRecord: JSON.stringify(para) })
+            saveCustomerRecord({ customerRecord: JSON.stringify(para),resetOrderChecked:this.resetOrderChecked })
               .then((res) => {
                 this.editLoading = false;
                 //NProgress.done();

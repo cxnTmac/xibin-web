@@ -198,7 +198,7 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="物流单号" prop="trackingNo">
-              <el-input v-model="orderHeader.trackingNo" :disabled="logisticsInfoStatus" auto-complete="off"></el-input>
+              <el-input v-model="orderHeader.trackingNo"  auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -208,7 +208,7 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="运费类别" prop="freightType">
-              <el-select v-model="orderHeader.freightType" placeholder="请选择">
+              <el-select v-model="orderHeader.freightType" :disabled="logisticsInfoStatus" placeholder="请选择">
                 <el-option v-for="item in freightType" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
@@ -223,7 +223,7 @@
         <el-row :gutter="0">
           <el-col :span="6">
             <el-form-item label="是否收到现金" prop="isRecievedCash">
-              <el-select v-model="orderHeader.isRecievedCash" placeholder="请选择">
+              <el-select v-model="orderHeader.isRecievedCash" :disabled="cashReceiveStatus" placeholder="请选择">
                 <el-option v-for="item in isRecievedCash" :key="item.code" :label="item.name" :value="item.code">
                   <span style="float: left">{{ item.name }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{
@@ -238,20 +238,20 @@
             <el-form-item label="现金收款数" prop="cash">
               <el-row :gutter="0">
                 <el-col :span="18">
-                  <el-input v-model="orderHeader.cash" auto-complete="off"></el-input></el-col>
+                  <el-input v-model="orderHeader.cash" :disabled="cashReceiveStatus" auto-complete="off"></el-input></el-col>
                 <el-col :span="6">
-                  <el-button type="primary" @click="computPricedifferent">计算差价</el-button></el-col>
+                  <el-button type="primary" :disabled="cashReceiveStatus" @click="computPricedifferent">计算差价</el-button></el-col>
               </el-row>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="实际差价" prop="priceDifferent">
-              <el-input v-model="orderHeader.priceDifferent" auto-complete="off"></el-input>
+              <el-input v-model="orderHeader.priceDifferent" :disabled="cashReceiveStatus" auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="收款时间" prop="cash">
-              <el-date-picker v-model="orderHeader.paymentTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
+              <el-date-picker v-model="orderHeader.paymentTime" :disabled="cashReceiveStatus" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
                 placeholder="选择日期时间">
               </el-date-picker>
             </el-form-item>
@@ -1201,10 +1201,12 @@ export default {
     },
     // 物流信息状态
     logisticsInfoStatus: function () {
+      debugger;
       if (this.orderHeader.status === "99") {
         return true;
+      }else{
+        return false;
       }
-      return false;
     },
     editFormSkuCodeStatus: function () {
       if (this.orderHeader.status === "99") {
@@ -1590,6 +1592,13 @@ export default {
       // }
       return false;
     },
+    cashReceiveStatus: function () {
+      if (this.orderHeader.status === "99" ){
+        return true;
+      }else{
+        false;
+      }
+    },
     orderNo: function () {
       return this.$store.state.outboundDetail.orderNo;
     },
@@ -1599,7 +1608,7 @@ export default {
   },
   methods: {
     computPricedifferent(){
-      this.orderHeader.priceDifferent = this.orderHeader.totalPrice - this.orderHeader.cash;
+      this.orderHeader.priceDifferent = NP.minus(this.orderHeader.totalPrice,this.orderHeader.cash); 
     },
     batchAddTabClick() {
       this.batchAddPopWinQuery();

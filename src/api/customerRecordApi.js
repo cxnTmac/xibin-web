@@ -16,3 +16,5 @@ export const saveCustomerRecord = params => { return axios.get(`/xibin/customerR
 export const getCustomerRecordListByCustomer = params => { return axios.get(`/xibin/customerRecord/showAllCustomerRecordByCustomer`, { params: params }); };
 
 export const monthReport = params => { return axios.get(`/xibin/customerRecord/monthReport`, { params: params }); };
+
+export const queryForVoucher = params => { return axios.get(`/xibin/customerRecord/queryForVoucher`, { params: params }); };

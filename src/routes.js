@@ -21,24 +21,15 @@ import outboundSkuQuery from "./views/outbound/outboundSkuQuery.vue";
 import inventory from "./views/inventory/inventory.vue";
 import actTran from "./views/inventory/actTran.vue";
 import move from "./views/inventory/move.vue";
-import createVoucherByInbound from "./views/finace/createVoucherByInbound.vue";
-import createVoucherByOutbound from "./views/finace/createVoucherByOutbound.vue";
-import createCostVoucherByOutbound from "./views/finace/createCostVoucherByOutbound.vue";
-import createCostVoucherByInbound from "./views/finace/createCostVoucherByInbound.vue";
-import financeHome from "./views/finace/financeHome.vue";
-import course from "./views/finace/course.vue";
-import voucher from "./views/finace/voucher.vue";
-import voucherDetail from "./views/finace/voucherDetail.vue";
-import generalLedger from "./views/finace/generalLedger.vue";
-import accountBalance from "./views/finace/accountBalance.vue";
-import credentialSummary from "./views/finace/credentialSummary.vue";
+import voucher from "./views/finance/voucher.vue";
+import voucherDetail from "./views/finance/voucherDetail.vue";
+import carryForward from "./views/finance/carryForward.vue";
 import assembleOrder from "./views/assemble/assembleOrder.vue";
 import assembleDetail from "./views/assemble/assembleDetail.vue";
 import company from "./views/sys/company.vue";
 import user from "./views/sys/user.vue";
 import role from "./views/sys/role.vue";
 import functions from "./views/sys/functions.vue";
-import report from "./views/finace/report.vue";
 import echarts from "./views/charts/echarts.vue";
 import provinceSaleCharts from "./views/charts/provinceSaleCharts.vue";
 import saleLineCharts from "./views/charts/saleLineCharts.vue";
@@ -71,24 +62,15 @@ export const pages = {
   outboundSkuQuery: outboundSkuQuery,
   inventory: inventory,
   actTran: actTran,
-  createVoucherByInbound: createVoucherByInbound,
-  createVoucherByOutbound: createVoucherByOutbound,
-  createCostVoucherByOutbound: createCostVoucherByOutbound,
-  createCostVoucherByInbound: createCostVoucherByInbound,
-  financeHome: financeHome,
-  course: course,
   voucher: voucher,
   voucherDetail: voucherDetail,
-  generalLedger: generalLedger,
-  accountBalance: accountBalance,
-  credentialSummary: credentialSummary,
+  carryForward:carryForward,
   assembleOrder: assembleOrder,
   assembleDetail: assembleDetail,
   company: company,
   move: move,
   user: user,
   role: role,
-  report: report,
   functions: functions,
   provinceSaleCharts: provinceSaleCharts,
   saleLineCharts:saleLineCharts,

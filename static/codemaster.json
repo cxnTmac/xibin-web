@@ -238,5 +238,42 @@
     {"code":"CASH","name":"现金"},
     {"code":"ON_DELIVERY","name":"货到付款"},
     {"code":"PERIOD","name":"账期"}
+  ],
+  "FI_VOUCHER_WORD":[
+    {"code":3,"name":"记"},
+    {"code":8,"name":"转"}
+  ],
+  "FI_VOUCHER_CHECK":[
+    {"code":0,"name":"否"},
+    {"code":1,"name":"是"},
+    {"code":2,"name":"待审核"}
+  ],
+  "FI_VOUCHER_POST":[
+    {"code":0,"name":"否"},
+    {"code":1,"name":"是"},
+    {"code":2,"name":"待过账"}
+  ],
+  "FI_VOUCHER_SA":[
+    {"code":0,"name":"否"},
+    {"code":1,"name":"是"}
+  ],
+  "FI_VOUCHER_PL":[
+    {"code":0,"name":"否"},
+    {"code":1,"name":"是"}
+  ],
+  "FI_INCOME_TYPE":[
+    {"code":1,"name":"销售出库"},
+    {"code":3,"name":"退货出库（退货给供应商）"},
+    {"code":4,"name":"盘亏出库"},
+    {"code":5,"name":"赊购入库"},
+    {"code":6,"name":"现购入库"}, 
+    {"code":7,"name":"退货入库（客户退货）"},
+    {"code":8,"name":"盘盈入库"},
+    {"code":9,"name":"运费"},
+    {"code":10,"name":"供应商差价/下浮"},
+    {"code":11,"name":"客户差价/下浮"},
+    {"code":12,"name":"付款"},
+    {"code":13,"name":"现金收款（现金/货到付款客户）"},
+    {"code":14,"name":"转账/银行打款（对账客户）"}
   ]
 }

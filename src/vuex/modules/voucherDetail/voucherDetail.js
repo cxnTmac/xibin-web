@@ -1,13 +1,25 @@
 const state = {
-    voucherId: '',
-    status:''
+    voucherID: '',
+    status:'',
+    fromPath:'',
+    voucherEntity:{
+        voucher:null,
+        list:[],
+        ids:[]
+    }
 }
 const mutations = {
-    changeVoucherId (state, newVoucherId) {
-        state.voucherId = newVoucherId
+    changeVoucherID (state, newVoucherID) {
+        state.voucherID = newVoucherID
     },
     changeVoucherStatus (state, newStatus) {
         state.status = newStatus
+    },
+    changeVoucherEntity (state, voucherEntity) {
+        state.voucherEntity = voucherEntity
+    },
+    changeVoucherFromPath (state, fromPath) {
+        state.fromPath = fromPath
     }
 }
 export default {
